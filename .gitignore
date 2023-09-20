@@ -1,0 +1,11 @@
+.idea
+.vscode/
+.data
+logs
+META-INF
+out
+/classes
+/logs
+/.svn
+/output
+*.iml

@@ -82,6 +82,7 @@ public class UserHandler extends BaseClientRequestHandler {
                 userInfo = new PlayerInfo(user.getId(), "username_" + user.getId());
                 userInfo.saveModel(user.getId());
             }
+                System.out.println(userInfo.toString());
             send(new ResponseRequestUserInfo(userInfo), user);
         } catch (Exception e) {
 
