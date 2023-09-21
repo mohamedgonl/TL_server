@@ -62,6 +62,7 @@ public class DemoHandler extends BaseClientRequestHandler {
      *
      */
     public void handleClientRequest(User user, DataCmd dataCmd) {
+        logger.info("requestId: " + dataCmd.getId());
         try {
             switch (dataCmd.getId()) {
                 // get username
@@ -105,7 +106,7 @@ public class DemoHandler extends BaseClientRequestHandler {
 //            userInfo.move(move.getDirection());
             userInfo.saveModel(user.getId()); 
             
-            send(new ResponseMove(DemoError.SUCCESS.getValue(), userInfo.position), user);
+//            send(new ResponseMove(DemoError.SUCCESS.getValue(), userInfo), user);
             
         } catch (Exception e) {
             send(new ResponseMove(DemoError.EXCEPTION.getValue(), new Point(0,0)), user);

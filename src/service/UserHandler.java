@@ -10,6 +10,7 @@ import bitzero.server.extensions.data.DataCmd;
 
 import cmd.CmdDefine;
 
+import cmd.ErrorConst;
 import cmd.receive.user.RequestUserInfo;
 
 import cmd.send.demo.ResponseRequestUserInfo;
@@ -27,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.server.ServerConstant;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserHandler extends BaseClientRequestHandler {
@@ -61,6 +61,7 @@ public class UserHandler extends BaseClientRequestHandler {
     }
 
     public void handleClientRequest(User user, DataCmd dataCmd) {
+        logger.info("requestId: " + dataCmd.getId());
         try {
             switch (dataCmd.getId()) {
                 case CmdDefine.GET_USER_INFO:
@@ -77,15 +78,17 @@ public class UserHandler extends BaseClientRequestHandler {
 
     private void getUserInfo(User user) {
         try {
+            //get user from cache
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
 
             if (userInfo == null) {
-//                userInfo = new PlayerInfo(user.getId(), "username_" + user.getId());
-                userInfo.saveModel(user.getId());
+                send(new ResponseRequestUserInfo(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
             }
-            send(new ResponseRequestUserInfo(userInfo), user);
-        } catch (Exception e) {
 
+            send(new ResponseRequestUserInfo(ErrorConst.SUCCESS, userInfo), user);
+        } catch (Exception e) {
+            send(new ResponseRequestUserInfo(ErrorConst.UNKNOWN), user);
         }
 
     }
@@ -100,5 +103,4 @@ public class UserHandler extends BaseClientRequestHandler {
             // notify user's change
         }
     }
-
 }

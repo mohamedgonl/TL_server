@@ -6,7 +6,6 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class PlayerInfo extends DataModel {
-    public Point position;
     private int id;
     private String name;
     private String avatar;
@@ -16,7 +15,7 @@ public class PlayerInfo extends DataModel {
     private int elixir;
     private int gem;
     private ArrayList<Building> listBuildings;
-    private int[][] map = new int[40][40];
+    private int[][] map;
 
     public PlayerInfo() {
     }
