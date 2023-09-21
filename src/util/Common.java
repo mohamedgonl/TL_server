@@ -64,5 +64,4 @@ public class Common {
                                                          ConstantMercury.SUFFIX_ONLINE);
         return (isOnline == 1);
     }
-
 }

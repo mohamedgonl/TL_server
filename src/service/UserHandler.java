@@ -33,7 +33,7 @@ import java.util.List;
 public class UserHandler extends BaseClientRequestHandler {
     public static short USER_MULTI_IDS = 1000;
     private final Logger logger = LoggerFactory.getLogger("UserHandler");
-    
+
     public UserHandler() {
         super();
     }
@@ -57,16 +57,16 @@ public class UserHandler extends BaseClientRequestHandler {
         if (ibzevent.getType() == BZEventType.USER_DISCONNECT)
             this.userDisconnect((User) ibzevent.getParameter(BZEventParam.USER));
         else if (ibzevent.getType() == DemoEventType.CHANGE_NAME)
-            this.userChangeName((User) ibzevent.getParameter(DemoEventParam.USER), (String)ibzevent.getParameter(DemoEventParam.NAME));
+            this.userChangeName((User) ibzevent.getParameter(DemoEventParam.USER), (String) ibzevent.getParameter(DemoEventParam.NAME));
     }
 
     public void handleClientRequest(User user, DataCmd dataCmd) {
         try {
             switch (dataCmd.getId()) {
-            case CmdDefine.GET_USER_INFO:
-                RequestUserInfo reqInfo = new RequestUserInfo(dataCmd);                
-                getUserInfo(user);
-                break;
+                case CmdDefine.GET_USER_INFO:
+                    RequestUserInfo reqInfo = new RequestUserInfo(dataCmd);
+                    getUserInfo(user);
+                    break;
             }
         } catch (Exception e) {
             logger.warn("USERHANDLER EXCEPTION " + e.getMessage());
@@ -78,11 +78,11 @@ public class UserHandler extends BaseClientRequestHandler {
     private void getUserInfo(User user) {
         try {
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
             if (userInfo == null) {
-                userInfo = new PlayerInfo(user.getId(), "username_" + user.getId());
+//                userInfo = new PlayerInfo(user.getId(), "username_" + user.getId());
                 userInfo.saveModel(user.getId());
             }
-                System.out.println(userInfo.toString());
             send(new ResponseRequestUserInfo(userInfo), user);
         } catch (Exception e) {
 
@@ -94,9 +94,9 @@ public class UserHandler extends BaseClientRequestHandler {
         // log user disconnect
     }
 
-    private void userChangeName(User user, String name){
+    private void userChangeName(User user, String name) {
         List<User> allUser = BitZeroServer.getInstance().getUserManager().getAllUsers();
-        for(User aUser : allUser){
+        for (User aUser : allUser) {
             // notify user's change
         }
     }

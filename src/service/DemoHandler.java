@@ -89,7 +89,7 @@ public class DemoHandler extends BaseClientRequestHandler {
     /**
      * events will be dispatch here
      */
-    public void handleServerEvent(IBZEvent ibzevent) {        
+    public void handleServerEvent(IBZEvent ibzevent) {
         if (ibzevent.getType() == DemoEventType.LOGIN_SUCCESS) {
             this.processUserLoginSuccess((User)ibzevent.getParameter(DemoEventParam.USER), (String)ibzevent.getParameter(DemoEventParam.NAME));
         }
@@ -102,7 +102,7 @@ public class DemoHandler extends BaseClientRequestHandler {
                 send(new ResponseMove(DemoError.PLAYERINFO_NULL.getValue(), new Point()), user);
             }
             
-            userInfo.move(move.getDirection());
+//            userInfo.move(move.getDirection());
             userInfo.saveModel(user.getId()); 
             
             send(new ResponseMove(DemoError.SUCCESS.getValue(), userInfo.position), user);
@@ -140,9 +140,9 @@ public class DemoHandler extends BaseClientRequestHandler {
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
             if (userInfo==null)
                 send(new ResponseSetName(DemoError.PLAYERINFO_NULL.getValue(), ""), user);
-            String name = userInfo.setName(requestSet.getName());
-            send(new ResponseSetName(DemoError.SUCCESS.getValue(), name), user);
-            logger.info("set new name = " + name);
+            userInfo.setName(requestSet.getName());
+            send(new ResponseSetName(DemoError.SUCCESS.getValue(), userInfo.getName()), user);
+            logger.info("set new name = " + userInfo.getName());
             /**
              * dispatch event for another handler
              */

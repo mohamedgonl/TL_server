@@ -16,6 +16,7 @@ import java.util.Map;
 import event.eventType.DemoEventParam;
 import event.eventType.DemoEventType;
 import model.PlayerInfo;
+import util.GameConfig;
 import util.server.ServerConstant;
 
 public class LoginSuccessHandler extends BaseServerEventHandler {
@@ -28,26 +29,30 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
     }
 
     /**
-     * @param user
-     * description: after login successful to server, core framework will dispatch this event
+     * @param user description: after login successful to server, core framework will dispatch this event
      */
     private void onLoginSuccess(User user) {
         trace(ExtensionLogLevel.DEBUG, "On Login Success ", user.getName());
         PlayerInfo pInfo = null;
         try {
+            //get from db
             pInfo = (PlayerInfo) PlayerInfo.getModel(user.getId(), PlayerInfo.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        if (pInfo==null){
+        if (pInfo == null) {
             pInfo = new PlayerInfo(user.getId(), "username_" + user.getId());
             try {
+                GameConfig.initPlayerInfo(pInfo);
+                //save to db
                 pInfo.saveModel(user.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        //init map from buildings
+        GameConfig.initPlayerMap(pInfo);
 
         /**
          * cache playerinfo in RAM
@@ -59,15 +64,14 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
          * after receive this message, client begin to send game logic packet to server
          */
         ExtensionUtility.instance().sendLoginOK(user);
-        
+
         /**
          * dispatch event here
          */
         Map evtParams = new HashMap();
         evtParams.put(DemoEventParam.USER, user);
         evtParams.put(DemoEventParam.NAME, user.getName());
-        ExtensionUtility.dispatchEvent(new BZEvent(DemoEventType.LOGIN_SUCCESS, evtParams));
-
+//        ExtensionUtility.dispatchEvent(new BZEvent(DemoEventType.LOGIN_SUCCESS, evtParams));
     }
 
 }

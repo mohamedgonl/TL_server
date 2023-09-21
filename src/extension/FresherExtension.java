@@ -122,13 +122,11 @@ public class FresherExtension extends BZExtension {
     public void doLogin(short cmdId, ISession session, DataCmd objData) {
         RequestLogin reqGet = new RequestLogin(objData);
         reqGet.unpackData();
-       
         try {
-            
             UserInfo uInfo = getUserInfo(reqGet.sessionKey, reqGet.userId, session.getAddress());
             User u = ExtensionUtility.instance().canLogin(uInfo, "", session);
             if (u!=null)
-                u.setProperty("userId", uInfo.getUserId());            
+                u.setProperty("userId", uInfo.getUserId());
         } catch (Exception e) {
             Debug.warn("DO LOGIN EXCEPTION " + e.getMessage());
             Debug.warn(ExceptionUtils.getStackTrace(e));
@@ -142,7 +140,7 @@ public class FresherExtension extends BZExtension {
             case 1: // login zingme
                 return ExtensionUtility.getUserInfoFormPortal(username);
             case 2: // set direct userid
-                return GuestLogin.setInfo(userId, "Fresher_" + userId);
+                return GuestLogin.setInfo(userId, "User_" + userId);
             default: // auto increment
                 return GuestLogin.newGuest();
         }        
