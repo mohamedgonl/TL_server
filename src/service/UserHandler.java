@@ -13,7 +13,8 @@ import cmd.CmdDefine;
 import cmd.ErrorConst;
 import cmd.receive.user.RequestUserInfo;
 
-import cmd.send.demo.ResponseRequestUserInfo;
+import cmd.send.demo.user.ResponseGetMapInfo;
+import cmd.send.demo.user.ResponseGetUserInfo;
 
 import event.eventType.DemoEventParam;
 import event.eventType.DemoEventType;
@@ -68,6 +69,9 @@ public class UserHandler extends BaseClientRequestHandler {
                     RequestUserInfo reqInfo = new RequestUserInfo(dataCmd);
                     getUserInfo(user);
                     break;
+                case CmdDefine.GET_MAP_INFO:
+                    getMapInfo(user);
+                    break;
             }
         } catch (Exception e) {
             logger.warn("USERHANDLER EXCEPTION " + e.getMessage());
@@ -82,15 +86,31 @@ public class UserHandler extends BaseClientRequestHandler {
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
 
             if (userInfo == null) {
-                send(new ResponseRequestUserInfo(ErrorConst.PLAYER_INFO_NULL), user);
+                send(new ResponseGetUserInfo(ErrorConst.PLAYER_INFO_NULL), user);
                 return;
             }
 
-            send(new ResponseRequestUserInfo(ErrorConst.SUCCESS, userInfo), user);
+            send(new ResponseGetUserInfo(ErrorConst.SUCCESS, userInfo), user);
         } catch (Exception e) {
-            send(new ResponseRequestUserInfo(ErrorConst.UNKNOWN), user);
+            send(new ResponseGetUserInfo(ErrorConst.UNKNOWN), user);
         }
 
+    }
+
+    private void getMapInfo(User user) {
+        try {
+            //get user from cache
+            PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (userInfo == null) {
+                send(new ResponseGetMapInfo(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            send(new ResponseGetMapInfo(ErrorConst.SUCCESS, userInfo), user);
+        } catch (Exception e) {
+            send(new ResponseGetMapInfo(ErrorConst.UNKNOWN), user);
+        }
     }
 
     private void userDisconnect(User user) {
