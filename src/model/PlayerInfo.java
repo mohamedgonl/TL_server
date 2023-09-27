@@ -3,6 +3,7 @@ package model;
 import util.database.DataModel;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class PlayerInfo extends DataModel {
     private int id;
@@ -18,8 +19,13 @@ public class PlayerInfo extends DataModel {
 
     private ArrayList<Building> listBuildings;
 
-    //dont save in db
+    //not be saved in db
+    private transient String townHallType;
+    private transient int townHallLv;
+    private transient int avaiableBuilders;
+    private transient int totalBuilders;
     private transient int[][] map;
+    private transient Map<String, Integer> buildingAmount;
 
     public PlayerInfo() {
     }
@@ -35,6 +41,9 @@ public class PlayerInfo extends DataModel {
         this.gem = 0;
         this.goldCapacity = 0;
         this.elixirCapacity = 0;
+        this.townHallLv = 1;
+        this.avaiableBuilders = 0;
+        this.totalBuilders = 0;
     }
 
     public PlayerInfo(int id, String name, String avatar, int level, int rank, int gold, int elixir, int gem, int goldCapacity, int elixirCapacity) {
@@ -130,6 +139,46 @@ public class PlayerInfo extends DataModel {
         this.elixirCapacity = elixirCapacity;
     }
 
+    public int getTownHallLv() {
+        return townHallLv;
+    }
+
+    public void setTownHallLv(int townHallLv) {
+        this.townHallLv = townHallLv;
+    }
+
+    public String getTownHallType() {
+        return townHallType;
+    }
+
+    public void setTownHallType(String townHallType) {
+        this.townHallType = townHallType;
+    }
+
+    public int getAvaiableBuilders() {
+        return avaiableBuilders;
+    }
+
+    public void setAvaiableBuilders(int avaiableBuilders) {
+        this.avaiableBuilders = avaiableBuilders;
+    }
+
+    public int getTotalBuilders() {
+        return totalBuilders;
+    }
+
+    public void setTotalBuilders(int totalBuilders) {
+        this.totalBuilders = totalBuilders;
+    }
+
+    public Map<String, Integer> getBuildingAmount() {
+        return buildingAmount;
+    }
+
+    public void setBuildingAmount(Map<String, Integer> buildingAmount) {
+        this.buildingAmount = buildingAmount;
+    }
+
     public ArrayList<Building> getListBuildings() {
         return listBuildings;
     }
@@ -144,6 +193,16 @@ public class PlayerInfo extends DataModel {
 
     public void setMap(int[][] map) {
         this.map = map;
+    }
+
+    public void useResources(int gold, int elixir, int gem) {
+        this.gold -= gold;
+        this.elixir -= elixir;
+        this.gem -= gem;
+    }
+
+    public void useBuilder(int builderAmount) {
+        this.avaiableBuilders -= builderAmount;
     }
 
     public String toString() {

@@ -26,6 +26,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import org.json.JSONObject;
 
+import service.BuildingHandler;
 import service.DemoHandler;
 import service.UserHandler;
 
@@ -52,12 +53,12 @@ public class FresherExtension extends BZExtension {
     }
 
     public void init() {
-
         /**
          * register new handler to catch client's packet
          */
         trace("  Register Handler ");
         addRequestHandler(UserHandler.USER_MULTI_IDS, UserHandler.class);
+        addRequestHandler(BuildingHandler.BUILDING_MULTI_IDS, BuildingHandler.class);
 
         /**
          * register new event

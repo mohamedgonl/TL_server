@@ -10,6 +10,9 @@ import java.util.Map;
 public class GameConfig {
     private static GameConfig instance;
 
+    public static final int MAP_WIDTH = 40;
+    public static final int MAP_HEIGHT = 40;
+
     public InitGameConfig initGameConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> armyCampConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> townHallConfig;
