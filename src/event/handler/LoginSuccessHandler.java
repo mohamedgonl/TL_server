@@ -1,8 +1,6 @@
 package event.handler;
 
-import bitzero.server.core.BZEvent;
 import bitzero.server.core.BZEventParam;
-import bitzero.server.core.BZEventType;
 import bitzero.server.core.IBZEvent;
 import bitzero.server.entities.User;
 import bitzero.server.extensions.BaseServerEventHandler;
@@ -14,9 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import event.eventType.DemoEventParam;
-import event.eventType.DemoEventType;
 import model.PlayerInfo;
-import util.GameConfig;
+import util.PlayerUtils;
+
 import util.server.ServerConstant;
 
 public class LoginSuccessHandler extends BaseServerEventHandler {
@@ -44,7 +42,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         if (pInfo == null) {
             pInfo = new PlayerInfo(user.getId(), "username_" + user.getId());
             try {
-                GameConfig.initPlayerInfo(pInfo);
+                PlayerUtils.initPlayerInfo(pInfo);
                 //save to db
                 pInfo.saveModel(user.getId());
             } catch (Exception e) {
@@ -52,7 +50,8 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
             }
         }
         //init map from buildings
-        GameConfig.initPlayerMap(pInfo);
+        PlayerUtils.genaratePlayerMap(pInfo);
+
 
         /**
          * cache playerinfo in RAM

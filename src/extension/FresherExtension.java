@@ -31,6 +31,7 @@ import service.UserHandler;
 
 import util.GuestLogin;
 
+import util.config.GameConfig;
 import util.metric.LogObject;
 import util.metric.MetricLog;
 
@@ -57,7 +58,6 @@ public class FresherExtension extends BZExtension {
          */
         trace("  Register Handler ");
         addRequestHandler(UserHandler.USER_MULTI_IDS, UserHandler.class);
-        addRequestHandler(DemoHandler.DEMO_MULTI_IDS, DemoHandler.class);
 
         /**
          * register new event
@@ -66,6 +66,9 @@ public class FresherExtension extends BZExtension {
         addEventHandler(BZEventType.USER_LOGIN, LoginSuccessHandler.class);
         addEventHandler(BZEventType.USER_LOGOUT, LogoutHandler.class);
         addEventHandler(BZEventType.USER_DISCONNECT, LogoutHandler.class);
+
+        //init data
+        GameConfig.getInstance().init();
     }
 
     public ServerLoop getServerLoop() {

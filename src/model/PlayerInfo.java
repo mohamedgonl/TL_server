@@ -2,7 +2,6 @@ package model;
 
 import util.database.DataModel;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class PlayerInfo extends DataModel {
@@ -14,8 +13,13 @@ public class PlayerInfo extends DataModel {
     private int gold;
     private int elixir;
     private int gem;
+    private int goldCapacity;
+    private int elixirCapacity;
+
     private ArrayList<Building> listBuildings;
-    private int[][] map;
+
+    //dont save in db
+    private transient int[][] map;
 
     public PlayerInfo() {
     }
@@ -29,9 +33,11 @@ public class PlayerInfo extends DataModel {
         this.gold = 0;
         this.elixir = 0;
         this.gem = 0;
+        this.goldCapacity = 0;
+        this.elixirCapacity = 0;
     }
 
-    public PlayerInfo(int id, String name, String avatar, int level, int rank, int gold, int elixir, int gem) {
+    public PlayerInfo(int id, String name, String avatar, int level, int rank, int gold, int elixir, int gem, int goldCapacity, int elixirCapacity) {
         this.id = id;
         this.name = name;
         this.avatar = avatar;
@@ -40,6 +46,8 @@ public class PlayerInfo extends DataModel {
         this.gold = gold;
         this.elixir = elixir;
         this.gem = gem;
+        this.goldCapacity = goldCapacity;
+        this.elixirCapacity = elixirCapacity;
     }
 
     public int getId() {
@@ -104,6 +112,22 @@ public class PlayerInfo extends DataModel {
 
     public void setGem(int gem) {
         this.gem = gem;
+    }
+
+    public int getGoldCapacity() {
+        return goldCapacity;
+    }
+
+    public void setGoldCapacity(int goldCapacity) {
+        this.goldCapacity = goldCapacity;
+    }
+
+    public int getElixirCapacity() {
+        return elixirCapacity;
+    }
+
+    public void setElixirCapacity(int elixirCapacity) {
+        this.elixirCapacity = elixirCapacity;
     }
 
     public ArrayList<Building> getListBuildings() {
