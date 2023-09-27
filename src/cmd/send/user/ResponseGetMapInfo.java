@@ -1,4 +1,4 @@
-package cmd.send.demo.user;
+package cmd.send.user;
 
 import bitzero.server.extensions.data.BaseMsg;
 import cmd.CmdDefine;
