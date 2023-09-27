@@ -11,5 +11,7 @@ public class CmdDefine {
     public static final short GET_NAME = 2002;
     public static final short SET_NAME = 2003;
 
+    public static final short TRAIN_TROOP = 3001;
+
 
 }
