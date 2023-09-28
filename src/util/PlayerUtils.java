@@ -62,11 +62,11 @@ public class PlayerUtils {
             buildingAmount.put(building.getType(), buildingAmount.getOrDefault(building.getType(), 0) + 1);
 
             //update map
-            if ( buildingDetail.height <= 0 ||  buildingDetail.height <= 0)
+            if (buildingDetail.height <= 0 || buildingDetail.height <= 0)
                 return;
 
             for (int i = 0; i < buildingDetail.width; i++)
-                for (int j = 0; j <  buildingDetail.height; j++) {
+                for (int j = 0; j < buildingDetail.height; j++) {
                     int posX = (int) (building.getPosition().getX() + i);
                     int posY = (int) (building.getPosition().getY() + j);
                     if (posX < GameConfig.MAP_WIDTH && posY < GameConfig.MAP_HEIGHT)
@@ -92,8 +92,12 @@ public class PlayerUtils {
                         elixirCapacity += storage.capacity;
                 }
             }
-            if (building.getStatus() == Building.Status.ON_WORK) {
-                availableBuilders--;
+            if (building.getStatus() == Building.Status.ON_BUILD || building.getStatus() == Building.Status.ON_UPGRADE) {
+                if (building.getEndTime() <= Common.currentTimeInSecond()) {
+                    building.endWorking();
+                } else {
+                    availableBuilders--;
+                }
             }
         }
         playerInfo.setMap(map);

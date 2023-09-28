@@ -18,6 +18,8 @@ public class ErrorConst {
     public static final short BUILD_DONE = 26;
     public static final short TOO_MUCH_RESOURCES = 27;
 
+    public static final short BUILD_NOT_DONE = 28;
+
     public static final short SERVICE_INVALID = 102;
     public static final short ACTION_INVALID = 103;
     public static final short SESSIONKEY_INVALID = 104;

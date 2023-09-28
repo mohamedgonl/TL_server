@@ -82,8 +82,14 @@ public class Building {
         this.status = status;
     }
 
-    public void startWorking(int startTime, int duration) {
-        this.status = Status.ON_WORK;
+    public void startBuilding(int startTime, int duration) {
+        this.status = Status.ON_BUILD;
+        this.startTime = startTime;
+        this.endTime = startTime + duration;
+    }
+
+    public void startUpgrading(int startTime, int duration) {
+        this.status = Status.ON_UPGRADE;
         this.startTime = startTime;
         this.endTime = startTime + duration;
     }
@@ -100,7 +106,8 @@ public class Building {
 
     public enum Status {
         DONE((short) 0),
-        ON_WORK((short) 1);
+        ON_BUILD((short) 1),
+        ON_UPGRADE((short) 2);
         private final short value;
 
         Status(short value) {

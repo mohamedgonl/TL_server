@@ -1,7 +1,10 @@
 package util;
 
+import model.Building;
 import util.config.BaseBuildingConfig;
 import util.config.GameConfig;
+
+import java.util.ArrayList;
 
 public class BuildingUtils {
     public static BaseBuildingConfig getBuilding(String type, int level) {
@@ -50,5 +53,14 @@ public class BuildingUtils {
                 if (map[posY + j][posX + i] > 0 && map[posY + j][posX + i] != buildingId)
                     return false;
         return true;
+    }
+
+    public static Building getBuildingInListById(ArrayList<Building> list, int buildingId) {
+        for (Building building : list) {
+            if (building.getId() == buildingId) {
+                return building;
+            }
+        }
+        return null;
     }
 }

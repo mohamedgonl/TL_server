@@ -5,8 +5,10 @@ import bitzero.server.extensions.BaseClientRequestHandler;
 import bitzero.server.extensions.data.DataCmd;
 import cmd.CmdDefine;
 import cmd.ErrorConst;
+import cmd.receive.building.RequestBuildSuccess;
 import cmd.receive.building.RequestBuyBuilding;
 import cmd.receive.building.RequestCancelBuild;
+import cmd.send.building.ResponseBuildSuccess;
 import cmd.send.building.ResponseBuyBuilding;
 import cmd.send.building.ResponseCancelBuild;
 import model.Building;
@@ -46,6 +48,10 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 case CmdDefine.CANCEL_BUILD:
                     RequestCancelBuild reqCancelBuild = new RequestCancelBuild(dataCmd);
                     cancelBuild(user, reqCancelBuild);
+                    break;
+                case CmdDefine.BUILD_SUCCESS:
+                    RequestBuildSuccess reqBuildSuccess = new RequestBuildSuccess(dataCmd);
+                    buildSuccess(user, reqBuildSuccess);
                     break;
             }
         } catch (Exception e) {
@@ -95,8 +101,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
             }
 
             //check amount building
-            Map<Integer, BaseBuildingConfig> townHallMap = gameConfig.townHallConfig.get(playerInfo.getTownHallType());
-            TownHallConfig townHall = (TownHallConfig) townHallMap.get(playerInfo.getTownHallLv());
+            TownHallConfig townHall = (TownHallConfig) BuildingUtils.getBuilding(playerInfo.getTownHallType(), playerInfo.getTownHallLv());
 
             Field buildingTypeField = townHall.getClass().getField(type);
             buildingTypeField.setAccessible(true);
@@ -132,7 +137,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
         playerInfo.useResources(buildingDetail.gold, buildingDetail.elixir, buildingDetail.coin);
         if (buildingDetail.buildTime > 0) {
             playerInfo.useBuilder(1);
-            newBuilding.startWorking(Common.currentTimeInSecond(), buildingDetail.buildTime);
+            newBuilding.startBuilding(Common.currentTimeInSecond(), buildingDetail.buildTime);
         }
 
         //update mapInfo
@@ -166,19 +171,9 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 return;
             }
 
-            GameConfig gameConfig = GameConfig.getInstance();
-
             //get building by id
             int buildingId = reqData.getBuildingId();
-            Building building = null;
-            int buildingIdx = 0;
-            for (buildingIdx = 0; buildingIdx < playerInfo.getListBuildings().size(); buildingIdx++) {
-                Building tmpBuilding = playerInfo.getListBuildings().get(buildingIdx);
-                if (tmpBuilding.getId() == buildingId) {
-                    building = tmpBuilding;
-                    break;
-                }
-            }
+            Building building = BuildingUtils.getBuildingInListById(playerInfo.getListBuildings(), buildingId);
 
             if (building == null) {
                 send(new ResponseCancelBuild(ErrorConst.BUILDING_NOT_EXIST), user);
@@ -190,7 +185,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
 
             //check build done
             int currentTime = Common.currentTimeInSecond();
-            if (building.getStatus() != Building.Status.ON_WORK || building.getEndTime() <= currentTime) {
+            if (building.getStatus() != Building.Status.ON_BUILD || building.getEndTime() <= currentTime) {
                 send(new ResponseCancelBuild(ErrorConst.BUILD_DONE), user);
                 return;
             }
@@ -208,7 +203,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
             }
 
             //success
-            cancelBuildSuccess(playerInfo, building, buildingIdx, buildingDetail, rewardGold, rewardElixir, rewardGem);
+            cancelBuildSuccess(playerInfo, building, buildingDetail, rewardGold, rewardElixir, rewardGem);
 
             playerInfo.saveModel(user.getId());
             send(new ResponseCancelBuild(ErrorConst.SUCCESS, building.getId()), user);
@@ -219,7 +214,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
         }
     }
 
-    private void cancelBuildSuccess(PlayerInfo playerInfo, Building building, int buildingIdx, BaseBuildingConfig buildingDetail, int rewardGold, int rewardElixir, int rewardGem) {
+    private void cancelBuildSuccess(PlayerInfo playerInfo, Building building, BaseBuildingConfig buildingDetail, int rewardGold, int rewardElixir, int rewardGem) {
         //update resources
         playerInfo.addResources(rewardGold, rewardElixir, rewardGem);
         playerInfo.freeBuilder(1);
@@ -242,6 +237,55 @@ public class BuildingHandler extends BaseClientRequestHandler {
             playerInfo.getBuildingAmount().put(building.getType(), amount - 1);
 
         //update listBuildings
-        playerInfo.getListBuildings().remove(buildingIdx);
+        playerInfo.getListBuildings().remove(building);
+    }
+
+    private void buildSuccess(User user, RequestBuildSuccess reqData) {
+        try {
+            if (!reqData.isValid()) {
+                send(new ResponseBuildSuccess(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            //get user from cache
+            PlayerInfo playerInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (playerInfo == null) {
+                send(new ResponseBuildSuccess(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            //get building by id
+            int buildingId = reqData.getBuildingId();
+            Building building = BuildingUtils.getBuildingInListById(playerInfo.getListBuildings(), buildingId);
+
+            if (building == null) {
+                send(new ResponseBuildSuccess(ErrorConst.BUILDING_NOT_EXIST), user);
+                return;
+            }
+
+            //check if build already done
+            if (building.getStatus() != Building.Status.ON_BUILD) {
+                send(new ResponseBuildSuccess(ErrorConst.BUILD_DONE), user);
+                return;
+            }
+
+            int currentTime = Common.currentTimeInSecond();
+            if (building.getEndTime() > currentTime) {
+                send(new ResponseBuildSuccess(ErrorConst.BUILD_NOT_DONE), user);
+                return;
+            }
+
+            //success
+            building.endWorking();
+            playerInfo.freeBuilder(1);
+
+            playerInfo.saveModel(user.getId());
+            send(new ResponseBuildSuccess(ErrorConst.SUCCESS, building.getId()), user);
+
+        } catch (Exception e) {
+            System.out.println("BUILDING HANDLER EXCEPTION " + e.getMessage());
+            send(new ResponseBuyBuilding(ErrorConst.UNKNOWN), user);
+        }
     }
 }

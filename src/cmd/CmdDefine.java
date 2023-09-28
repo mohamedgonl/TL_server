@@ -9,6 +9,7 @@ public class CmdDefine {
     //building
     public static final short BUY_BUILDING = 2001;
     public static final short CANCEL_BUILD = 2002;
+    public static final short BUILD_SUCCESS = 2003;
 
     //Log cmd
     public static final short MOVE = 3001;
