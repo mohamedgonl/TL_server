@@ -31,7 +31,6 @@ public class GameConfig {
 
     public static GameConfig getInstance() {
         if (instance == null) {
-            System.out.println("new game config");
             instance = new GameConfig();
         }
         return instance;

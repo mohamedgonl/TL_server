@@ -83,21 +83,36 @@ public class Building {
     }
 
     public void startBuilding(int startTime, int duration) {
-        this.status = Status.ON_BUILD;
-        this.startTime = startTime;
-        this.endTime = startTime + duration;
+        if (duration > 0) {
+            this.status = Status.ON_BUILD;
+            this.startTime = startTime;
+            this.endTime = startTime + duration;
+        } else {
+            buildSuccess();
+        }
     }
 
     public void startUpgrading(int startTime, int duration) {
-        this.status = Status.ON_UPGRADE;
-        this.startTime = startTime;
-        this.endTime = startTime + duration;
+        if (duration > 0) {
+            this.status = Status.ON_UPGRADE;
+            this.startTime = startTime;
+            this.endTime = startTime + duration;
+        } else {
+            upgradeSuccess();
+        }
     }
 
-    public void endWorking() {
+    public void buildSuccess() {
         this.status = Status.DONE;
         this.startTime = 0;
         this.endTime = 0;
+    }
+
+    public void upgradeSuccess() {
+        this.status = Status.DONE;
+        this.startTime = 0;
+        this.endTime = 0;
+        this.level++;
     }
 
     public String toString() {

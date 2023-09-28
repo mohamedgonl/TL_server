@@ -8,9 +8,11 @@ import cmd.ErrorConst;
 import cmd.receive.building.RequestBuildSuccess;
 import cmd.receive.building.RequestBuyBuilding;
 import cmd.receive.building.RequestCancelBuild;
+import cmd.receive.building.RequestUpgradeBuilding;
 import cmd.send.building.ResponseBuildSuccess;
 import cmd.send.building.ResponseBuyBuilding;
 import cmd.send.building.ResponseCancelBuild;
+import cmd.send.building.ResponseUpgradeBuilding;
 import model.Building;
 import model.PlayerInfo;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -24,7 +26,6 @@ import util.config.TownHallConfig;
 import util.server.ServerConstant;
 
 import java.lang.reflect.Field;
-import java.util.Map;
 
 public class BuildingHandler extends BaseClientRequestHandler {
     public static short BUILDING_MULTI_IDS = 2000;
@@ -53,6 +54,10 @@ public class BuildingHandler extends BaseClientRequestHandler {
                     RequestBuildSuccess reqBuildSuccess = new RequestBuildSuccess(dataCmd);
                     buildSuccess(user, reqBuildSuccess);
                     break;
+                case CmdDefine.UPGRADE_BUILDING:
+                    RequestUpgradeBuilding reqUpgradeBuilding = new RequestUpgradeBuilding(dataCmd);
+                    upgradeBuilding(user, reqUpgradeBuilding);
+                    break;
             }
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
@@ -76,7 +81,6 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 return;
             }
 
-            GameConfig gameConfig = GameConfig.getInstance();
             String type = reqData.getType();
 
             //get building detail
@@ -135,9 +139,9 @@ public class BuildingHandler extends BaseClientRequestHandler {
     private void buildNewBuilding(PlayerInfo playerInfo, Building newBuilding, BaseBuildingConfig buildingDetail) {
         //update resource
         playerInfo.useResources(buildingDetail.gold, buildingDetail.elixir, buildingDetail.coin);
-        if (buildingDetail.buildTime > 0) {
+        newBuilding.startBuilding(Common.currentTimeInSecond(), buildingDetail.buildTime);
+        if (newBuilding.getStatus() == Building.Status.ON_BUILD) {
             playerInfo.useBuilder(1);
-            newBuilding.startBuilding(Common.currentTimeInSecond(), buildingDetail.buildTime);
         }
 
         //update mapInfo
@@ -270,14 +274,8 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 return;
             }
 
-            int currentTime = Common.currentTimeInSecond();
-            if (building.getEndTime() > currentTime) {
-                send(new ResponseBuildSuccess(ErrorConst.BUILD_NOT_DONE), user);
-                return;
-            }
-
             //success
-            building.endWorking();
+            building.buildSuccess();
             playerInfo.freeBuilder(1);
 
             playerInfo.saveModel(user.getId());
@@ -286,6 +284,71 @@ public class BuildingHandler extends BaseClientRequestHandler {
         } catch (Exception e) {
             System.out.println("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseBuyBuilding(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void upgradeBuilding(User user, RequestUpgradeBuilding reqData) {
+        try {
+            if (!reqData.isValid()) {
+                send(new ResponseUpgradeBuilding(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            //get user from cache
+            PlayerInfo playerInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (playerInfo == null) {
+                send(new ResponseUpgradeBuilding(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            //get building by id
+            int buildingId = reqData.getBuildingId();
+            Building building = BuildingUtils.getBuildingInListById(playerInfo.getListBuildings(), buildingId);
+
+
+            if (building == null) {
+                send(new ResponseUpgradeBuilding(ErrorConst.BUILDING_NOT_EXIST), user);
+                return;
+            }
+
+            if (building.getStatus() != Building.Status.DONE) {
+                send(new ResponseUpgradeBuilding(ErrorConst.BUILDING_ON_WORKING), user);
+                return;
+            }
+
+            String type = building.getType();
+            BaseBuildingConfig buildingDetail = BuildingUtils.getBuilding(type, building.getLevel() + 1);
+
+            //check resources
+            if (playerInfo.getGold() < buildingDetail.gold || playerInfo.getElixir() < buildingDetail.elixir || playerInfo.getGem() < buildingDetail.coin) {
+                send(new ResponseUpgradeBuilding(ErrorConst.NOT_ENOUGH_RESOURCES), user);
+                return;
+            }
+
+            //check builder
+            if (buildingDetail.buildTime > 0 && playerInfo.getAvaiableBuilders() == 0) {
+                send(new ResponseUpgradeBuilding(ErrorConst.NOT_ENOUGH_BUILDER), user);
+                return;
+            }
+
+            //check town hall lv
+            if (playerInfo.getTownHallLv() < buildingDetail.townHallLevelRequired) {
+                send(new ResponseUpgradeBuilding(ErrorConst.TOWNHALL_LEVEL_TOO_LOW), user);
+                return;
+            }
+
+            //success
+            playerInfo.useResources(buildingDetail.gold, buildingDetail.elixir, buildingDetail.coin);
+            building.startUpgrading(Common.currentTimeInSecond(), buildingDetail.buildTime);
+            if (building.getStatus() == Building.Status.ON_UPGRADE)
+                playerInfo.useBuilder(1);
+
+            playerInfo.saveModel(user.getId());
+            send(new ResponseUpgradeBuilding(ErrorConst.SUCCESS, building), user);
+        } catch (Exception e) {
+            System.out.println("BUILDING HANDLER EXCEPTION " + e.getMessage());
+            send(new ResponseUpgradeBuilding(ErrorConst.UNKNOWN), user);
         }
     }
 }

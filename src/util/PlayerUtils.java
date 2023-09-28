@@ -94,7 +94,9 @@ public class PlayerUtils {
             }
             if (building.getStatus() == Building.Status.ON_BUILD || building.getStatus() == Building.Status.ON_UPGRADE) {
                 if (building.getEndTime() <= Common.currentTimeInSecond()) {
-                    building.endWorking();
+                    if (building.getStatus() == Building.Status.ON_BUILD)
+                        building.buildSuccess();
+                    else building.upgradeSuccess();
                 } else {
                     availableBuilders--;
                 }
