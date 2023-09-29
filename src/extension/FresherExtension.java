@@ -27,7 +27,11 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.JSONObject;
 
 import service.DemoHandler;
+<<<<<<< HEAD
 import service.ShopHandler;
+=======
+import service.TroopHandler;
+>>>>>>> origin/long
 import service.UserHandler;
 
 import util.GuestLogin;
@@ -59,8 +63,9 @@ public class FresherExtension extends BZExtension {
          */
         trace("  Register Handler ");
         addRequestHandler(UserHandler.USER_MULTI_IDS, UserHandler.class);
-        addRequestHandler(UserHandler.USER_MULTI_IDS, UserHandler.class);
         addRequestHandler(ShopHandler.USER_MULTI_IDS, ShopHandler.class);
+        addRequestHandler(DemoHandler.DEMO_MULTI_IDS, DemoHandler.class);
+        addRequestHandler(TroopHandler.TROOP_MULTI_IDS, TroopHandler.class);
 
         /**
          * register new event
@@ -69,7 +74,6 @@ public class FresherExtension extends BZExtension {
         addEventHandler(BZEventType.USER_LOGIN, LoginSuccessHandler.class);
         addEventHandler(BZEventType.USER_LOGOUT, LogoutHandler.class);
         addEventHandler(BZEventType.USER_DISCONNECT, LogoutHandler.class);
-
         //init data
         GameConfig.getInstance().init();
     }

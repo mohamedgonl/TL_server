@@ -14,4 +14,6 @@ public class CmdDefine {
     public static final short BUY_ITEM = 3001;
     public static final short BUILD = 3002;
 
+    public static final short TRAIN_TROOP = 3003;
+
 }
