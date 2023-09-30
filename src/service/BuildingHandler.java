@@ -56,6 +56,10 @@ public class BuildingHandler extends BaseClientRequestHandler {
                     RequestCancelUpgrade reqCancelUpgrade = new RequestCancelUpgrade(dataCmd);
                     cancelUpgrade(user, reqCancelUpgrade);
                     break;
+                case CmdDefine.UPGRADE_SUCCESS:
+                    RequestUpgradeSuccess reqUpgradeSuccess = new RequestUpgradeSuccess(dataCmd);
+                    upgradeSuccess(user, reqUpgradeSuccess);
+                    break;
             }
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
@@ -212,7 +216,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
 
         } catch (Exception e) {
             System.out.println("BUILDING HANDLER EXCEPTION " + e.getMessage());
-            send(new ResponseBuyBuilding(ErrorConst.UNKNOWN), user);
+            send(new ResponseCancelBuild(ErrorConst.UNKNOWN), user);
         }
     }
 
@@ -272,6 +276,12 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 return;
             }
 
+            //check if build not done
+            if (building.getEndTime() > Common.currentTimeInSecond()) {
+                send(new ResponseBuildSuccess(ErrorConst.BUILD_NOT_DONE), user);
+                return;
+            }
+
             //success
             building.buildSuccess();
             playerInfo.freeBuilder(1);
@@ -281,7 +291,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
 
         } catch (Exception e) {
             System.out.println("BUILDING HANDLER EXCEPTION " + e.getMessage());
-            send(new ResponseBuyBuilding(ErrorConst.UNKNOWN), user);
+            send(new ResponseBuildSuccess(ErrorConst.UNKNOWN), user);
         }
     }
 
@@ -407,6 +417,55 @@ public class BuildingHandler extends BaseClientRequestHandler {
         } catch (Exception e) {
             System.out.println("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseCancelUpgrade(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void upgradeSuccess(User user, RequestUpgradeSuccess reqData) {
+        try {
+            if (!reqData.isValid()) {
+                send(new ResponseUpgradeSuccess(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            //get user from cache
+            PlayerInfo playerInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (playerInfo == null) {
+                send(new ResponseUpgradeSuccess(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            //get building by id
+            int buildingId = reqData.getBuildingId();
+            Building building = BuildingUtils.getBuildingInListById(playerInfo.getListBuildings(), buildingId);
+
+            if (building == null) {
+                send(new ResponseUpgradeSuccess(ErrorConst.BUILDING_NOT_EXIST), user);
+                return;
+            }
+
+            //check if upgrade already done
+            if (building.getStatus() != Building.Status.ON_UPGRADE) {
+                send(new ResponseUpgradeSuccess(ErrorConst.BUILD_DONE), user);
+                return;
+            }
+
+            //check if upgrade not done
+            if (building.getEndTime() > Common.currentTimeInSecond()) {
+                send(new ResponseUpgradeSuccess(ErrorConst.BUILD_NOT_DONE), user);
+                return;
+            }
+
+            //success
+            building.upgradeSuccess();
+            playerInfo.freeBuilder(1);
+
+            playerInfo.saveModel(user.getId());
+            send(new ResponseUpgradeSuccess(ErrorConst.SUCCESS, building.getId()), user);
+
+        } catch (Exception e) {
+            System.out.println("BUILDING HANDLER EXCEPTION " + e.getMessage());
+            send(new ResponseUpgradeSuccess(ErrorConst.UNKNOWN), user);
         }
     }
 }
