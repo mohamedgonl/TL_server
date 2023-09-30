@@ -115,6 +115,12 @@ public class Building {
         this.level++;
     }
 
+    public void cancelUpgradeSuccess() {
+        this.status = Status.DONE;
+        this.startTime = 0;
+        this.endTime = 0;
+    }
+
     public String toString() {
         return String.format("%s|%s|%d|%d", id, type, position.x, position.y);
     }

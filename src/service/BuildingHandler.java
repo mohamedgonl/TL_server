@@ -5,14 +5,8 @@ import bitzero.server.extensions.BaseClientRequestHandler;
 import bitzero.server.extensions.data.DataCmd;
 import cmd.CmdDefine;
 import cmd.ErrorConst;
-import cmd.receive.building.RequestBuildSuccess;
-import cmd.receive.building.RequestBuyBuilding;
-import cmd.receive.building.RequestCancelBuild;
-import cmd.receive.building.RequestUpgradeBuilding;
-import cmd.send.building.ResponseBuildSuccess;
-import cmd.send.building.ResponseBuyBuilding;
-import cmd.send.building.ResponseCancelBuild;
-import cmd.send.building.ResponseUpgradeBuilding;
+import cmd.receive.building.*;
+import cmd.send.building.*;
 import model.Building;
 import model.PlayerInfo;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -57,6 +51,10 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 case CmdDefine.UPGRADE_BUILDING:
                     RequestUpgradeBuilding reqUpgradeBuilding = new RequestUpgradeBuilding(dataCmd);
                     upgradeBuilding(user, reqUpgradeBuilding);
+                    break;
+                case CmdDefine.CANCEL_UPGRADE:
+                    RequestCancelUpgrade reqCancelUpgrade = new RequestCancelUpgrade(dataCmd);
+                    cancelUpgrade(user, reqCancelUpgrade);
                     break;
             }
         } catch (Exception e) {
@@ -349,6 +347,66 @@ public class BuildingHandler extends BaseClientRequestHandler {
         } catch (Exception e) {
             System.out.println("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseUpgradeBuilding(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void cancelUpgrade(User user, RequestCancelUpgrade reqData) {
+        try {
+            if (!reqData.isValid()) {
+                send(new ResponseCancelUpgrade(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            //get user from cache
+            PlayerInfo playerInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (playerInfo == null) {
+                send(new ResponseCancelUpgrade(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            //get building by id
+            int buildingId = reqData.getBuildingId();
+            Building building = BuildingUtils.getBuildingInListById(playerInfo.getListBuildings(), buildingId);
+
+            if (building == null) {
+                send(new ResponseCancelUpgrade(ErrorConst.BUILDING_NOT_EXIST), user);
+                return;
+            }
+
+            //get building detail
+            BaseBuildingConfig buildingDetail = BuildingUtils.getBuilding(building.getType(), building.getLevel() + 1);
+
+            //check upgrade done
+            int currentTime = Common.currentTimeInSecond();
+            if (building.getStatus() != Building.Status.ON_UPGRADE || building.getEndTime() <= currentTime) {
+                send(new ResponseCancelUpgrade(ErrorConst.BUILD_DONE), user);
+                return;
+            }
+
+            //check resources
+            double rewardRate = (double) 1 / 2;
+            int rewardGold = (int) (buildingDetail.gold * rewardRate);
+            int rewardElixir = (int) (buildingDetail.elixir * rewardRate);
+            int rewardGem = (int) (buildingDetail.coin * rewardRate);
+
+            if (playerInfo.getGold() + rewardGold > playerInfo.getGoldCapacity()
+                    || playerInfo.getElixir() + rewardElixir > playerInfo.getElixirCapacity()) {
+                send(new ResponseCancelUpgrade(ErrorConst.TOO_MUCH_RESOURCES), user);
+                return;
+            }
+
+            //success
+            playerInfo.addResources(rewardGold, rewardElixir, rewardGem);
+            playerInfo.freeBuilder(1);
+
+            building.cancelUpgradeSuccess();
+
+            playerInfo.saveModel(user.getId());
+            send(new ResponseCancelUpgrade(ErrorConst.SUCCESS, building.getId()), user);
+        } catch (Exception e) {
+            System.out.println("BUILDING HANDLER EXCEPTION " + e.getMessage());
+            send(new ResponseCancelUpgrade(ErrorConst.UNKNOWN), user);
         }
     }
 }
