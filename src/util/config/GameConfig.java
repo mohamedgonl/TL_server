@@ -5,6 +5,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.FileReader;
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class GameConfig {
@@ -17,6 +20,7 @@ public class GameConfig {
     public Map<String, Map<Integer, BaseBuildingConfig>> clanCastleConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> obstacleConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> resourceConfig;
+    public Map<String, List<ShopResourceItemConfig>> shopResItemConfig;
 
     private GameConfig() {
     }
@@ -58,6 +62,15 @@ public class GameConfig {
             reader = new FileReader("./gameConfig/Resource.json");
             resourceConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, ResourceConfig>>>() {
             }.getType());
+
+            reader = new FileReader("./gameConfig/ShopResItem.json");
+            shopResItemConfig = gson.fromJson(reader, new TypeToken<Map<String, List<ShopResourceItemConfig>>>(){
+            }.getType());
+
+            System.out.println(gson.toString());
+
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
