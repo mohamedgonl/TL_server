@@ -2,21 +2,21 @@ package util;
 
 import model.Building;
 import model.PlayerInfo;
-import util.config.BaseBuildingConfig;
-import util.config.GameConfig;
-import util.config.InitGameConfig;
+import util.config.*;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class PlayerUtils {
-    public static void initPlayerInfo(PlayerInfo playerInfo) throws Exception {
+    public static void initNewPlayerInfo(PlayerInfo playerInfo) throws Exception {
         GameConfig gameConfig = GameConfig.getInstance();
-        System.out.println("init player info: " + playerInfo.getId());
+        System.out.println("init new player info: " + playerInfo.getId());
 
         InitGameConfig initGameConfig = gameConfig.initGameConfig;
+
         playerInfo.setGold(initGameConfig.player.gold);
         playerInfo.setGem(initGameConfig.player.coin);
         playerInfo.setElixir(initGameConfig.player.elixir);
@@ -44,46 +44,67 @@ public class PlayerUtils {
         playerInfo.setListBuildings((ArrayList<Building>) buildings);
     }
 
-    public static void genaratePlayerMap(PlayerInfo playerInfo) {
-        final int MAP_WIDTH = 40;
-        final int MAP_HEIGHT = 40;
-        int[][] map = new int[MAP_HEIGHT][MAP_WIDTH];
+    public static void initPlayerData(PlayerInfo playerInfo) {
+        int[][] map = new int[GameConfig.MAP_HEIGHT][GameConfig.MAP_WIDTH];
+        Map<String, Integer> buildingAmount = new HashMap<>();
+
+        int totalBuilders = 0;
+        int availableBuilders = 0;
+        int goldCapacity = 0;
+        int elixirCapacity = 0;
 
         for (Building building : playerInfo.getListBuildings()) {
-            BaseBuildingConfig buildingDetail = getBuilding(building.getType(), building.getLevel());
+            BaseBuildingConfig buildingDetail = BuildingUtils.getBuilding(building.getType(), building.getLevel());
 
-            int width = buildingDetail.width;
-            int height = buildingDetail.height;
+            //update buildingAmount
+            buildingAmount.put(building.getType(), buildingAmount.getOrDefault(building.getType(), 0) + 1);
 
-            if (width <= 0 || height <= 0)
+            //update map
+            if (buildingDetail.height <= 0 || buildingDetail.height <= 0)
                 return;
 
-            for (int i = 0; i < width; i++)
-                for (int j = 0; j < height; j++) {
+            for (int i = 0; i < buildingDetail.width; i++)
+                for (int j = 0; j < buildingDetail.height; j++) {
                     int posX = (int) (building.getPosition().getX() + i);
                     int posY = (int) (building.getPosition().getY() + j);
-                    if (posX < MAP_HEIGHT && posY < MAP_HEIGHT)
-                        map[posX][posY] = building.getId();
+                    if (posX < GameConfig.MAP_WIDTH && posY < GameConfig.MAP_HEIGHT)
+                        map[posY][posX] = building.getId();
                 }
+
+            //update resources capacity
+            if (building.getType().startsWith("TOW")) {
+                TownHallConfig townHall = (TownHallConfig) buildingDetail;
+                playerInfo.setTownHallType(building.getType());
+                playerInfo.setTownHallLv(building.getLevel());
+                goldCapacity += townHall.capacityGold;
+                elixirCapacity += townHall.capacityElixir;
+            } else if (building.getType().startsWith("BDH")) {
+                totalBuilders++;
+                availableBuilders++;
+            } else if (building.getType().startsWith("STO")) {
+                StorageConfig storage = (StorageConfig) buildingDetail;
+                switch (storage.type) {
+                    case "gold":
+                        goldCapacity += storage.capacity;
+                    case "elixir":
+                        elixirCapacity += storage.capacity;
+                }
+            }
+            if (building.getStatus() == Building.Status.ON_BUILD || building.getStatus() == Building.Status.ON_UPGRADE) {
+                if (building.getEndTime() <= Common.currentTimeInSecond()) {
+                    if (building.getStatus() == Building.Status.ON_BUILD)
+                        building.buildSuccess();
+                    else building.upgradeSuccess();
+                } else {
+                    availableBuilders--;
+                }
+            }
         }
         playerInfo.setMap(map);
-    }
-
-    private static BaseBuildingConfig getBuilding(String type, int level) {
-        GameConfig gameConfig = GameConfig.getInstance();
-        if (type.startsWith("AMC"))
-            return gameConfig.armyCampConfig.get(type).get(level);
-        if (type.startsWith("BDH"))
-            return gameConfig.builderHutConfig.get(type).get(level);
-        if (type.startsWith("CLC"))
-            return gameConfig.clanCastleConfig.get(type).get(level);
-        if (type.startsWith("RES"))
-            return gameConfig.resourceConfig.get(type).get(level);
-        if (type.startsWith("OBS"))
-            return gameConfig.obstacleConfig.get(type).get(level);
-        if (type.startsWith("TOW"))
-            return gameConfig.townHallConfig.get(type).get(level);
-
-        return gameConfig.builderHutConfig.get(type).get(level);
+        playerInfo.setBuildingAmount(buildingAmount);
+        playerInfo.setAvaiableBuilders(availableBuilders);
+        playerInfo.setTotalBuilders(totalBuilders);
+        playerInfo.setGoldCapacity(goldCapacity);
+        playerInfo.setElixirCapacity(elixirCapacity);
     }
 }

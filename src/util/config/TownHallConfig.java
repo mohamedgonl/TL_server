@@ -1,10 +1,6 @@
 package util.config;
 
 public class TownHallConfig extends BaseBuildingConfig {
-    public int hitpoints;
-    public int darkElixir;
-    public int gold;
-    public int buildTime;
     public int goldRopRate;
     public int elixirRopRate;
     public int darkElixirRopRate;

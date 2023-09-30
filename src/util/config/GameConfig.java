@@ -5,13 +5,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.FileReader;
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 public class GameConfig {
     private static GameConfig instance;
+
+    public static final int MAP_WIDTH = 40;
+    public static final int MAP_HEIGHT = 40;
 
     public InitGameConfig initGameConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> armyCampConfig;
@@ -20,14 +20,17 @@ public class GameConfig {
     public Map<String, Map<Integer, BaseBuildingConfig>> clanCastleConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> obstacleConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> resourceConfig;
-    public Map<String, List<ShopResourceItemConfig>> shopResItemConfig;
+    public Map<String, Map<Integer, BaseBuildingConfig>> storageConfig;
+    public Map<String, Map<Integer, BaseBuildingConfig>> barrackConfig;
+    public Map<String, Map<Integer, BaseBuildingConfig>> defenceConfig;
+    public Map<String, Map<Integer, BaseBuildingConfig>> laboratoryConfig;
+    public Map<String, Map<Integer, BaseBuildingConfig>> wallConfig;
 
     private GameConfig() {
     }
 
     public static GameConfig getInstance() {
         if (instance == null) {
-            System.out.println("new game config");
             instance = new GameConfig();
         }
         return instance;
@@ -63,13 +66,25 @@ public class GameConfig {
             resourceConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, ResourceConfig>>>() {
             }.getType());
 
-            reader = new FileReader("./gameConfig/ShopResItem.json");
-            shopResItemConfig = gson.fromJson(reader, new TypeToken<Map<String, List<ShopResourceItemConfig>>>(){
+            reader = new FileReader("./gameConfig/Storage.json");
+            storageConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, StorageConfig>>>() {
             }.getType());
 
-            System.out.println(gson.toString());
+            reader = new FileReader("./gameConfig/Barrack.json");
+            barrackConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, BarrackConfig>>>() {
+            }.getType());
 
+            reader = new FileReader("./gameConfig/Defence.json");
+            defenceConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, DefenceConfig>>>() {
+            }.getType());
 
+            reader = new FileReader("./gameConfig/Laboratory.json");
+            laboratoryConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, LaboratoryConfig>>>() {
+            }.getType());
+
+            reader = new FileReader("./gameConfig/Wall.json");
+            wallConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, WallConfig>>>() {
+            }.getType());
 
         } catch (Exception e) {
             e.printStackTrace();

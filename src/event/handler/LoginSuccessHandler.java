@@ -5,18 +5,24 @@ import bitzero.server.core.IBZEvent;
 import bitzero.server.entities.User;
 import bitzero.server.extensions.BaseServerEventHandler;
 import bitzero.server.extensions.ExtensionLogLevel;
-
 import bitzero.util.ExtensionUtility;
+import event.eventType.DemoEventParam;
+import model.PlayerInfo;
+import util.PlayerUtils;
+import util.server.ServerConstant;
 
 import java.util.HashMap;
 import java.util.Map;
 
+<<<<<<< HEAD
 import event.eventType.DemoEventParam;
 import model.PlayerInfo;
 import util.PlayerUtils;
 
 import util.server.ServerConstant;
 
+=======
+>>>>>>> gitlab/devTmp
 public class LoginSuccessHandler extends BaseServerEventHandler {
     public LoginSuccessHandler() {
         super();
@@ -42,16 +48,26 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         if (pInfo == null) {
             pInfo = new PlayerInfo(user.getId(), "username_" + user.getId());
             try {
+<<<<<<< HEAD
                 PlayerUtils.initPlayerInfo(pInfo);
+=======
+                PlayerUtils.initNewPlayerInfo(pInfo);
+>>>>>>> gitlab/devTmp
                 //save to db
                 pInfo.saveModel(user.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+<<<<<<< HEAD
         //init map from buildings
         PlayerUtils.genaratePlayerMap(pInfo);
 
+=======
+
+        //init map & capacity from buildings
+        PlayerUtils.initPlayerData(pInfo);
+>>>>>>> gitlab/devTmp
 
         /**
          * cache playerinfo in RAM
