@@ -1,0 +1,64 @@
+{
+  "category_ngankho" : [
+    {
+      "cfgId": "GOLD_10",
+      "name": "10% KHO",
+      "img": "res_shop.GOLD_10",
+      "price_type": "RESOURCE_TYPE.G",
+      "price": 128,
+      "time": 0,
+      "nganhko_percent": 0.1,
+      "value_type": "RESOURCE_TYPE.GOLD"
+    },
+    {
+      "cfgId": "GOLD_50",
+      "name": "50% KHO",
+      "img": "res_shop.GOLD_50",
+      "price_type": "RESOURCE_TYPE.G",
+      "price": 349,
+      "time": 0,
+      "nganhko_percent": 0.5,
+      "value_type": "RESOURCE_TYPE.GOLD"
+    },
+    {
+      "cfgId": "GOLD_100",
+      "name": "ĐẦY KHO",
+      "img": "res_shop.GOLD_100",
+      "price_type": "RESOURCE_TYPE.G",
+      "price": 409,
+      "time": 0,
+      "nganhko_percent": 1,
+      "value_type": "RESOURCE_TYPE.GOLD"
+    },
+    {
+      "cfgId": "ELI_10",
+      "name": "10% KHO",
+      "img": "res_shop.ELIXIR_10",
+      "price_type": "RESOURCE_TYPE.G",
+      "price": 128,
+      "time": 0,
+      "nganhko_percent": 0.1,
+      "value_type": "RESOURCE_TYPE.ELIXIR"
+    },
+    {
+      "cfgId": "ELI_50",
+      "name": "50% KHO",
+      "img": "res_shop.ELIXIR_50",
+      "price_type": "RESOURCE_TYPE.G",
+      "price": 349,
+      "time": 0,
+      "nganhko_percent": 0.5,
+      "value_type": "RESOURCE_TYPE.ELIXIR"
+    },
+    {
+      "cfgId": "ELI_100",
+      "name": "ĐẦY KHO",
+      "img": "res_shop.ELIXIR_100",
+      "price_type": "RESOURCE_TYPE.G",
+      "price": 409,
+      "time": 0,
+      "nganhko_percent": 1,
+      "value_type": "RESOURCE_TYPE.ELIXIR"
+    }
+  ]
+}

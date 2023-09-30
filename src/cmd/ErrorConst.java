@@ -15,5 +15,8 @@ public class ErrorConst {
     public static final short ZINGID_MAPPING_ERROR = 107;
     public static final short AUTHENTICATE_FAIL = 108;
     public static final short OBJECT_NULL = 109;
+
+    public static final short ITEM_NOT_EXIST = 3001;
+    public static final short GEM_NOT_ENOUGH = 3002;
     public static final short UNKNOWN = 110;
 }

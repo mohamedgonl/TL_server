@@ -13,9 +13,9 @@ import cmd.CmdDefine;
 import cmd.ErrorConst;
 import cmd.receive.user.RequestUserInfo;
 
-import cmd.send.demo.user.ResponseGetMapInfo;
-import cmd.send.demo.user.ResponseGetUserInfo;
 
+import cmd.send.user.ResponseGetMapInfo;
+import cmd.send.user.ResponseGetUserInfo;
 import event.eventType.DemoEventParam;
 import event.eventType.DemoEventType;
 import extension.FresherExtension;
