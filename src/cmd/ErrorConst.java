@@ -11,7 +11,6 @@ public class ErrorConst {
     public static final short NOT_ENOUGH_RESOURCES = 20;
     public static final short NOT_ENOUGH_BUILDER = 21;
     public static final short TOWNHALL_LEVEL_TOO_LOW = 22;
-    public static final short TOO_MANY_BUILDING = 22;
     public static final short POSITION_INVALID = 23;
 
     public static final short BUILDING_NOT_EXIST = 25;
@@ -22,6 +21,7 @@ public class ErrorConst {
     public static final short BUILDING_ON_WORKING = 29;
 
     public static final short UNEXPECTED_BUILDING = 30;
+    public static final short BUILDING_CANT_BE_MOVED = 40;
 
     public static final short ITEM_NOT_EXIST = 31;
     public static final short GEM_NOT_ENOUGH = 32;

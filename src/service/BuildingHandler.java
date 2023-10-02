@@ -66,6 +66,10 @@ public class BuildingHandler extends BaseClientRequestHandler {
                     RequestCollectResource reqCollectResource = new RequestCollectResource(dataCmd);
                     collectResource(user, reqCollectResource);
                     break;
+                case CmdDefine.MOVE_BUILDING:
+                    RequestMoveBuilding reqMoveBuilding = new RequestMoveBuilding(dataCmd);
+                    moveBuilding(user, reqMoveBuilding);
+                    break;
             }
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
@@ -539,5 +543,70 @@ public class BuildingHandler extends BaseClientRequestHandler {
             System.out.println("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseCollectResource(ErrorConst.UNKNOWN), user);
         }
+    }
+
+    private void moveBuilding(User user, RequestMoveBuilding reqData) {
+        try {
+            if (!reqData.isValid()) {
+                send(new ResponseMoveBuilding(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            //get user from cache
+            PlayerInfo playerInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (playerInfo == null) {
+                send(new ResponseMoveBuilding(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            //get building by id
+            int buildingId = reqData.getBuildingId();
+            Building building = BuildingUtils.getBuildingInListById(playerInfo.getListBuildings(), buildingId);
+
+            if (building == null) {
+                send(new ResponseMoveBuilding(ErrorConst.BUILDING_NOT_EXIST), user);
+                return;
+            }
+
+            if (BuildingUtils.isObstacle(building.getType())) {
+                send(new ResponseMoveBuilding(ErrorConst.BUILDING_CANT_BE_MOVED), user);
+                return;
+            }
+
+            BaseBuildingConfig buildingDetail = BuildingUtils.getBuilding(building.getType(), building.getLevel());
+
+            //check position
+            if (!BuildingUtils.checkBuildingPosition(playerInfo.getMap(), reqData.getPosition().x, reqData.getPosition().y,
+                    buildingDetail.width, buildingDetail.height, buildingId)) {
+                send(new ResponseMoveBuilding(ErrorConst.POSITION_INVALID), user);
+                return;
+            }
+
+            //success
+            building.setPosition(reqData.getPosition());
+            int[][] map = playerInfo.getMap();
+
+            for (int i = 0; i < buildingDetail.width; i++)
+                for (int j = 0; j < buildingDetail.height; j++) {
+                    int posX = (int) (building.getPosition().getX() + i);
+                    int posY = (int) (building.getPosition().getY() + j);
+                    if (posX < GameConfig.MAP_WIDTH && posY < GameConfig.MAP_HEIGHT)
+                        map[posY][posX] = 0;
+
+                    int newPosX = (int) (reqData.getPosition().x+ i);
+                    int newPosY = (int) (reqData.getPosition().y + j);
+                    if (newPosX < GameConfig.MAP_WIDTH && newPosY < GameConfig.MAP_HEIGHT)
+                        map[newPosY][newPosX] = buildingId;
+                }
+            playerInfo.setMap(map);
+
+            playerInfo.saveModel(user.getId());
+            send(new ResponseMoveBuilding(ErrorConst.SUCCESS), user);
+        } catch (Exception e) {
+            System.out.println("BUILDING HANDLER EXCEPTION " + e.getMessage());
+            send(new ResponseMoveBuilding(ErrorConst.UNKNOWN), user);
+        }
+
     }
 }

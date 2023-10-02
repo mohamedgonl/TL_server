@@ -36,7 +36,7 @@ public class BuildingUtils {
     }
 
     public static boolean checkBuildingPosition(int[][] map, int posX, int posY, int width, int height) {
-        if (map.length == 0 || posY + width >= map.length || posX + height >= map[0].length)
+        if (map.length == 0 || posY < 0 || posX < 0 || posY + width >= map.length || posX + height >= map[0].length)
             return false;
         for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
@@ -46,7 +46,7 @@ public class BuildingUtils {
     }
 
     public static boolean checkBuildingPosition(int[][] map, int posX, int posY, int width, int height, int buildingId) {
-        if (map.length == 0 || posY + width >= map.length || posX + height >= map[0].length)
+        if (map.length == 0 || posY < 0 || posX < 0 || posY + width >= map.length || posX + height >= map[0].length)
             return false;
         for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
@@ -78,5 +78,9 @@ public class BuildingUtils {
 
     public static boolean isStorageBuilding(String type) {
         return type.startsWith("BDH");
+    }
+
+    public static boolean isObstacle(String type) {
+        return type.startsWith("OBS");
     }
 }
