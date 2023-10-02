@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.FileReader;
+import java.util.List;
 import java.util.Map;
 
 public class GameConfig {
@@ -25,6 +26,7 @@ public class GameConfig {
     public Map<String, Map<Integer, BaseBuildingConfig>> defenceConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> laboratoryConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> wallConfig;
+    public Map<String, List<ShopResourceItemConfig>>  shopResItemConfig;
 
     private GameConfig() {
     }
@@ -85,6 +87,12 @@ public class GameConfig {
             reader = new FileReader("./gameConfig/Wall.json");
             wallConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, WallConfig>>>() {
             }.getType());
+
+            reader = new FileReader("./gameConfig/ShopResItem.json");
+            shopResItemConfig = gson.fromJson(reader, new TypeToken<Map<String, List<ShopResourceItemConfig>>>() {
+            }.getType());
+
+
 
         } catch (Exception e) {
             e.printStackTrace();

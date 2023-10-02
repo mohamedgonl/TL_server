@@ -11,10 +11,10 @@ public class ResponseBuyItem extends BaseMsg {
     private  int elixir;
     private int gem;
 
-    public ResponseBuyItem(short error) {super(CmdDefine.BUY_ITEM, error);}
+    public ResponseBuyItem(short error) {super(CmdDefine.BUY_RESOURCE, error);}
 
     public ResponseBuyItem(short error, int gold,int elixir,int gem) {
-        super(CmdDefine.BUY_ITEM, error);
+        super(CmdDefine.BUY_RESOURCE, error);
         this.gold = gold;
         this.elixir = elixir;
         this.gem = gem;

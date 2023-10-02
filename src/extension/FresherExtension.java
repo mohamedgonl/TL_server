@@ -60,14 +60,10 @@ public class FresherExtension extends BZExtension {
          */
         trace("  Register Handler ");
         addRequestHandler(UserHandler.USER_MULTI_IDS, UserHandler.class);
-<<<<<<< HEAD
-        addRequestHandler(DemoHandler.DEMO_MULTI_IDS, DemoHandler.class);
-        addRequestHandler(ShopHandler.USER_MULTI_IDS, ShopHandler.class);
-        addRequestHandler(TroopHandler.TROOP_MULTI_IDS, TroopHandler.class);
-=======
+//        addRequestHandler(DemoHandler.DEMO_MULTI_IDS, DemoHandler.class);
         addRequestHandler(BuildingHandler.BUILDING_MULTI_IDS, BuildingHandler.class);
->>>>>>> gitlab/devTmp
-
+        addRequestHandler(ShopHandler.SHOP_MULTI_IDS, ShopHandler.class);
+        addRequestHandler(TroopHandler.TROOP_MULTI_IDS, TroopHandler.class);
         /**
          * register new event
          */
@@ -75,10 +71,6 @@ public class FresherExtension extends BZExtension {
         addEventHandler(BZEventType.USER_LOGIN, LoginSuccessHandler.class);
         addEventHandler(BZEventType.USER_LOGOUT, LogoutHandler.class);
         addEventHandler(BZEventType.USER_DISCONNECT, LogoutHandler.class);
-<<<<<<< HEAD
-=======
-
->>>>>>> gitlab/devTmp
         //init data
         GameConfig.getInstance().init();
     }

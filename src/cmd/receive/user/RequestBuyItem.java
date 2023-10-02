@@ -20,6 +20,10 @@ public class RequestBuyItem extends BaseCmd {
         return itemCfgId;
     }
 
+    public boolean isValid() {
+        return valid;
+    }
+
     @Override
     public void unpackData() {
         ByteBuffer bf = makeBuffer();
@@ -28,7 +32,7 @@ public class RequestBuyItem extends BaseCmd {
             valid = true;
         }
         catch (Exception e){
-
+            valid = false;
             e.printStackTrace();
         }
     }

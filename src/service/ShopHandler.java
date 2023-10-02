@@ -12,6 +12,7 @@ import cmd.CmdDefine;
 import cmd.ErrorConst;
 import cmd.receive.user.RequestBuyItem;
 
+import cmd.send.building.ResponseCancelBuild;
 import cmd.send.user.ResponseBuyItem;
 import cmd.send.user.ResponseGetUserInfo;
 import event.eventType.DemoEventType;
@@ -29,7 +30,7 @@ import util.config.ShopResourceItemConfig;
 import util.server.ServerConstant;
 
 public class ShopHandler extends BaseClientRequestHandler {
-    public static short USER_MULTI_IDS = 3001;
+    public static short SHOP_MULTI_IDS = 4000;
     private final Logger logger = LoggerFactory.getLogger("UserHandler");
 
     public ShopHandler() {
@@ -63,7 +64,7 @@ public class ShopHandler extends BaseClientRequestHandler {
         logger.info("requestId: " + dataCmd.getId());
         try {
             switch (dataCmd.getId()) {
-                case CmdDefine.BUY_ITEM:
+                case CmdDefine.BUY_RESOURCE:
                     RequestBuyItem reqInfo = new RequestBuyItem(dataCmd);
                     this.handleBuyResItem(user, reqInfo);
                     break;
@@ -85,55 +86,57 @@ public class ShopHandler extends BaseClientRequestHandler {
 
     private void handleBuyResItem(User user, RequestBuyItem requestBuyItem){
         PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
-//        if (!requestBuyItem.isValid()){
-//            send(new ResponseBuyItem(ErrorConst.PARAM_INVALID), user);
-//        }
-
+        if (!requestBuyItem.isValid()){
+            send(new ResponseBuyItem(ErrorConst.PARAM_INVALID), user);
+        }
         try {
             String itemCfgId = requestBuyItem.getItemCfgId();
-
             // check item id có trong config không
             for (int i = 0; i < GameConfig.getInstance().shopResItemConfig.size(); i++) {
-                if(itemCfgId ==
-                        GameConfig.getInstance().shopResItemConfig.get("category_ngankho").get(i).cfgId){
+                if(itemCfgId.equals(GameConfig.getInstance().shopResItemConfig.get("category_ngankho").get(i).cfgId)){
                     ShopResourceItemConfig resItem = GameConfig.getInstance().shopResItemConfig.get("category_ngankho").get(i);
                     if(resItem.price > userInfo.getGem()){
                         send(new ResponseBuyItem(ErrorConst.GEM_NOT_ENOUGH),user);
                         return;
                     }
                     else {
+                        // update resource
                         float percent = resItem.nganhko_percent;
+
                         switch (resItem.value_type){
                             case "RESOURCE_TYPE.ELIXIR": {
-
+                                int resource = (int) (userInfo.getElixirCapacity()*percent);
+                                int newResource = userInfo.getElixir() + resource >= userInfo.getElixirCapacity()
+                                        ? userInfo.getElixirCapacity() : userInfo.getElixir() + resource;
+                                userInfo.setElixir(newResource);
                                 break;
                             }
                             case "RESOURCE_TYPE.GOLD": {
-
+                                int resource = (int) (userInfo.getGoldCapacity()*percent);
+                                int newResource = userInfo.getGold() + resource >= userInfo.getGoldCapacity()
+                                        ? userInfo.getGoldCapacity() : userInfo.getGold() + resource;
+                                userInfo.setGold(newResource);
                                 break;
                             }
                             default: {
-
                                 break;
                             }
                         }
+                        // update gem
+                        int leftGem =  userInfo.getGem() - resItem.price;
+                        userInfo.setGem(leftGem);
 
-
-
-
-
+                        System.out.println("DEBUG send buy success");
+                        send(new ResponseBuyItem(ErrorConst.SUCCESS, userInfo.getGold(), userInfo.getElixir(), userInfo.getGem()), user);
+                        return;
                     }
-
-
                 }
             }
-
             send(new ResponseBuyItem(ErrorConst.ITEM_NOT_EXIST),user);
-
-
         }
         catch (Exception e){
-
+            System.out.println("BUY ITEM ERROR " + e.getMessage());
+            send(new ResponseBuyItem(ErrorConst.UNKNOWN), user);
         }
     }
 

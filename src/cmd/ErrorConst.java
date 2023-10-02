@@ -21,6 +21,9 @@ public class ErrorConst {
     public static final short BUILD_NOT_DONE = 28;
     public static final short BUILDING_ON_WORKING = 29;
 
+    public static final short ITEM_NOT_EXIST = 31;
+    public static final short GEM_NOT_ENOUGH = 32;
+
     public static final short SERVICE_INVALID = 102;
     public static final short ACTION_INVALID = 103;
     public static final short SESSIONKEY_INVALID = 104;

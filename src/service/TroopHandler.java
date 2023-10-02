@@ -32,7 +32,7 @@ import util.server.ServerConstant;
 import java.util.List;
 
 public class TroopHandler extends BaseClientRequestHandler {
-    public static short TROOP_MULTI_IDS = 3000;
+    public static short TROOP_MULTI_IDS = 5000;
     private final Logger logger = LoggerFactory.getLogger("UserHandler");
 
     public TroopHandler() {
