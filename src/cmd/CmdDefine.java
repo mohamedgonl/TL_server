@@ -14,6 +14,7 @@ public class CmdDefine {
     public static final short UPGRADE_BUILDING = 2004;
     public static final short CANCEL_UPGRADE = 2005;
     public static final short UPGRADE_SUCCESS = 2006;
+    public static final short COLLECT_RESOURCE = 2007;
 
     //Log cmd
     public static final short MOVE = 3001;

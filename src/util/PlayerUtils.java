@@ -1,6 +1,7 @@
 package util;
 
 import model.Building;
+import model.CollectorBuilding;
 import model.PlayerInfo;
 import util.config.*;
 
@@ -28,7 +29,12 @@ public class PlayerUtils {
             String type = entry.getKey();
             InitGameConfig.MapElement data = entry.getValue();
 
-            Building building = new Building(id, type, 1, new Point(data.posX - 1, data.posY - 1));
+            Building building;
+            if (BuildingUtils.isResourceBuilding(type)) {
+                building = new CollectorBuilding(id, type, 1, new Point(data.posX - 1, data.posY - 1), Common.currentTimeInSecond());
+            } else {
+                building = new Building(id, type, 1, new Point(data.posX - 1, data.posY - 1));
+            }
             buildings.add(building);
             id++;
         }
@@ -72,16 +78,16 @@ public class PlayerUtils {
                 }
 
             //update resources capacity
-            if (building.getType().startsWith("TOW")) {
+            if (BuildingUtils.isTownHallBuilding(building.getType())) {
                 TownHallConfig townHall = (TownHallConfig) buildingDetail;
                 playerInfo.setTownHallType(building.getType());
                 playerInfo.setTownHallLv(building.getLevel());
                 goldCapacity += townHall.capacityGold;
                 elixirCapacity += townHall.capacityElixir;
-            } else if (building.getType().startsWith("BDH")) {
+            } else if (BuildingUtils.isBuilderHutBuilding(building.getType())) {
                 totalBuilders++;
                 availableBuilders++;
-            } else if (building.getType().startsWith("STO")) {
+            } else if (BuildingUtils.isStorageBuilding(building.getType())) {
                 StorageConfig storage = (StorageConfig) buildingDetail;
                 switch (storage.type) {
                     case "gold":

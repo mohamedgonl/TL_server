@@ -63,4 +63,20 @@ public class BuildingUtils {
         }
         return null;
     }
+
+    public static boolean isResourceBuilding(String type) {
+        return type.startsWith("RES");
+    }
+
+    public static boolean isTownHallBuilding(String type) {
+        return type.startsWith("TOW");
+    }
+
+    public static boolean isBuilderHutBuilding(String type) {
+        return type.startsWith("BDH");
+    }
+
+    public static boolean isStorageBuilding(String type) {
+        return type.startsWith("BDH");
+    }
 }

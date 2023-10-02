@@ -21,6 +21,8 @@ public class ErrorConst {
     public static final short BUILD_NOT_DONE = 28;
     public static final short BUILDING_ON_WORKING = 29;
 
+    public static final short UNEXPECTED_BUILDING = 30;
+
     public static final short ITEM_NOT_EXIST = 31;
     public static final short GEM_NOT_ENOUGH = 32;
 

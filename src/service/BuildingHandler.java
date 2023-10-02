@@ -8,6 +8,7 @@ import cmd.ErrorConst;
 import cmd.receive.building.*;
 import cmd.send.building.*;
 import model.Building;
+import model.CollectorBuilding;
 import model.PlayerInfo;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import util.BuildingUtils;
 import util.Common;
 import util.config.BaseBuildingConfig;
 import util.config.GameConfig;
+import util.config.ResourceConfig;
 import util.config.TownHallConfig;
 import util.server.ServerConstant;
 
@@ -60,12 +62,15 @@ public class BuildingHandler extends BaseClientRequestHandler {
                     RequestUpgradeSuccess reqUpgradeSuccess = new RequestUpgradeSuccess(dataCmd);
                     upgradeSuccess(user, reqUpgradeSuccess);
                     break;
+                case CmdDefine.COLLECT_RESOURCE:
+                    RequestCollectResource reqCollectResource = new RequestCollectResource(dataCmd);
+                    collectResource(user, reqCollectResource);
+                    break;
             }
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
             logger.warn(ExceptionUtils.getStackTrace(e));
         }
-
     }
 
     private void buyBuilding(User user, RequestBuyBuilding reqData) {
@@ -125,7 +130,13 @@ public class BuildingHandler extends BaseClientRequestHandler {
             }
 
             int newId = playerInfo.getListBuildings().get(playerInfo.getListBuildings().size() - 1).getId() + 1;
-            Building newBuilding = new Building(newId, type, 1, reqData.getPosition());
+            Building newBuilding;
+
+            if (BuildingUtils.isStorageBuilding(type)) {
+                newBuilding = new CollectorBuilding(newId, type, 1, reqData.getPosition(), Common.currentTimeInSecond());
+            } else {
+                newBuilding = new Building(newId, type, 1, reqData.getPosition());
+            }
             buildNewBuilding(playerInfo, newBuilding, building);
 
             playerInfo.saveModel(user.getId());
@@ -466,6 +477,67 @@ public class BuildingHandler extends BaseClientRequestHandler {
         } catch (Exception e) {
             System.out.println("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseUpgradeSuccess(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void collectResource(User user, RequestCollectResource reqData) {
+        try {
+            if (!reqData.isValid()) {
+                send(new ResponseCollectResource(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            //get user from cache
+            PlayerInfo playerInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (playerInfo == null) {
+                send(new ResponseCollectResource(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            //get building by id
+            int buildingId = reqData.getBuildingId();
+            Building building = BuildingUtils.getBuildingInListById(playerInfo.getListBuildings(), buildingId);
+
+            if (building == null) {
+                send(new ResponseCollectResource(ErrorConst.BUILDING_NOT_EXIST), user);
+                return;
+            }
+
+            if (!BuildingUtils.isResourceBuilding(building.getType())) {
+                send(new ResponseCollectResource(ErrorConst.UNEXPECTED_BUILDING), user);
+                return;
+            }
+
+            if (building.getStatus() != Building.Status.DONE) {
+                send(new ResponseCollectResource(ErrorConst.BUILDING_ON_WORKING), user);
+                return;
+            }
+
+            ResourceConfig collectorConfig = (ResourceConfig) BuildingUtils.getBuilding(building.getType(), building.getLevel());
+            CollectorBuilding collector = (CollectorBuilding) building;
+
+            //check resources
+            int currentTime = Common.currentTimeInSecond();
+
+            int quantity = collectorConfig.productivity * (currentTime - collector.getLastCollectTime()) / 3600;
+            if (quantity > collectorConfig.capacity)
+                quantity = collectorConfig.capacity;
+
+            //success
+            collector.collect();
+
+            if (collectorConfig.type.equals("gold")) {
+                playerInfo.addResources(quantity, 0, 0);
+            } else if (collectorConfig.type.equals("elixir")) {
+                playerInfo.addResources(0, quantity, 0);
+            }
+
+            playerInfo.saveModel(user.getId());
+            send(new ResponseCollectResource(ErrorConst.SUCCESS, collector, playerInfo.getGold(), playerInfo.getElixir()), user);
+        } catch (Exception e) {
+            System.out.println("BUILDING HANDLER EXCEPTION " + e.getMessage());
+            send(new ResponseCollectResource(ErrorConst.UNKNOWN), user);
         }
     }
 }
