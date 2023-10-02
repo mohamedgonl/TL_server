@@ -3,7 +3,6 @@ package util.database;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import model.Building;
-import model.BuildingDeserializer;
 import model.CollectorBuilding;
 import net.spy.memcached.CASResponse;
 import net.spy.memcached.CASValue;

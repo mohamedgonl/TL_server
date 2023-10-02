@@ -1,6 +1,7 @@
-package model;
+package util.database;
 
 import com.google.gson.*;
+import model.Building;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;

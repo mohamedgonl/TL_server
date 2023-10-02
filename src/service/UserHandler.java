@@ -14,6 +14,7 @@ import cmd.ErrorConst;
 import cmd.receive.user.RequestUserInfo;
 
 import cmd.send.user.ResponseGetMapInfo;
+import cmd.send.user.ResponseGetTimeServer;
 import cmd.send.user.ResponseGetUserInfo;
 
 import event.eventType.DemoEventParam;
@@ -27,6 +28,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.Common;
 import util.server.ServerConstant;
 
 import java.util.List;
@@ -72,6 +74,9 @@ public class UserHandler extends BaseClientRequestHandler {
                 case CmdDefine.GET_MAP_INFO:
                     getMapInfo(user);
                     break;
+                case CmdDefine.GET_TIME_SERVER:
+                    getTimeServer(user);
+                    break;
             }
         } catch (Exception e) {
             logger.warn("USERHANDLER EXCEPTION " + e.getMessage());
@@ -110,6 +115,14 @@ public class UserHandler extends BaseClientRequestHandler {
             send(new ResponseGetMapInfo(ErrorConst.SUCCESS, userInfo), user);
         } catch (Exception e) {
             send(new ResponseGetMapInfo(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void getTimeServer(User user) {
+        try {
+            send(new ResponseGetTimeServer(ErrorConst.SUCCESS, Common.currentTimeInSecond()), user);
+        } catch (Exception e) {
+            send(new ResponseGetTimeServer(ErrorConst.UNKNOWN), user);
         }
     }
 
