@@ -29,12 +29,8 @@ public class PlayerUtils {
             String type = entry.getKey();
             InitGameConfig.MapElement data = entry.getValue();
 
-            Building building;
-            if (BuildingUtils.isResourceBuilding(type)) {
-                building = new CollectorBuilding(id, type, 1, new Point(data.posX - 1, data.posY - 1), Common.currentTimeInSecond());
-            } else {
-                building = new Building(id, type, 1, new Point(data.posX - 1, data.posY - 1));
-            }
+            Building building = BuildingUtils.getBuilding(id, type, 1, new Point(data.posX - 1, data.posY - 1));
+
             buildings.add(building);
             id++;
         }
@@ -42,7 +38,7 @@ public class PlayerUtils {
         for (Map.Entry<Integer, InitGameConfig.ObsElement> entry : initGameConfig.obs.entrySet()) {
             InitGameConfig.ObsElement data = entry.getValue();
 
-            Building building = new Building(id, data.type, 1, new Point(data.posX - 1, data.posY - 1));
+            Building building = BuildingUtils.getBuilding(id, data.type, 1, new Point(data.posX - 1, data.posY - 1));
             buildings.add(building);
             id++;
         }
@@ -60,7 +56,7 @@ public class PlayerUtils {
         int elixirCapacity = 0;
 
         for (Building building : playerInfo.getListBuildings()) {
-            BaseBuildingConfig buildingDetail = BuildingUtils.getBuilding(building.getType(), building.getLevel());
+            BaseBuildingConfig buildingDetail = BuildingUtils.getBuildingConfig(building.getType(), building.getLevel());
 
             //update buildingAmount
             buildingAmount.put(building.getType(), buildingAmount.getOrDefault(building.getType(), 0) + 1);

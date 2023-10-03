@@ -7,14 +7,9 @@ import java.awt.*;
 public class CollectorBuilding extends Building{
     private int lastCollectTime = 0;
 
-    public CollectorBuilding(int id, String type, int level, Point position, int lastCollectTime) {
+    public CollectorBuilding(int id, String type, int level, Point position) {
         super(id, type, level, position);
-        this.lastCollectTime = lastCollectTime;
-    }
-
-    public CollectorBuilding(int id, String type, Point position, int lastCollectTime) {
-        super(id, type, position);
-        this.lastCollectTime = lastCollectTime;
+        this.lastCollectTime = Common.currentTimeInSecond();
     }
 
     public int getLastCollectTime() {

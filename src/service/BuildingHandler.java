@@ -95,7 +95,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
             String type = reqData.getType();
 
             //get building detail
-            BaseBuildingConfig building = BuildingUtils.getBuilding(type, 1);
+            BaseBuildingConfig building = BuildingUtils.getBuildingConfig(type, 1);
 
             //check resources
             if (playerInfo.getGold() < building.gold || playerInfo.getElixir() < building.elixir || playerInfo.getGem() < building.coin) {
@@ -116,7 +116,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
             }
 
             //check amount building
-            TownHallConfig townHall = (TownHallConfig) BuildingUtils.getBuilding(playerInfo.getTownHallType(), playerInfo.getTownHallLv());
+            TownHallConfig townHall = (TownHallConfig) BuildingUtils.getBuildingConfig(playerInfo.getTownHallType(), playerInfo.getTownHallLv());
 
             Field buildingTypeField = townHall.getClass().getField(type);
             buildingTypeField.setAccessible(true);
@@ -134,13 +134,8 @@ public class BuildingHandler extends BaseClientRequestHandler {
             }
 
             int newId = playerInfo.getListBuildings().get(playerInfo.getListBuildings().size() - 1).getId() + 1;
-            Building newBuilding;
+            Building newBuilding = BuildingUtils.getBuilding(newId,type,  1, reqData.getPosition());
 
-            if (BuildingUtils.isStorageBuilding(type)) {
-                newBuilding = new CollectorBuilding(newId, type, 1, reqData.getPosition(), Common.currentTimeInSecond());
-            } else {
-                newBuilding = new Building(newId, type, 1, reqData.getPosition());
-            }
             buildNewBuilding(playerInfo, newBuilding, building);
 
             playerInfo.saveModel(user.getId());
@@ -202,7 +197,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
             }
 
             //get building detail
-            BaseBuildingConfig buildingDetail = BuildingUtils.getBuilding(building.getType(), building.getLevel());
+            BaseBuildingConfig buildingDetail = BuildingUtils.getBuildingConfig(building.getType(), building.getLevel());
 
             //check build done
             int currentTime = Common.currentTimeInSecond();
@@ -341,7 +336,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
             }
 
             String type = building.getType();
-            BaseBuildingConfig buildingDetail = BuildingUtils.getBuilding(type, building.getLevel() + 1);
+            BaseBuildingConfig buildingDetail = BuildingUtils.getBuildingConfig(type, building.getLevel() + 1);
 
             //check resources
             if (playerInfo.getGold() < buildingDetail.gold || playerInfo.getElixir() < buildingDetail.elixir || playerInfo.getGem() < buildingDetail.coin) {
@@ -400,7 +395,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
             }
 
             //get building detail
-            BaseBuildingConfig buildingDetail = BuildingUtils.getBuilding(building.getType(), building.getLevel() + 1);
+            BaseBuildingConfig buildingDetail = BuildingUtils.getBuildingConfig(building.getType(), building.getLevel() + 1);
 
             //check upgrade done
             int currentTime = Common.currentTimeInSecond();
@@ -518,7 +513,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 return;
             }
 
-            ResourceConfig collectorConfig = (ResourceConfig) BuildingUtils.getBuilding(building.getType(), building.getLevel());
+            ResourceConfig collectorConfig = (ResourceConfig) BuildingUtils.getBuildingConfig(building.getType(), building.getLevel());
             CollectorBuilding collector = (CollectorBuilding) building;
 
             //check resources
@@ -574,7 +569,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 return;
             }
 
-            BaseBuildingConfig buildingDetail = BuildingUtils.getBuilding(building.getType(), building.getLevel());
+            BaseBuildingConfig buildingDetail = BuildingUtils.getBuildingConfig(building.getType(), building.getLevel());
 
             //check position
             if (!BuildingUtils.checkBuildingPosition(playerInfo.getMap(), reqData.getPosition().x, reqData.getPosition().y,

@@ -1,13 +1,21 @@
 package util;
 
 import model.Building;
+import model.CollectorBuilding;
 import util.config.BaseBuildingConfig;
 import util.config.GameConfig;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class BuildingUtils {
-    public static BaseBuildingConfig getBuilding(String type, int level) {
+    public static Building getBuilding(int id, String type, int level, Point position) {
+        if (isResourceBuilding(type))
+            return new CollectorBuilding(id, type, level, position);
+        return new Building(id, type, level, position);
+    }
+
+    public static BaseBuildingConfig getBuildingConfig(String type, int level) {
         GameConfig gameConfig = GameConfig.getInstance();
         if (type.startsWith("AMC"))
             return gameConfig.armyCampConfig.get(type).get(level);
