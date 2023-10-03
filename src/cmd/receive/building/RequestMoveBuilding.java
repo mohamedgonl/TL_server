@@ -3,7 +3,6 @@ package cmd.receive.building;
 import bitzero.server.extensions.data.BaseCmd;
 import bitzero.server.extensions.data.DataCmd;
 import bitzero.util.common.business.CommonHandle;
-import util.config.GameConfig;
 
 import java.awt.*;
 import java.nio.ByteBuffer;

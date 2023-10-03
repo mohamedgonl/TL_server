@@ -196,6 +196,9 @@ public class PlayerInfo extends DataModel {
     }
 
     public void useResources(int gold, int elixir, int gem) {
+        if (gold < 0 || elixir < 0 || gem < 0)
+            return;
+
         this.gold -= gold;
         this.elixir -= elixir;
         this.gem -= gem;
@@ -209,6 +212,9 @@ public class PlayerInfo extends DataModel {
     }
 
     public void addResources(int gold, int elixir, int gem) {
+        if (gold < 0 || elixir < 0 || gem < 0)
+            return;
+
         this.gold += gold;
         this.elixir += elixir;
         this.gem += gem;

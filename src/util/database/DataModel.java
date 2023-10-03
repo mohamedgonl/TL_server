@@ -15,42 +15,37 @@ import java.util.Map;
 
 public class DataModel {
     private static final Map<String, List<Field>> cachedMapField = new HashMap<String, List<Field>>();
-    static Gson gson = null;
+    static Gson gson = new Gson();
+    static Gson gsonDeserializer = initGsonDeserializerInstance();
 
     public DataModel() {
         super();
-        initGsonInstance();
     }
 
-    private static void initGsonInstance() {
-        if (gson == null) {
-            BuildingDeserializer deserializer = new BuildingDeserializer("type", Building.class);
-            deserializer.registerBarnType("RES", CollectorBuilding.class);
+    private static Gson initGsonDeserializerInstance() {
+        BuildingDeserializer deserializer = new BuildingDeserializer("type", Building.class);
+        deserializer.registerBarnType("RES", CollectorBuilding.class);
 
-            gson = new GsonBuilder()
-                    .registerTypeAdapter(Building.class, deserializer)
-                    .create();
-        }
+        return new GsonBuilder()
+                .registerTypeAdapter(Building.class, deserializer)
+                .create();
     }
 
     public static Object getModel(String key, Class c) throws Exception {
-        initGsonInstance();
         String globalKey = ServerUtil.getModelKeyName(c.getSimpleName(), key);
-        return gson.fromJson((String) DataHandler.get(globalKey), c);
+        return gsonDeserializer.fromJson((String) DataHandler.get(globalKey), c);
         //return DataHandler.get(key);
     }
 
     public static Object getModel(int uId, Class c) throws Exception {
-        initGsonInstance();
         String key = ServerUtil.getModelKeyName(c.getSimpleName(), uId);
-        return gson.fromJson((String) DataHandler.get(key), c);
+        return gsonDeserializer.fromJson((String) DataHandler.get(key), c);
         //return DataHandler.get(key);
     }
 
     public static Object getModel(long uId, Class c) throws Exception {
-        initGsonInstance();
         String key = ServerUtil.getModelKeyName(c.getSimpleName(), uId);
-        return gson.fromJson((String) DataHandler.get(key), c);
+        return gsonDeserializer.fromJson((String) DataHandler.get(key), c);
         //return DataHandler.get(key);
     }
 

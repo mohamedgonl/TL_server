@@ -1,8 +1,9 @@
-package util.config;
+package util;
 
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import util.config.*;
 
 import java.io.FileReader;
 import java.util.List;
@@ -92,10 +93,35 @@ public class GameConfig {
             shopResItemConfig = gson.fromJson(reader, new TypeToken<Map<String, List<ShopResourceItemConfig>>>() {
             }.getType());
 
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public BaseBuildingConfig getBuildingConfig(String type, int level) {
+        if (type.startsWith("AMC"))
+            return instance.armyCampConfig.get(type).get(level);
+        if (type.startsWith("BDH"))
+            return instance.builderHutConfig.get(type).get(level);
+        if (type.startsWith("CLC"))
+            return instance.clanCastleConfig.get(type).get(level);
+        if (type.startsWith("RES"))
+            return instance.resourceConfig.get(type).get(level);
+        if (type.startsWith("OBS"))
+            return instance.obstacleConfig.get(type).get(level);
+        if (type.startsWith("TOW"))
+            return instance.townHallConfig.get(type).get(level);
+        if (type.startsWith("STO"))
+            return instance.storageConfig.get(type).get(level);
+        if (type.startsWith("BAR"))
+            return instance.barrackConfig.get(type).get(level);
+        if (type.startsWith("DEF"))
+            return instance.defenceConfig.get(type).get(level);
+        if (type.startsWith("LAB"))
+            return instance.laboratoryConfig.get(type).get(level);
+        if (type.startsWith("WAL"))
+            return instance.wallConfig.get(type).get(level);
+
+        return null;
     }
 }
