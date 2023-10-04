@@ -8,11 +8,15 @@ import bitzero.server.extensions.ExtensionLogLevel;
 import bitzero.util.ExtensionUtility;
 import event.eventType.DemoEventParam;
 import model.Building;
+import model.Obstacle;
 import model.PlayerInfo;
 import util.BuildingFactory;
 import util.Common;
 import util.GameConfig;
-import util.config.*;
+import util.config.BaseBuildingConfig;
+import util.config.InitGameConfig;
+import util.config.StorageConfig;
+import util.config.TownHallConfig;
 import util.server.ServerConstant;
 
 import java.awt.*;
@@ -120,6 +124,8 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         int goldCapacity = 0;
         int elixirCapacity = 0;
 
+        List<Building> listBuildingToRemove = new ArrayList<>();
+
         for (Building building : playerInfo.getListBuildings()) {
             //update building status
             if (building.getStatus() == Building.Status.ON_BUILD || building.getStatus() == Building.Status.ON_UPGRADE) {
@@ -134,8 +140,15 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
 
             BaseBuildingConfig buildingDetail = GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
 
-            //update buildingAmount
-            buildingAmount.put(building.getType(), buildingAmount.getOrDefault(building.getType(), 0) + 1);
+            if (building instanceof Obstacle) {
+                if (((Obstacle) building).isRemove()) {
+                    listBuildingToRemove.add(building);
+                    continue;
+                }
+            } else {
+                //update buildingAmount
+                buildingAmount.put(building.getType(), buildingAmount.getOrDefault(building.getType(), 0) + 1);
+            }
 
             //update map
             if (buildingDetail.height <= 0 || buildingDetail.height <= 0)
@@ -168,6 +181,10 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
                         elixirCapacity += storage.capacity;
                 }
             }
+        }
+
+        for (Building building : listBuildingToRemove){
+            playerInfo.getListBuildings().remove(building);
         }
         playerInfo.setMap(map);
         playerInfo.setBuildingAmount(buildingAmount);

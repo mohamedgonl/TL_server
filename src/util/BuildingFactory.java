@@ -3,6 +3,7 @@ package util;
 import model.Barrack;
 import model.Building;
 import model.CollectorBuilding;
+import model.Obstacle;
 
 import java.awt.*;
 
@@ -12,6 +13,8 @@ public class BuildingFactory {
             return new CollectorBuilding(id, type, level, position);
         if(isBarrack(type))
             return new Barrack(id, type, level, position);
+        if(isObstacle(type))
+            return new Obstacle(id, type, level, position);
         return new Building(id, type, level, position);
     }
 
