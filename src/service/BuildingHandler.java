@@ -716,14 +716,14 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 }
             }
             playerInfo.saveModel(user.getId());
-            send(new ResponseRemoveObstacle(ErrorConst.SUCCESS, building.getId()), user);
+            send(new ResponseRemoveObstacle(ErrorConst.SUCCESS, building), user);
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseRemoveObstacle(ErrorConst.UNKNOWN), user);
         }
     }
 
-    private void removeBuilding(PlayerInfo playerInfo, Building building, BaseBuildingConfig buildingDetail){
+    private void removeBuilding(PlayerInfo playerInfo, Building building, BaseBuildingConfig buildingDetail) {
         //update map
         int[][] map = playerInfo.getMap();
 
