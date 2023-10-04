@@ -121,6 +121,17 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         int elixirCapacity = 0;
 
         for (Building building : playerInfo.getListBuildings()) {
+            //update building status
+            if (building.getStatus() == Building.Status.ON_BUILD || building.getStatus() == Building.Status.ON_UPGRADE) {
+                if (building.getEndTime() <= Common.currentTimeInSecond()) {
+                    if (building.getStatus() == Building.Status.ON_BUILD)
+                        building.buildSuccess();
+                    else building.upgradeSuccess();
+                } else {
+                    availableBuilders--;
+                }
+            }
+
             BaseBuildingConfig buildingDetail = GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
 
             //update buildingAmount
@@ -155,15 +166,6 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
                         goldCapacity += storage.capacity;
                     case "elixir":
                         elixirCapacity += storage.capacity;
-                }
-            }
-            if (building.getStatus() == Building.Status.ON_BUILD || building.getStatus() == Building.Status.ON_UPGRADE) {
-                if (building.getEndTime() <= Common.currentTimeInSecond()) {
-                    if (building.getStatus() == Building.Status.ON_BUILD)
-                        building.buildSuccess();
-                    else building.upgradeSuccess();
-                } else {
-                    availableBuilders--;
                 }
             }
         }
