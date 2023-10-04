@@ -15,6 +15,8 @@ import cmd.receive.user.RequestUserInfo;
 import cmd.send.user.ResponseGetMapInfo;
 import cmd.send.user.ResponseGetUserInfo;
 
+import model.Barrack;
+import model.Building;
 import model.PlayerInfo;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -24,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.server.ServerConstant;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TroopHandler extends BaseClientRequestHandler {
@@ -63,8 +66,10 @@ public class TroopHandler extends BaseClientRequestHandler {
         try {
             //get user from cache
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
-
+            ArrayList<Building> userBuilding = userInfo.getListBuildings();
+            ArrayList<Barrack> barrackArrayList = this.getBarracksList(userBuilding);
             if (userInfo == null) {
+
                 send(new ResponseGetUserInfo(ErrorConst.PLAYER_INFO_NULL), user);
                 return;
             }
@@ -73,6 +78,19 @@ public class TroopHandler extends BaseClientRequestHandler {
         } catch (Exception e) {
             send(new ResponseGetUserInfo(ErrorConst.UNKNOWN), user);
         }
+    }
+
+    private ArrayList<Barrack> getBarracksList (ArrayList<Building> buildings) {
+        ArrayList<Barrack> barrackList = new ArrayList<>();
+        for (int i = 0; i < buildings.size(); i++) {
+            Building building = buildings.get(i);
+            if (building.getType().startsWith("BAR")) {
+                    Barrack barrack = (Barrack) building;
+                    barrackList.add(barrack);
+            }
+        }
+
+        return barrackList;
     }
 
 
