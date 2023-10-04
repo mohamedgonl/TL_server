@@ -74,6 +74,10 @@ public class BuildingHandler extends BaseClientRequestHandler {
                     RequestRemoveObstacle reqRemoveObstacle = new RequestRemoveObstacle(dataCmd);
                     removeObstacle(user, reqRemoveObstacle);
                     break;
+                case CmdDefine.REMOVE_OBSTACLE_SUCCESS:
+                    RequestRemoveObstacleSuccess reqRemoveObstacleSuccess = new RequestRemoveObstacleSuccess(dataCmd);
+                    removeObstacleSuccess(user, reqRemoveObstacleSuccess);
+                    break;
             }
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
@@ -720,6 +724,65 @@ public class BuildingHandler extends BaseClientRequestHandler {
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseRemoveObstacle(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void removeObstacleSuccess(User user, RequestRemoveObstacleSuccess reqData) {
+        try {
+            if (!reqData.isValid()) {
+                send(new ResponseRemoveObstacleSuccess(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            //get user from cache
+            PlayerInfo playerInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (playerInfo == null) {
+                send(new ResponseRemoveObstacleSuccess(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            Building building;
+            synchronized (playerInfo) {
+                //get building by id
+                int buildingId = reqData.getBuildingId();
+                building = getBuildingInListById(playerInfo.getListBuildings(), buildingId);
+
+                if (building == null) {
+                    send(new ResponseRemoveObstacleSuccess(ErrorConst.BUILDING_NOT_EXIST), user);
+                    return;
+                }
+
+                if (!BuildingFactory.isObstacle(building.getType())) {
+                    send(new ResponseRemoveObstacleSuccess(ErrorConst.UNEXPECTED_BUILDING), user);
+                    return;
+                }
+
+                //check if build already done
+                if (building.getStatus() != Building.Status.ON_BUILD) {
+                    send(new ResponseRemoveObstacleSuccess(ErrorConst.BUILD_DONE), user);
+                    return;
+                }
+
+                //check if build not done
+                if (building.getEndTime() > Common.currentTimeInSecond()) {
+                    send(new ResponseRemoveObstacleSuccess(ErrorConst.BUILD_NOT_DONE), user);
+                    return;
+                }
+
+                //success
+                ObstacleConfig buildingDetail = (ObstacleConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
+
+                building.buildSuccess();
+                playerInfo.freeBuilder(1);
+                playerInfo.addResources(0, buildingDetail.rewardElixir, 0);
+                removeBuilding(playerInfo, building, buildingDetail);
+            }
+            playerInfo.saveModel(user.getId());
+            send(new ResponseRemoveObstacleSuccess(ErrorConst.SUCCESS, building.getId()), user);
+        } catch (Exception e) {
+            logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
+            send(new ResponseRemoveObstacleSuccess(ErrorConst.UNKNOWN), user);
         }
     }
 
