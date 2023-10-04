@@ -3,6 +3,7 @@ package cmd.send.user;
 import bitzero.server.extensions.data.BaseMsg;
 import cmd.CmdDefine;
 import model.Building;
+import model.CollectorBuilding;
 import model.PlayerInfo;
 
 import java.nio.ByteBuffer;
@@ -32,6 +33,10 @@ public class ResponseGetMapInfo extends BaseMsg {
             putStr(bf, building.getType());
             bf.putInt((int)building.getPosition().getX());
             bf.putInt((int)building.getPosition().getY());
+            bf.putShort(building.getStatus().getValue());
+            if (building instanceof CollectorBuilding){
+                bf.putInt(((CollectorBuilding) building).getLastCollectTime());
+            }
         }
         return packBuffer(bf);
     }

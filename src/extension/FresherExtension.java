@@ -27,14 +27,13 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.JSONObject;
 
 import service.BuildingHandler;
-import service.DemoHandler;
 import service.ShopHandler;
 import service.TroopHandler;
 import service.UserHandler;
 
 import util.GuestLogin;
 
-import util.config.GameConfig;
+import util.GameConfig;
 import util.metric.LogObject;
 import util.metric.MetricLog;
 

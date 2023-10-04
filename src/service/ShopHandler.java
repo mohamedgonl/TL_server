@@ -12,9 +12,7 @@ import cmd.CmdDefine;
 import cmd.ErrorConst;
 import cmd.receive.user.RequestBuyItem;
 
-import cmd.send.building.ResponseCancelBuild;
 import cmd.send.user.ResponseBuyItem;
-import cmd.send.user.ResponseGetUserInfo;
 import event.eventType.DemoEventType;
 import extension.FresherExtension;
 
@@ -25,7 +23,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.config.GameConfig;
+import util.GameConfig;
 import util.config.ShopResourceItemConfig;
 import util.server.ServerConstant;
 
