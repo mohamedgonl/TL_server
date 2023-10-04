@@ -19,13 +19,6 @@ public class Building {
         this.status = Status.DONE;
     }
 
-    public Building(int id, String type, Point position) {
-        this.id = id;
-        this.type = type;
-        this.level = 1;
-        this.position = position;
-    }
-
     public int getId() {
         return id;
     }
