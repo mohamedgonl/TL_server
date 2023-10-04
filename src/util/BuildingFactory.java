@@ -1,5 +1,6 @@
 package util;
 
+import model.Barrack;
 import model.Building;
 import model.CollectorBuilding;
 
@@ -9,6 +10,8 @@ public class BuildingFactory {
     public static Building getBuilding(int id, String type, int level, Point position) {
         if (isResourceBuilding(type))
             return new CollectorBuilding(id, type, level, position);
+        if(isBarrack(type))
+            return new Barrack(id, type, level, position);
         return new Building(id, type, level, position);
     }
 
@@ -31,4 +34,6 @@ public class BuildingFactory {
     public static boolean isObstacle(String type) {
         return type.startsWith("OBS");
     }
+
+    public static boolean isBarrack(String type) {return type.startsWith("BAR");}
 }
