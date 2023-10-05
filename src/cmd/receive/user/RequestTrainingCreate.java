@@ -23,6 +23,14 @@ public class RequestTrainingCreate extends BaseCmd {
         return troopCfgId;
     }
 
+    public int getBarrackIdId() {
+        return barrackId;
+    }
+
+    public int getTroopCount() {
+        return troopCount;
+    }
+
     public boolean isValid() {
         return valid;
     }

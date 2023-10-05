@@ -21,10 +21,17 @@ public class ErrorConst {
     public static final short BUILDING_ON_WORKING = 29;
 
     public static final short UNEXPECTED_BUILDING = 30;
-    public static final short BUILDING_CANT_BE_MOVED = 40;
 
     public static final short ITEM_NOT_EXIST = 31;
     public static final short GEM_NOT_ENOUGH = 32;
+    public static final short BUILDING_CANT_BE_MOVED = 40;
+
+    public static final short BARRACK_NOT_FOUND = 50;
+    public static final short TROOP_NOT_UNLOCKED = 51;
+    public static final short BARRACK_FULL = 52;
+    public static final short RESOURCE_NOT_ENOUGH = 53;
+    public static final short BARRACK_NOT_FOUND3 = 50;
+
 
     public static final short SERVICE_INVALID = 102;
     public static final short ACTION_INVALID = 103;
