@@ -123,6 +123,7 @@ public class ShopHandler extends BaseClientRequestHandler {
                         // update gem
                         int leftGem =  userInfo.getGem() - resItem.price;
                         userInfo.setGem(leftGem);
+                        userInfo.saveModel(userInfo.getId());
 
                         System.out.println("DEBUG send buy success");
                         send(new ResponseBuyItem(ErrorConst.SUCCESS, userInfo.getGold(), userInfo.getElixir(), userInfo.getGem()), user);

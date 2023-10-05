@@ -23,11 +23,14 @@ public class GameConfig {
     public Map<String, Map<Integer, BaseBuildingConfig>> obstacleConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> resourceConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> storageConfig;
-    public Map<String, Map<Integer, BaseBuildingConfig>> barrackConfig;
+    public Map<String, Map<Integer, BarrackConfig>> barrackConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> defenceConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> laboratoryConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> wallConfig;
     public Map<String, List<ShopResourceItemConfig>>  shopResItemConfig;
+
+    public Map<String, Map<Integer, TroopConfig>> troopConfig;
+    public Map<String, TroopBaseConfig> troopBaseConfig;
 
     private GameConfig() {
     }
@@ -91,6 +94,14 @@ public class GameConfig {
 
             reader = new FileReader("./gameConfig/ShopResItem.json");
             shopResItemConfig = gson.fromJson(reader, new TypeToken<Map<String, List<ShopResourceItemConfig>>>() {
+            }.getType());
+
+            reader = new FileReader("./gameConfig/Troop.json");
+            troopConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, TroopConfig>>>() {
+            }.getType());
+
+            reader = new FileReader("./gameConfig/TroopBase.json");
+            troopBaseConfig = gson.fromJson(reader, new TypeToken<Map<String,  TroopBaseConfig>>() {
             }.getType());
 
         } catch (Exception e) {

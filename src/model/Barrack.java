@@ -1,6 +1,7 @@
 package model;
 
 import util.Common;
+import util.GameConfig;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,7 +26,16 @@ public class Barrack extends Building{
 
 
     public void pushNewTrainingItem(TrainingItem trainingItem) {
-        trainingItemList.add(trainingItem);
+        for (int i = 0; i < trainingItemList.size(); i++) {
+            if(trainingItemList.get(i).cfgId.equals(trainingItem.cfgId)) {
+                trainingItemList.get(i).count += trainingItem.count;
+                return;
+            }
+        }
+
+        // if not found or empty list
+        this.trainingItemList.add(trainingItem);
+
     }
 
     @Override
@@ -45,4 +55,18 @@ public class Barrack extends Building{
         super.cancelUpgradeSuccess();
 //        lastCollectTime = Common.currentTimeInSecond();
     }
+
+    public int getMaxSpace() {
+        return GameConfig.getInstance().barrackConfig.get(this.getType()).get(this.getLevel()).queueLength;
+    }
+
+    public int getCurrentSpace (){
+        int count = 0;
+        for (int i = 0; i < this.trainingItemList.size(); i++) {
+            count += this.trainingItemList.get(i).count;
+        }
+        return count;
+    }
+
+
 }
