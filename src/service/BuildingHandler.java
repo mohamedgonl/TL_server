@@ -78,6 +78,10 @@ public class BuildingHandler extends BaseClientRequestHandler {
                     RequestRemoveObstacleSuccess reqRemoveObstacleSuccess = new RequestRemoveObstacleSuccess(dataCmd);
                     removeObstacleSuccess(user, reqRemoveObstacleSuccess);
                     break;
+                case CmdDefine.UPGRADE_LIST_WALL:
+                    RequestUpgradeListWall reqUpgradeListWall = new RequestUpgradeListWall(dataCmd);
+                    upgradeListWall(user, reqUpgradeListWall);
+                    break;
             }
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
@@ -784,6 +788,86 @@ public class BuildingHandler extends BaseClientRequestHandler {
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseRemoveObstacleSuccess(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void upgradeListWall(User user, RequestUpgradeListWall reqData) {
+        try {
+            if (!reqData.isValid()) {
+                send(new ResponseUpgradeListWall(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            //get user from cache
+            PlayerInfo playerInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (playerInfo == null) {
+                send(new ResponseUpgradeListWall(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            Building building;
+            int goldCost = 0;
+            int elixirCost = 0;
+            int gemCost = 0;
+            int maxTownHallLvRequire = 0;
+
+            synchronized (playerInfo) {
+
+                int[] buildingIds = reqData.getBuildingIds();
+                ArrayList<Building> walls = new ArrayList<>();
+
+                for (int buildingId : buildingIds) {
+                    building = getBuildingInListById(playerInfo.getListBuildings(), buildingId);
+                    if (building == null) {
+                        send(new ResponseUpgradeListWall(ErrorConst.BUILDING_NOT_EXIST), user);
+                        return;
+                    }
+                    if (building.getStatus() != Building.Status.DONE) {
+                        send(new ResponseUpgradeListWall(ErrorConst.BUILDING_ON_WORKING), user);
+                        return;
+                    }
+                    String type = building.getType();
+
+                    if (BuildingFactory.isObstacle(type)) {
+                        send(new ResponseUpgradeListWall(ErrorConst.UNEXPECTED_BUILDING), user);
+                        return;
+                    }
+                    BaseBuildingConfig buildingDetail = GameConfig.getInstance().getBuildingConfig(type, building.getLevel() + 1);
+                    if (buildingDetail == null) {
+                        send(new ResponseUpgradeListWall(ErrorConst.UNEXPECTED_BUILDING), user);
+                        return;
+                    }
+                    walls.add(building);
+                    goldCost += buildingDetail.gold;
+                    elixirCost += buildingDetail.elixir;
+                    gemCost += buildingDetail.coin;
+                    maxTownHallLvRequire = Math.max(maxTownHallLvRequire, buildingDetail.townHallLevelRequired);
+                }
+
+                //check resources
+                if (playerInfo.getGold() < goldCost || playerInfo.getElixir() < elixirCost || playerInfo.getGem() < gemCost) {
+                    send(new ResponseUpgradeListWall(ErrorConst.NOT_ENOUGH_RESOURCES), user);
+                    return;
+                }
+
+                //check town hall lv
+                if (playerInfo.getTownHallLv() < maxTownHallLvRequire) {
+                    send(new ResponseUpgradeListWall(ErrorConst.TOWNHALL_LEVEL_TOO_LOW), user);
+                    return;
+                }
+
+                //success
+                playerInfo.useResources(goldCost, elixirCost, gemCost);
+                for (Building wall : walls) {
+                    wall.upgradeSuccess();
+                }
+            }
+            playerInfo.saveModel(user.getId());
+            send(new ResponseUpgradeListWall(ErrorConst.SUCCESS, reqData.getBuildingIds()), user);
+        } catch (Exception e) {
+            logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
+            send(new ResponseUpgradeListWall(ErrorConst.UNKNOWN), user);
         }
     }
 
