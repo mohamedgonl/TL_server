@@ -33,8 +33,13 @@ public class Barrack extends Building{
             }
         }
 
-        // if not found or empty list
+        // update lasttime when train first troop
+        if(this.trainingItemList.size() == 0) {
+            this.lastTrainingTime = Common.currentTimeInSecond();
+        }
+
         this.trainingItemList.add(trainingItem);
+
 
     }
 
@@ -53,7 +58,6 @@ public class Barrack extends Building{
     @Override
     public void cancelUpgradeSuccess() {
         super.cancelUpgradeSuccess();
-//        lastCollectTime = Common.currentTimeInSecond();
     }
 
     public int getMaxSpace() {
@@ -66,6 +70,14 @@ public class Barrack extends Building{
             count += this.trainingItemList.get(i).count;
         }
         return count;
+    }
+
+    public int getDoneNowCost() {
+        int cost = 0;
+        for (int i = 0; i < this.trainingItemList.size(); i++) {
+
+        }
+        return cost;
     }
 
 

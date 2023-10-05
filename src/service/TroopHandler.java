@@ -10,6 +10,8 @@ import cmd.ErrorConst;
 import cmd.receive.user.RequestTrainingCreate;
 
 
+import cmd.receive.user.RequestTrainingSuccess;
+import cmd.send.building.ResponseTrainingSuccess;
 import cmd.send.user.ResponseGetUserInfo;
 
 import cmd.send.user.ResponseTrainingCreate;
@@ -43,17 +45,20 @@ public class TroopHandler extends BaseClientRequestHandler {
     }
 
     public void handleClientRequest(User user, DataCmd dataCmd) {
-        System.out.println("requestId: " + dataCmd.getId());
         logger.info("requestId: " + dataCmd.getId());
         try {
             switch (dataCmd.getId()) {
-                case CmdDefine.TRAIN_TROOP_CREATE:
+                case CmdDefine.TRAIN_TROOP_CREATE:{
                     RequestTrainingCreate reqInfo = new RequestTrainingCreate(dataCmd);
                     trainTroopCreate(user, reqInfo);
                     break;
-//                case CmdDefine.GET_MAP_INFO:
-//                    getMapInfo(user);
-//                    break;
+                }
+                case CmdDefine.TRAIN_TROOP_SUCCESS: {
+                    RequestTrainingSuccess reqInfo = new RequestTrainingSuccess(dataCmd);
+                    trainTroopSuccess(user, reqInfo);
+                    break;
+
+                }
             }
         } catch (Exception e) {
             logger.warn("USERHANDLER EXCEPTION " + e.getMessage());
@@ -100,15 +105,34 @@ public class TroopHandler extends BaseClientRequestHandler {
             TrainingItem trainingItem = new TrainingItem(reqInfo.getTroopCfgId(), reqInfo.getTroopCount());
             currentBarrack.pushNewTrainingItem(trainingItem);
 
-            send(new ResponseTrainingCreate(ErrorConst.SUCCESS), user);
+            send(new ResponseTrainingCreate(ErrorConst.SUCCESS, trainingItem, reqInfo.getBarrackIdId(), currentBarrack.getLastTrainingTime()), user);
         } catch (Exception e) {
             send(new ResponseGetUserInfo(ErrorConst.UNKNOWN), user);
         }
     }
 
-    private void onTrainSuccess () {
+    private void trainTroopSuccess(User user, RequestTrainingSuccess reqInfo){
+        try {
+            PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+            ArrayList<Building> userBuilding = userInfo.getListBuildings();
+            Barrack currentBarrack = this.getBarrackById(userBuilding, reqInfo.getBarrackIdId());
 
+            // check done now
+            if(reqInfo.checkIsDoneNow()) {
+
+            }
+            else {
+
+            }
+
+
+
+        }catch (Exception e) {
+            send(new ResponseTrainingSuccess(ErrorConst.UNKNOWN),user);
+        }
     }
+
+
 
     private ArrayList<Barrack> getBarracksList (ArrayList<Building> buildings) {
         ArrayList<Barrack> barrackList = new ArrayList<>();

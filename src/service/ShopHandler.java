@@ -83,6 +83,7 @@ public class ShopHandler extends BaseClientRequestHandler {
     }
 
     private void handleBuyResItem(User user, RequestBuyItem requestBuyItem){
+        System.out.println("HANDLE BUY RESOURCE ITEM");
         PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
         if (!requestBuyItem.isValid()){
             send(new ResponseBuyItem(ErrorConst.PARAM_INVALID), user);
@@ -90,7 +91,7 @@ public class ShopHandler extends BaseClientRequestHandler {
         try {
             String itemCfgId = requestBuyItem.getItemCfgId();
             // check item id có trong config không
-            for (int i = 0; i < GameConfig.getInstance().shopResItemConfig.size(); i++) {
+            for (int i = 0; i < GameConfig.getInstance().shopResItemConfig.get("category_ngankho").size(); i++) {
                 if(itemCfgId.equals(GameConfig.getInstance().shopResItemConfig.get("category_ngankho").get(i).cfgId)){
                     ShopResourceItemConfig resItem = GameConfig.getInstance().shopResItemConfig.get("category_ngankho").get(i);
                     if(resItem.price > userInfo.getGem()){
@@ -101,28 +102,9 @@ public class ShopHandler extends BaseClientRequestHandler {
                         // update resource
                         float percent = resItem.nganhko_percent;
 
-                        switch (resItem.value_type){
-                            case "RESOURCE_TYPE.ELIXIR": {
-                                int resource = (int) (userInfo.getElixirCapacity()*percent);
-                                int newResource = userInfo.getElixir() + resource >= userInfo.getElixirCapacity()
-                                        ? userInfo.getElixirCapacity() : userInfo.getElixir() + resource;
-                                userInfo.setElixir(newResource);
-                                break;
-                            }
-                            case "RESOURCE_TYPE.GOLD": {
-                                int resource = (int) (userInfo.getGoldCapacity()*percent);
-                                int newResource = userInfo.getGold() + resource >= userInfo.getGoldCapacity()
-                                        ? userInfo.getGoldCapacity() : userInfo.getGold() + resource;
-                                userInfo.setGold(newResource);
-                                break;
-                            }
-                            default: {
-                                break;
-                            }
-                        }
-                        // update gem
-                        int leftGem =  userInfo.getGem() - resItem.price;
-                        userInfo.setGem(leftGem);
+                        userInfo.addResources(resItem.value_type.equals("RESOURCE_TYPE.GOLD") ?  (int) (userInfo.getGoldCapacity()*percent) : 0,
+                                resItem.value_type.equals("RESOURCE_TYPE.ELIXIR") ?  (int) (userInfo.getElixirCapacity()*percent) : 0,userInfo.getGem() - resItem.price);
+
                         userInfo.saveModel(userInfo.getId());
 
                         System.out.println("DEBUG send buy success");

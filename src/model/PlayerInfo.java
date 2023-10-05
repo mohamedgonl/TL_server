@@ -16,6 +16,7 @@ public class PlayerInfo extends DataModel {
     private int gem;
     private int goldCapacity;
     private int elixirCapacity;
+    private Map<String, Integer> listTroops;
 
     private ArrayList<Building> listBuildings;
 
