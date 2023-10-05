@@ -2,8 +2,10 @@ package util.database;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import model.Barrack;
 import model.Building;
 import model.CollectorBuilding;
+import model.Obstacle;
 import net.spy.memcached.CASResponse;
 import net.spy.memcached.CASValue;
 import util.server.ServerUtil;
@@ -25,6 +27,8 @@ public class DataModel {
     private static Gson initGsonDeserializerInstance() {
         BuildingDeserializer deserializer = new BuildingDeserializer("type", Building.class);
         deserializer.registerBarnType("RES", CollectorBuilding.class);
+        deserializer.registerBarnType("BAR", Barrack.class);
+        deserializer.registerBarnType("OBS", Obstacle.class);
 
         return new GsonBuilder()
                 .registerTypeAdapter(Building.class, deserializer)

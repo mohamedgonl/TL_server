@@ -9,16 +9,15 @@ import cmd.receive.building.*;
 import cmd.send.building.*;
 import model.Building;
 import model.CollectorBuilding;
+import model.Obstacle;
 import model.PlayerInfo;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.BuildingFactory;
 import util.Common;
-import util.config.BaseBuildingConfig;
 import util.GameConfig;
-import util.config.ResourceConfig;
-import util.config.TownHallConfig;
+import util.config.*;
 import util.server.ServerConstant;
 
 import java.lang.reflect.Field;
@@ -30,16 +29,6 @@ public class BuildingHandler extends BaseClientRequestHandler {
 
     public BuildingHandler() {
         super();
-    }
-
-    public static boolean checkBuildingPosition(int[][] map, int posX, int posY, int width, int height) {
-        if (map.length == 0 || posY < 0 || posX < 0 || posY + width >= map.length || posX + height >= map[0].length)
-            return false;
-        for (int i = 0; i < width; i++)
-            for (int j = 0; j < height; j++)
-                if (map[posY + j][posX + i] > 0)
-                    return false;
-        return true;
     }
 
     public void init() {
@@ -80,6 +69,14 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 case CmdDefine.MOVE_BUILDING:
                     RequestMoveBuilding reqMoveBuilding = new RequestMoveBuilding(dataCmd);
                     moveBuilding(user, reqMoveBuilding);
+                    break;
+                case CmdDefine.REMOVE_OBSTACLE:
+                    RequestRemoveObstacle reqRemoveObstacle = new RequestRemoveObstacle(dataCmd);
+                    removeObstacle(user, reqRemoveObstacle);
+                    break;
+                case CmdDefine.REMOVE_OBSTACLE_SUCCESS:
+                    RequestRemoveObstacleSuccess reqRemoveObstacleSuccess = new RequestRemoveObstacleSuccess(dataCmd);
+                    removeObstacleSuccess(user, reqRemoveObstacleSuccess);
                     break;
             }
         } catch (Exception e) {
@@ -171,6 +168,10 @@ public class BuildingHandler extends BaseClientRequestHandler {
         newBuilding.startBuilding(Common.currentTimeInSecond(), buildingDetail.buildTime);
         if (newBuilding.getStatus() == Building.Status.ON_BUILD) {
             playerInfo.useBuilder(1);
+        } else if (newBuilding.getStatus() == Building.Status.DONE) {
+            if (BuildingFactory.isBuilderHutBuilding(newBuilding.getType())) {
+                playerInfo.setTotalBuilders(playerInfo.getTotalBuilders() + 1);
+            }
         }
 
         //update mapInfo
@@ -239,7 +240,16 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 }
 
                 //success
-                cancelBuildSuccess(playerInfo, building, buildingDetail, rewardGold, rewardElixir, rewardGem);
+                //update resources
+                playerInfo.addResources(rewardGold, rewardElixir, rewardGem);
+                playerInfo.freeBuilder(1);
+
+                //update buildingAmount
+                int amount = playerInfo.getBuildingAmount().getOrDefault(building.getType(), 0);
+                if (amount > 0)
+                    playerInfo.getBuildingAmount().put(building.getType(), amount - 1);
+
+                removeBuilding(playerInfo, building, buildingDetail);
             }
             playerInfo.saveModel(user.getId());
             send(new ResponseCancelBuild(ErrorConst.SUCCESS, building.getId()), user);
@@ -248,32 +258,6 @@ public class BuildingHandler extends BaseClientRequestHandler {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseCancelBuild(ErrorConst.UNKNOWN), user);
         }
-    }
-
-    private void cancelBuildSuccess(PlayerInfo playerInfo, Building building, BaseBuildingConfig buildingDetail, int rewardGold, int rewardElixir, int rewardGem) {
-        //update resources
-        playerInfo.addResources(rewardGold, rewardElixir, rewardGem);
-        playerInfo.freeBuilder(1);
-
-        //update map
-        int[][] map = playerInfo.getMap();
-
-        for (int i = 0; i < buildingDetail.width; i++)
-            for (int j = 0; j < buildingDetail.height; j++) {
-                int posX = (int) (building.getPosition().getX() + i);
-                int posY = (int) (building.getPosition().getY() + j);
-                if (posX < GameConfig.MAP_WIDTH && posY < GameConfig.MAP_HEIGHT)
-                    map[posY][posX] = 0;
-            }
-        playerInfo.setMap(map);
-
-        //update buildingAmount
-        int amount = playerInfo.getBuildingAmount().getOrDefault(building.getType(), 0);
-        if (amount > 0)
-            playerInfo.getBuildingAmount().put(building.getType(), amount - 1);
-
-        //update listBuildings
-        playerInfo.getListBuildings().remove(building);
     }
 
     private void buildSuccess(User user, RequestBuildSuccess reqData) {
@@ -317,6 +301,16 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 //success
                 building.buildSuccess();
                 playerInfo.freeBuilder(1);
+
+                if (BuildingFactory.isStorageBuilding(building.getType())) {
+                    StorageConfig storage = (StorageConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
+                    switch (storage.type) {
+                        case "gold":
+                            playerInfo.setGoldCapacity(playerInfo.getGoldCapacity() + storage.capacity);
+                        case "elixir":
+                            playerInfo.setElixirCapacity(playerInfo.getElixir() + storage.capacity);
+                    }
+                }
             }
             playerInfo.saveModel(user.getId());
             send(new ResponseBuildSuccess(ErrorConst.SUCCESS, building.getId()), user);
@@ -506,6 +500,25 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 //success
                 building.upgradeSuccess();
                 playerInfo.freeBuilder(1);
+
+                //update resource capacity
+                if (BuildingFactory.isStorageBuilding(building.getType())) {
+                    StorageConfig storage = (StorageConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel() - 1);
+                    StorageConfig storageNextLevel = (StorageConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
+                    int capacity = storageNextLevel.capacity - storage.capacity;
+                    switch (storage.type) {
+                        case "gold":
+                            playerInfo.setGoldCapacity(playerInfo.getGoldCapacity() + capacity);
+                        case "elixir":
+                            playerInfo.setElixirCapacity(playerInfo.getElixirCapacity() + capacity);
+                    }
+                } else if (BuildingFactory.isTownHallBuilding(building.getType())) {
+                    TownHallConfig townHall = (TownHallConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel() - 1);
+                    TownHallConfig townHallNextLv = (TownHallConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
+
+                    playerInfo.setGoldCapacity(playerInfo.getGoldCapacity() + townHallNextLv.capacityGold - townHall.capacityGold);
+                    playerInfo.setElixirCapacity(playerInfo.getElixirCapacity() + townHallNextLv.capacityElixir - townHall.capacityElixir);
+                }
             }
             playerInfo.saveModel(user.getId());
             send(new ResponseUpgradeSuccess(ErrorConst.SUCCESS, building.getId()), user);
@@ -644,6 +657,160 @@ public class BuildingHandler extends BaseClientRequestHandler {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseMoveBuilding(ErrorConst.UNKNOWN), user);
         }
+    }
+
+    private void removeObstacle(User user, RequestRemoveObstacle reqData) {
+        try {
+            if (!reqData.isValid()) {
+                send(new ResponseRemoveObstacle(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            //get user from cache
+            PlayerInfo playerInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (playerInfo == null) {
+                send(new ResponseRemoveObstacle(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            Building building;
+            synchronized (playerInfo) {
+                //get building by id
+                int buildingId = reqData.getBuildingId();
+                building = getBuildingInListById(playerInfo.getListBuildings(), buildingId);
+
+                if (building == null) {
+                    send(new ResponseRemoveObstacle(ErrorConst.BUILDING_NOT_EXIST), user);
+                    return;
+                }
+
+                if (!BuildingFactory.isObstacle(building.getType())) {
+                    send(new ResponseRemoveObstacle(ErrorConst.UNEXPECTED_BUILDING), user);
+                    return;
+                }
+
+                Obstacle obstacle = (Obstacle) building;
+
+                //get building detail
+                ObstacleConfig buildingDetail = (ObstacleConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
+
+                //check resources
+                if (playerInfo.getGold() < buildingDetail.gold || playerInfo.getElixir() < buildingDetail.elixir || playerInfo.getGem() < buildingDetail.coin) {
+                    send(new ResponseRemoveObstacle(ErrorConst.NOT_ENOUGH_RESOURCES), user);
+                    return;
+                }
+
+                //check builder
+                if (buildingDetail.buildTime > 0 && playerInfo.getAvaiableBuilders() == 0) {
+                    send(new ResponseRemoveObstacle(ErrorConst.NOT_ENOUGH_BUILDER), user);
+                    return;
+                }
+
+                //success
+                playerInfo.useResources(buildingDetail.gold, buildingDetail.elixir, buildingDetail.coin);
+
+                if (buildingDetail.buildTime > 0) {
+                    playerInfo.useBuilder(1);
+                    obstacle.startBuilding(Common.currentTimeInSecond(), buildingDetail.buildTime);
+                } else {
+                    //remove obstacle from map
+                    removeBuilding(playerInfo, obstacle, buildingDetail);
+                    obstacle.buildSuccess();
+                }
+            }
+            playerInfo.saveModel(user.getId());
+            send(new ResponseRemoveObstacle(ErrorConst.SUCCESS, building), user);
+        } catch (Exception e) {
+            logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
+            send(new ResponseRemoveObstacle(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void removeObstacleSuccess(User user, RequestRemoveObstacleSuccess reqData) {
+        try {
+            if (!reqData.isValid()) {
+                send(new ResponseRemoveObstacleSuccess(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            //get user from cache
+            PlayerInfo playerInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (playerInfo == null) {
+                send(new ResponseRemoveObstacleSuccess(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            Building building;
+            synchronized (playerInfo) {
+                //get building by id
+                int buildingId = reqData.getBuildingId();
+                building = getBuildingInListById(playerInfo.getListBuildings(), buildingId);
+
+                if (building == null) {
+                    send(new ResponseRemoveObstacleSuccess(ErrorConst.BUILDING_NOT_EXIST), user);
+                    return;
+                }
+
+                if (!BuildingFactory.isObstacle(building.getType())) {
+                    send(new ResponseRemoveObstacleSuccess(ErrorConst.UNEXPECTED_BUILDING), user);
+                    return;
+                }
+
+                //check if build already done
+                if (building.getStatus() != Building.Status.ON_BUILD) {
+                    send(new ResponseRemoveObstacleSuccess(ErrorConst.BUILD_DONE), user);
+                    return;
+                }
+
+                //check if build not done
+                if (building.getEndTime() > Common.currentTimeInSecond()) {
+                    send(new ResponseRemoveObstacleSuccess(ErrorConst.BUILD_NOT_DONE), user);
+                    return;
+                }
+
+                //success
+                ObstacleConfig buildingDetail = (ObstacleConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
+
+                building.buildSuccess();
+                playerInfo.freeBuilder(1);
+                playerInfo.addResources(0, buildingDetail.rewardElixir, 0);
+                removeBuilding(playerInfo, building, buildingDetail);
+            }
+            playerInfo.saveModel(user.getId());
+            send(new ResponseRemoveObstacleSuccess(ErrorConst.SUCCESS, building.getId()), user);
+        } catch (Exception e) {
+            logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
+            send(new ResponseRemoveObstacleSuccess(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void removeBuilding(PlayerInfo playerInfo, Building building, BaseBuildingConfig buildingDetail) {
+        //update map
+        int[][] map = playerInfo.getMap();
+
+        for (int i = 0; i < buildingDetail.width; i++)
+            for (int j = 0; j < buildingDetail.height; j++) {
+                int posX = (int) (building.getPosition().getX() + i);
+                int posY = (int) (building.getPosition().getY() + j);
+                if (posX < GameConfig.MAP_WIDTH && posY < GameConfig.MAP_HEIGHT)
+                    map[posY][posX] = 0;
+            }
+        playerInfo.setMap(map);
+
+        //update listBuildings
+        playerInfo.getListBuildings().remove(building);
+    }
+
+    public boolean checkBuildingPosition(int[][] map, int posX, int posY, int width, int height) {
+        if (map.length == 0 || posY < 0 || posX < 0 || posY + width >= map.length || posX + height >= map[0].length)
+            return false;
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
+                if (map[posY + j][posX + i] > 0)
+                    return false;
+        return true;
     }
 
     public boolean checkBuildingPosition(int[][] map, int posX, int posY, int width, int height, int buildingId) {

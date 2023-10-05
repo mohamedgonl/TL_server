@@ -18,6 +18,9 @@ public class CmdDefine {
     public static final short COLLECT_RESOURCE = 2007;
     public static final short MOVE_BUILDING = 2008;
 
+    public static final short REMOVE_OBSTACLE = 2009;
+    public static final short REMOVE_OBSTACLE_SUCCESS = 2010;
+
     //Log cmd
     public static final short MOVE = 3001;
     public static final short GET_NAME = 3002;
