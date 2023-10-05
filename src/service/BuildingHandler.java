@@ -634,7 +634,6 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 }
 
                 //success
-                building.setPosition(reqData.getPosition());
                 int[][] map = playerInfo.getMap();
 
                 for (int i = 0; i < buildingDetail.width; i++)
@@ -649,6 +648,8 @@ public class BuildingHandler extends BaseClientRequestHandler {
                         if (newPosX < GameConfig.MAP_WIDTH && newPosY < GameConfig.MAP_HEIGHT)
                             map[newPosY][newPosX] = buildingId;
                     }
+
+                building.setPosition(reqData.getPosition());
                 playerInfo.setMap(map);
             }
             playerInfo.saveModel(user.getId());
