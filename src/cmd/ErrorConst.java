@@ -30,7 +30,12 @@ public class ErrorConst {
     public static final short TROOP_NOT_UNLOCKED = 51;
     public static final short BARRACK_FULL = 52;
     public static final short RESOURCE_NOT_ENOUGH = 53;
-    public static final short BARRACK_NOT_FOUND3 = 50;
+    public static final short NOT_ENOUGH_DONE_TRAIN_NOW_COST = 54;
+    public static final short BARRACK_TRAIN_NOT_DONE = 55;
+
+    public static final short BARRACK_TRAIN_LIST_EMPTY = 56;
+
+
 
 
     public static final short SERVICE_INVALID = 102;

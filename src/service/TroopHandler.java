@@ -25,12 +25,14 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.Common;
 import util.GameConfig;
 import util.config.TroopBaseConfig;
 import util.config.TroopConfig;
 import util.server.ServerConstant;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TroopHandler extends BaseClientRequestHandler {
     public static short TROOP_MULTI_IDS = 5000;
@@ -104,6 +106,7 @@ public class TroopHandler extends BaseClientRequestHandler {
             userInfo.setElixir(userInfo.getElixir() - troopConfig.trainingElixir);
             TrainingItem trainingItem = new TrainingItem(reqInfo.getTroopCfgId(), reqInfo.getTroopCount());
             currentBarrack.pushNewTrainingItem(trainingItem);
+            userInfo.saveModel(user.getId());
 
             send(new ResponseTrainingCreate(ErrorConst.SUCCESS, trainingItem, reqInfo.getBarrackIdId(), currentBarrack.getLastTrainingTime()), user);
         } catch (Exception e) {
@@ -115,19 +118,55 @@ public class TroopHandler extends BaseClientRequestHandler {
         try {
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
             ArrayList<Building> userBuilding = userInfo.getListBuildings();
-            Barrack currentBarrack = this.getBarrackById(userBuilding, reqInfo.getBarrackIdId());
+            Barrack currentBarrack = this.getBarrackById(userBuilding, reqInfo.getBarrackId());
 
             // check done now
             if(reqInfo.checkIsDoneNow()) {
+                int doneNowCost = currentBarrack.getDoneNowCost();
+                if(doneNowCost > userInfo.getGem()) {
+                    send(new ResponseTrainingSuccess(ErrorConst.NOT_ENOUGH_DONE_TRAIN_NOW_COST),user);
+                    return;
+                }
+                else {
+                    userInfo.setGem(userInfo.getGem() - doneNowCost);
+                    //get all troop in barrack and mark as done
+                    ArrayList<TrainingItem> troopItems = currentBarrack.getTrainingItemList();
+                    userInfo.pushToListTroop(troopItems);
+                    currentBarrack.cleanTrainingItemList();
+                    currentBarrack.setLastTrainingTime(Common.currentTimeInSecond());
+
+                    send(new ResponseTrainingSuccess(ErrorConst.SUCCESS), user);
+                }
 
             }
             else {
+                if(currentBarrack.getTrainingItemList().size() == 0) {
+                    System.out.println("NHÀ LÍNH ĐANG TRỐNG");
+                    send(new ResponseTrainingSuccess(ErrorConst.BARRACK_TRAIN_LIST_EMPTY),user);
+                    return;
+                }
 
+                String firstTroopCfgId = currentBarrack.getTrainingItemList().get(0).cfgId;
+                System.out.println("PASS              "+firstTroopCfgId);
+                int trainingTime =(int) Math.ceil(GameConfig.getInstance().troopBaseConfig.get(firstTroopCfgId).trainingTime/10);
+                if(Common.currentTimeInSecond() - currentBarrack.getLastTrainingTime() >= trainingTime){
+                    System.out.println("ĐỒNG Ý CHO LÍNH RA");
+                    currentBarrack.removeFirstTroop();
+                    currentBarrack.setLastTrainingTime(Common.currentTimeInSecond());
+                    System.out.println( currentBarrack.getId());
+                    send(new ResponseTrainingSuccess(ErrorConst.SUCCESS,currentBarrack.getId(),0, firstTroopCfgId),user);
+                    return;
+                }
+                else {
+                     send(new ResponseTrainingSuccess(ErrorConst.BARRACK_TRAIN_NOT_DONE),user);
+                    return;
+                }
             }
 
 
 
         }catch (Exception e) {
+            System.out.println("HANDLE TRAITROOOP SUCCESS ERROR:     ");
             send(new ResponseTrainingSuccess(ErrorConst.UNKNOWN),user);
         }
     }

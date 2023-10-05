@@ -3,6 +3,8 @@ package model;
 import util.database.DataModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PlayerInfo extends DataModel {
@@ -16,7 +18,7 @@ public class PlayerInfo extends DataModel {
     private int gem;
     private int goldCapacity;
     private int elixirCapacity;
-    private Map<String, Integer> listTroops;
+    private Map<String, Integer> listTroops = new HashMap<>();
 
     private ArrayList<Building> listBuildings;
 
@@ -237,6 +239,16 @@ public class PlayerInfo extends DataModel {
         if (this.avaiableBuilders + builderAmount <= totalBuilders)
             this.avaiableBuilders += builderAmount;
         else this.avaiableBuilders = totalBuilders;
+    }
+
+    public void pushToListTroop(List<TrainingItem> listTroops){
+        for (int i = 0; i < listTroops.size(); i++) {
+            String cfg  = listTroops.get(i).cfgId;
+            int count = listTroops.get(i).count;
+
+            int amount = this.listTroops.getOrDefault(cfg, 0) + count;
+            this.listTroops.put(cfg, amount);
+        }
     }
 
     public String toString() {

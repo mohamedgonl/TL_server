@@ -7,7 +7,7 @@ import bitzero.server.extensions.data.DataCmd;
 import java.nio.ByteBuffer;
 
 public class RequestTrainingSuccess extends BaseCmd {
-    private int isDoneNow = 0;
+    private int isDoneNow;
     private int barrackId;
 
     private boolean valid = false;
@@ -18,7 +18,7 @@ public class RequestTrainingSuccess extends BaseCmd {
         unpackData();
     }
 
-    public int getBarrackIdId() {
+    public int getBarrackId() {
         return barrackId;
     }
 

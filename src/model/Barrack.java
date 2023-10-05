@@ -20,6 +20,29 @@ public class Barrack extends Building{
         return lastTrainingTime;
     }
 
+    public ArrayList<TrainingItem> getTrainingItemList() {
+        return trainingItemList;
+    }
+
+    public void setTrainingItemList() {
+
+    }
+
+    public void cleanTrainingItemList(){
+        this.trainingItemList.clear();
+    }
+
+    public String removeFirstTroop() {
+        String cfgId = this.trainingItemList.get(0).cfgId;
+        if(this.trainingItemList.get(0).count == 1) {
+            this.cleanTrainingItemList();
+        }
+        else {
+            this.trainingItemList.get(0).count -= 1;
+        }
+        return cfgId;
+    }
+
     public void setLastTrainingTime(int lastTrainingTime) {
         this.lastTrainingTime = lastTrainingTime;
     }
@@ -73,10 +96,14 @@ public class Barrack extends Building{
     }
 
     public int getDoneNowCost() {
-        int cost = 0;
+        int totalTrainingTime = 0;
         for (int i = 0; i < this.trainingItemList.size(); i++) {
-
+            String troopCfgId = this.trainingItemList.get(i).cfgId;
+            int trainingTime = GameConfig.getInstance().troopBaseConfig.get(troopCfgId).trainingTime;
+            trainingTime = (int) Math.ceil(trainingTime / 10);
+            totalTrainingTime += trainingTime;
         }
+        int cost =  (totalTrainingTime % 60) * 2;
         return cost;
     }
 
