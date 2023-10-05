@@ -2,6 +2,7 @@ package model;
 
 import util.Common;
 import util.GameConfig;
+import util.config.BarrackConfig;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class Barrack extends Building{
     }
 
     public int getMaxSpace() {
-        return GameConfig.getInstance().barrackConfig.get(this.getType()).get(this.getLevel()).queueLength;
+        return ((BarrackConfig) GameConfig.getInstance().getBuildingConfig(this.getType(), this.getLevel())).queueLength;
     }
 
     public int getCurrentSpace (){
