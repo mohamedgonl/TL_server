@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 public class ResponseTrainingSuccess extends BaseMsg {
     private int barrackId;
     private int isDoneNow;
+    private int lastTrainingTime;
 
     private String cfgId;
 
@@ -16,11 +17,13 @@ public class ResponseTrainingSuccess extends BaseMsg {
         super(CmdDefine.TRAIN_TROOP_SUCCESS, error);
     }
 
-    public ResponseTrainingSuccess(short error, int barrackId, int isDoneNow, String cfgId) {
-        super(CmdDefine.COLLECT_RESOURCE, error);
+    public ResponseTrainingSuccess(short error, int barrackId, int isDoneNow, String cfgId, int lastTrainingTime) {
+        super(CmdDefine.TRAIN_TROOP_SUCCESS, error);
         this.barrackId = barrackId;
         this.isDoneNow = isDoneNow;
         this.cfgId = cfgId;
+        this.lastTrainingTime = lastTrainingTime;
+
     }
 
 
@@ -30,6 +33,7 @@ public class ResponseTrainingSuccess extends BaseMsg {
         bf.putInt(isDoneNow);
         bf.putInt(barrackId);
         putStr(bf, cfgId);
+        bf.putInt(lastTrainingTime);
         
         return packBuffer(bf);
     }

@@ -154,7 +154,8 @@ public class TroopHandler extends BaseClientRequestHandler {
                     currentBarrack.removeFirstTroop();
                     currentBarrack.setLastTrainingTime(Common.currentTimeInSecond());
                     System.out.println( currentBarrack.getId());
-                    send(new ResponseTrainingSuccess(ErrorConst.SUCCESS,currentBarrack.getId(),0, firstTroopCfgId),user);
+                    send(new ResponseTrainingSuccess(ErrorConst.SUCCESS,currentBarrack.getId(),0, firstTroopCfgId,
+                            currentBarrack.getLastTrainingTime()),user);
                     return;
                 }
                 else {
