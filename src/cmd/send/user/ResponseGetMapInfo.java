@@ -34,6 +34,8 @@ public class ResponseGetMapInfo extends BaseMsg {
             bf.putInt((int)building.getPosition().getX());
             bf.putInt((int)building.getPosition().getY());
             bf.putShort(building.getStatus().getValue());
+            bf.putInt(building.getStartTime());
+            bf.putInt(building.getEndTime());
             if (building instanceof CollectorBuilding){
                 bf.putInt(((CollectorBuilding) building).getLastCollectTime());
             }
