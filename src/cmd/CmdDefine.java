@@ -30,5 +30,7 @@ public class CmdDefine {
     public static final short TRAIN_TROOP_CREATE = 5001;
     public static final short TRAIN_TROOP_SUCCESS = 5002;
 
+    public static final short GET_TRAINING_LIST = 5003;
+
 
 }

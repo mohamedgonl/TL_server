@@ -2,7 +2,6 @@ package cmd.send.building;
 
 import bitzero.server.extensions.data.BaseMsg;
 import cmd.CmdDefine;
-import model.CollectorBuilding;
 
 import java.nio.ByteBuffer;
 
@@ -12,15 +11,18 @@ public class ResponseTrainingSuccess extends BaseMsg {
 
     private String cfgId;
 
+    private int lastTrainingTime;
+
     public ResponseTrainingSuccess(short error) {
         super(CmdDefine.TRAIN_TROOP_SUCCESS, error);
     }
 
-    public ResponseTrainingSuccess(short error, int barrackId, int isDoneNow, String cfgId) {
-        super(CmdDefine.COLLECT_RESOURCE, error);
+    public ResponseTrainingSuccess(short error, int barrackId, int isDoneNow, String cfgId, int lastTrainingTime) {
+        super(CmdDefine.TRAIN_TROOP_SUCCESS, error);
         this.barrackId = barrackId;
         this.isDoneNow = isDoneNow;
         this.cfgId = cfgId;
+        this.lastTrainingTime = lastTrainingTime;
     }
 
 
@@ -30,7 +32,9 @@ public class ResponseTrainingSuccess extends BaseMsg {
         bf.putInt(isDoneNow);
         bf.putInt(barrackId);
         putStr(bf, cfgId);
+        bf.putInt(lastTrainingTime);
         
         return packBuffer(bf);
     }
+
 }

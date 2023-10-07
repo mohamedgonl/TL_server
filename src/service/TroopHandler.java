@@ -7,10 +7,12 @@ import bitzero.server.extensions.data.DataCmd;
 import cmd.CmdDefine;
 
 import cmd.ErrorConst;
+import cmd.receive.user.RequestGetTrainTroopList;
 import cmd.receive.user.RequestTrainingCreate;
 
 
 import cmd.receive.user.RequestTrainingSuccess;
+import cmd.send.building.ResponseGetTrainTroopList;
 import cmd.send.building.ResponseTrainingSuccess;
 import cmd.send.user.ResponseGetUserInfo;
 
@@ -59,6 +61,12 @@ public class TroopHandler extends BaseClientRequestHandler {
                     RequestTrainingSuccess reqInfo = new RequestTrainingSuccess(dataCmd);
                     trainTroopSuccess(user, reqInfo);
                     break;
+
+                }
+
+                case CmdDefine.GET_TRAINING_LIST: {
+                    RequestGetTrainTroopList reqInfo = new RequestGetTrainTroopList(dataCmd);
+                    handleGetTrainTroopList(user, reqInfo);
 
                 }
             }
@@ -120,6 +128,11 @@ public class TroopHandler extends BaseClientRequestHandler {
             ArrayList<Building> userBuilding = userInfo.getListBuildings();
             Barrack currentBarrack = this.getBarrackById(userBuilding, reqInfo.getBarrackId());
 
+            if(currentBarrack == null) {
+                send(new ResponseTrainingSuccess(ErrorConst.BARRACK_NOT_FOUND),user);
+                return;
+            }
+
             // check done now
             if(reqInfo.checkIsDoneNow()) {
                 int doneNowCost = currentBarrack.getDoneNowCost();
@@ -147,14 +160,15 @@ public class TroopHandler extends BaseClientRequestHandler {
                 }
 
                 String firstTroopCfgId = currentBarrack.getTrainingItemList().get(0).cfgId;
-                System.out.println("PASS              "+firstTroopCfgId);
                 int trainingTime =(int) Math.ceil(GameConfig.getInstance().troopBaseConfig.get(firstTroopCfgId).trainingTime/10);
                 if(Common.currentTimeInSecond() - currentBarrack.getLastTrainingTime() >= trainingTime){
                     System.out.println("ĐỒNG Ý CHO LÍNH RA");
+
                     currentBarrack.removeFirstTroop();
-                    currentBarrack.setLastTrainingTime(Common.currentTimeInSecond());
-                    System.out.println( currentBarrack.getId());
-                    send(new ResponseTrainingSuccess(ErrorConst.SUCCESS,currentBarrack.getId(),0, firstTroopCfgId),user);
+                    int lastTrainingTime = Common.currentTimeInSecond();
+                    currentBarrack.setLastTrainingTime(lastTrainingTime);
+                    userInfo.saveModel(user.getId());
+                    send(new ResponseTrainingSuccess(ErrorConst.SUCCESS,currentBarrack.getId(),0, firstTroopCfgId, lastTrainingTime),user);
                     return;
                 }
                 else {
@@ -163,11 +177,35 @@ public class TroopHandler extends BaseClientRequestHandler {
                 }
             }
 
-
-
         }catch (Exception e) {
             System.out.println("HANDLE TRAITROOOP SUCCESS ERROR:     ");
             send(new ResponseTrainingSuccess(ErrorConst.UNKNOWN),user);
+        }
+    }
+
+    private void handleGetTrainTroopList(User user, RequestGetTrainTroopList reqInfo){
+        System.out.println("HANDLE GET TRAINING LIST with barrackId::::" + reqInfo.getBarrackId());
+        try {
+            // tìm barrack theo đúng id
+            PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+            ArrayList<Building> userBuilding = userInfo.getListBuildings();
+            Barrack currentBarrack = this.getBarrackById(userBuilding, reqInfo.getBarrackId());
+
+            if(currentBarrack == null) {
+                send(new ResponseGetTrainTroopList(ErrorConst.BARRACK_NOT_FOUND),user);
+                return;
+            }
+            // cập nhập lai danh sách luyện
+            ArrayList<TrainingItem> trainingList = currentBarrack.updateTrainingList();
+            // lưu thông tin
+            userInfo.saveModel(user.getId());
+
+            send(new ResponseGetTrainTroopList(ErrorConst.SUCCESS, currentBarrack.getId(), trainingList, currentBarrack.getLastTrainingTime()), user);
+            return;
+        }
+        catch (Exception e) {
+            System.out.println("HANDLE GET TRAINING TROOP LIST ERROR:     ");
+            send(new ResponseGetTrainTroopList(ErrorConst.UNKNOWN),user);
         }
     }
 

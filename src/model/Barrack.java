@@ -35,7 +35,7 @@ public class Barrack extends Building{
     public String removeFirstTroop() {
         String cfgId = this.trainingItemList.get(0).cfgId;
         if(this.trainingItemList.get(0).count == 1) {
-            this.cleanTrainingItemList();
+            this.trainingItemList.remove(0);
         }
         else {
             this.trainingItemList.get(0).count -= 1;
@@ -46,7 +46,6 @@ public class Barrack extends Building{
     public void setLastTrainingTime(int lastTrainingTime) {
         this.lastTrainingTime = lastTrainingTime;
     }
-
 
     public void pushNewTrainingItem(TrainingItem trainingItem) {
         for (int i = 0; i < trainingItemList.size(); i++) {
@@ -64,23 +63,6 @@ public class Barrack extends Building{
         this.trainingItemList.add(trainingItem);
 
 
-    }
-
-    @Override
-    public void buildSuccess() {
-        super.buildSuccess();
-//        lastCollectTime = Common.currentTimeInSecond();
-    }
-
-    @Override
-    public void upgradeSuccess() {
-        super.upgradeSuccess();
-//        lastCollectTime = Common.currentTimeInSecond();
-    }
-
-    @Override
-    public void cancelUpgradeSuccess() {
-        super.cancelUpgradeSuccess();
     }
 
     public int getMaxSpace() {
@@ -105,6 +87,17 @@ public class Barrack extends Building{
         }
         int cost =  (totalTrainingTime % 60) * 2;
         return cost;
+    }
+
+    public ArrayList<TrainingItem> updateTrainingList(){
+        if(this.trainingItemList.size() > 0){
+            int timeLeft =  Common.currentTimeInSecond() - lastTrainingTime;
+            while (timeLeft > 0) {
+                String troopCfgId = this.removeFirstTroop();
+                timeLeft -= GameConfig.getInstance().troopBaseConfig.get(troopCfgId).trainingTime;
+            }
+        }
+            return this.trainingItemList;
     }
 
 
