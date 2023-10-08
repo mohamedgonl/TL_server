@@ -5,27 +5,26 @@ import cmd.CmdDefine;
 
 import java.nio.ByteBuffer;
 
-public class ResponseTrainingSuccess extends BaseMsg {
+public class ResponseCancleTrain extends BaseMsg {
     private int barrackId;
-    private int isDoneNow;
 
     private String cfgId;
 
     private int lastTrainingTime;
 
-    private int gem;
+    private int additionElixir;
 
-    public ResponseTrainingSuccess(short error) {
-        super(CmdDefine.TRAIN_TROOP_SUCCESS, error);
+
+    public ResponseCancleTrain(short error) {
+        super(CmdDefine.CANCLE_TRAIN_TROOP, error);
     }
 
-    public ResponseTrainingSuccess(short error, int barrackId, int isDoneNow, String cfgId, int lastTrainingTime, int gem) {
-        super(CmdDefine.TRAIN_TROOP_SUCCESS, error);
+    public ResponseCancleTrain(short error, int barrackId, String cfgId, int lastTrainingTime, int additionElixir) {
+        super(CmdDefine.CANCLE_TRAIN_TROOP, error);
         this.barrackId = barrackId;
-        this.isDoneNow = isDoneNow;
         this.cfgId = cfgId;
         this.lastTrainingTime = lastTrainingTime;
-        this.gem = gem;
+        this.additionElixir = additionElixir;
     }
 
 
@@ -33,11 +32,10 @@ public class ResponseTrainingSuccess extends BaseMsg {
     @Override
     public byte[] createData() {
         ByteBuffer bf = makeBuffer();
-        bf.putInt(isDoneNow);
         bf.putInt(barrackId);
         putStr(bf, cfgId);
         bf.putInt(lastTrainingTime);
-        bf.putInt(gem);
+        bf.putInt(additionElixir);
         return packBuffer(bf);
     }
 

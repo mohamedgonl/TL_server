@@ -1,5 +1,6 @@
 package model;
 
+import util.GameConfig;
 import util.database.DataModel;
 
 import java.util.ArrayList;
@@ -250,6 +251,27 @@ public class PlayerInfo extends DataModel {
             this.listTroops.put(cfg, amount);
         }
     }
+
+    public int getMaxArmySpace(){
+        int max  = 0;
+        for (int i = 0; i < this.listBuildings.size(); i++) {
+            if(this.listBuildings.get(i).getType().startsWith("AMC")) {
+                int level = this.listBuildings.get(i).getLevel();
+                max += GameConfig.getInstance().armyCampConfig.get("AMC_1").get(level).capacity;
+            }
+        }
+        return max;
+    }
+
+    public int getCurrentSpace(){
+        int total =  0;
+        for (Map.Entry<String, Integer> entry : listTroops.entrySet()) {
+            total += entry.getValue();
+        }
+        return total;
+    }
+
+
 
     public String toString() {
         return String.format("%s|%s|%s|%s|%s", id, name, gold, gem, elixir, level);

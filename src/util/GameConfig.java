@@ -16,7 +16,7 @@ public class GameConfig {
     public static final int MAP_HEIGHT = 40;
 
     public InitGameConfig initGameConfig;
-    public Map<String, Map<Integer, BaseBuildingConfig>> armyCampConfig;
+    public Map<String, Map<Integer, ArmyCampConfig>> armyCampConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> townHallConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> builderHutConfig;
     public Map<String, Map<Integer, BaseBuildingConfig>> clanCastleConfig;

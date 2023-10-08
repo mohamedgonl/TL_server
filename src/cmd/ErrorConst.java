@@ -35,6 +35,10 @@ public class ErrorConst {
 
     public static final short BARRACK_TRAIN_LIST_EMPTY = 56;
 
+    public static final short ARMY_MAX_SPACE = 56;
+
+    public static final short TROOP_NOT_FOUND = 57;
+
 
 
 

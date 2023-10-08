@@ -7,11 +7,13 @@ import bitzero.server.extensions.data.DataCmd;
 import cmd.CmdDefine;
 
 import cmd.ErrorConst;
+import cmd.receive.user.RequestCancleTrain;
 import cmd.receive.user.RequestGetTrainTroopList;
 import cmd.receive.user.RequestTrainingCreate;
 
 
 import cmd.receive.user.RequestTrainingSuccess;
+import cmd.send.building.ResponseCancleTrain;
 import cmd.send.building.ResponseGetTrainTroopList;
 import cmd.send.building.ResponseTrainingSuccess;
 import cmd.send.user.ResponseGetUserInfo;
@@ -63,11 +65,15 @@ public class TroopHandler extends BaseClientRequestHandler {
                     break;
 
                 }
-
                 case CmdDefine.GET_TRAINING_LIST: {
                     RequestGetTrainTroopList reqInfo = new RequestGetTrainTroopList(dataCmd);
                     handleGetTrainTroopList(user, reqInfo);
-
+                    break;
+                }
+                case CmdDefine.CANCLE_TRAIN_TROOP:{
+                    RequestCancleTrain reqInfo = new RequestCancleTrain(dataCmd);
+                    handleCancleTrainTroop(user, reqInfo);
+                    break;
                 }
             }
         } catch (Exception e) {
@@ -144,31 +150,40 @@ public class TroopHandler extends BaseClientRequestHandler {
                     userInfo.setGem(userInfo.getGem() - doneNowCost);
                     //get all troop in barrack and mark as done
                     ArrayList<TrainingItem> troopItems = currentBarrack.getTrainingItemList();
+
+                    if(userInfo.getCurrentSpace() + currentBarrack.getCurrentSpace() > userInfo.getMaxArmySpace()) {
+                        send(new ResponseTrainingSuccess(ErrorConst.ARMY_MAX_SPACE), user);
+                        return;
+                    }
+
                     userInfo.pushToListTroop(troopItems);
                     currentBarrack.cleanTrainingItemList();
-                    currentBarrack.setLastTrainingTime(Common.currentTimeInSecond());
-
-                    send(new ResponseTrainingSuccess(ErrorConst.SUCCESS), user);
+                    int lastTrainTime = Common.currentTimeInSecond();
+                    currentBarrack.setLastTrainingTime(lastTrainTime);
+                    userInfo.saveModel(user.getId());
+                    send(new ResponseTrainingSuccess(ErrorConst.SUCCESS, currentBarrack.getId(), 1, "", lastTrainTime, userInfo.getGem()), user);
+                    return;
                 }
 
             }
             else {
-                if(currentBarrack.getTrainingItemList().size() == 0) {
-                    System.out.println("NHÀ LÍNH ĐANG TRỐNG");
+                if(currentBarrack.getTrainingItemList().isEmpty()) {
                     send(new ResponseTrainingSuccess(ErrorConst.BARRACK_TRAIN_LIST_EMPTY),user);
                     return;
                 }
 
                 String firstTroopCfgId = currentBarrack.getTrainingItemList().get(0).cfgId;
-                int trainingTime =(int) Math.ceil(GameConfig.getInstance().troopBaseConfig.get(firstTroopCfgId).trainingTime/10);
+                int trainingTime =(int) Math.ceil((double) GameConfig.getInstance().troopBaseConfig.get(firstTroopCfgId).trainingTime /10);
                 if(Common.currentTimeInSecond() - currentBarrack.getLastTrainingTime() >= trainingTime){
-                    System.out.println("ĐỒNG Ý CHO LÍNH RA");
 
-                    currentBarrack.removeFirstTroop();
+                    String cfgId = currentBarrack.removeFirstTroop();
                     int lastTrainingTime = Common.currentTimeInSecond();
                     currentBarrack.setLastTrainingTime(lastTrainingTime);
+                    ArrayList<TrainingItem> doneList  = new ArrayList<>();
+                    doneList.add(new TrainingItem(cfgId,1));
+                    userInfo.pushToListTroop(doneList);
                     userInfo.saveModel(user.getId());
-                    send(new ResponseTrainingSuccess(ErrorConst.SUCCESS,currentBarrack.getId(),0, firstTroopCfgId, lastTrainingTime),user);
+                    send(new ResponseTrainingSuccess(ErrorConst.SUCCESS,currentBarrack.getId(),0, firstTroopCfgId, lastTrainingTime, userInfo.getGem()),user);
                     return;
                 }
                 else {
@@ -178,7 +193,7 @@ public class TroopHandler extends BaseClientRequestHandler {
             }
 
         }catch (Exception e) {
-            System.out.println("HANDLE TRAITROOOP SUCCESS ERROR:     ");
+            System.out.println("HANDLE TRAIN TROOP SUCCESS ERROR:     ");
             send(new ResponseTrainingSuccess(ErrorConst.UNKNOWN),user);
         }
     }
@@ -197,6 +212,10 @@ public class TroopHandler extends BaseClientRequestHandler {
             }
             // cập nhập lai danh sách luyện
             ArrayList<TrainingItem> trainingList = currentBarrack.updateTrainingList();
+
+            // lính dc train lưu vào player info;
+            userInfo.pushToListTroop(trainingList);
+
             // lưu thông tin
             userInfo.saveModel(user.getId());
 
@@ -209,7 +228,38 @@ public class TroopHandler extends BaseClientRequestHandler {
         }
     }
 
+    private void handleCancleTrainTroop(User  user, RequestCancleTrain reqInfo){
+        System.out.println("HANDLE CANCLE TRAINTROOP "+ reqInfo.getBarrackId() + "   " + reqInfo.getTroopCfgId());
+        try {
+            // hiện để level = 1 do chưa có lab
+            int troopLevel = 1;
 
+            PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+            ArrayList<Building> userBuilding = userInfo.getListBuildings();
+            Barrack currentBarrack = this.getBarrackById(userBuilding, reqInfo.getBarrackId());
+            TroopConfig troopConfig = GameConfig.getInstance().troopConfig.get(reqInfo.getTroopCfgId()).get(troopLevel) ;
+
+            if(currentBarrack == null) {
+                send(new ResponseCancleTrain(ErrorConst.BARRACK_NOT_FOUND), user);
+            }
+
+            boolean found = currentBarrack.removeTroop(reqInfo.getTroopCfgId());
+
+            if(!found) {
+                send(new ResponseCancleTrain(ErrorConst.TROOP_NOT_FOUND),user);
+            }
+
+            userInfo.addResources(0,troopConfig.trainingElixir/2,0);
+
+            send(new ResponseCancleTrain(ErrorConst.SUCCESS, currentBarrack.getId(), reqInfo.getTroopCfgId(),
+                    currentBarrack.getLastTrainingTime(), troopConfig.trainingElixir/2), user);
+            return;
+
+        }catch (Exception e){
+            System.out.println("HANDLE CANLE TRAIN TROOP ERROR");
+            send(new ResponseCancleTrain(ErrorConst.UNKNOWN), user);
+        }
+    }
 
     private ArrayList<Barrack> getBarracksList (ArrayList<Building> buildings) {
         ArrayList<Barrack> barrackList = new ArrayList<>();
