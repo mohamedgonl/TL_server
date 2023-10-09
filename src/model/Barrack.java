@@ -17,11 +17,11 @@ public class Barrack extends Building{
     }
 
     public int getLastTrainingTime() {
-        return lastTrainingTime;
+        return this.lastTrainingTime;
     }
 
     public ArrayList<TrainingItem> getTrainingItemList() {
-        return trainingItemList;
+        return this.trainingItemList;
     }
 
 
@@ -81,11 +81,11 @@ public class Barrack extends Building{
 
         // update lasttime when train first troop
         if(this.trainingItemList.size() == 0) {
-            this.lastTrainingTime = Common.currentTimeInSecond();
+            int curent = Common.currentTimeInSecond();
+            System.out.println("RESET lasttime + " +curent);
+            this.lastTrainingTime = curent;
+            this.trainingItemList.add(trainingItem);
         }
-
-        this.trainingItemList.add(trainingItem);
-
 
     }
 
