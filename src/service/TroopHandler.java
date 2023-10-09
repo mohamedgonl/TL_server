@@ -115,7 +115,8 @@ public class TroopHandler extends BaseClientRequestHandler {
     }
 
     private void trainTroopSuccess(User user, RequestTrainingSuccess reqInfo){
-        try {
+//        try
+        {
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
             ArrayList<Building> userBuilding = userInfo.getListBuildings();
             Barrack currentBarrack = this.getBarrackById(userBuilding, reqInfo.getBarrackId());
@@ -132,15 +133,16 @@ public class TroopHandler extends BaseClientRequestHandler {
                     //get all troop in barrack and mark as done
                     ArrayList<TrainingItem> troopItems = currentBarrack.getTrainingItemList();
                     userInfo.pushToListTroop(troopItems);
+                    int curTime = Common.currentTimeInSecond();
                     currentBarrack.cleanTrainingItemList();
-                    currentBarrack.setLastTrainingTime(Common.currentTimeInSecond());
+                    currentBarrack.setLastTrainingTime(curTime);
 
                     send(new ResponseTrainingSuccess(ErrorConst.SUCCESS), user);
                 }
 
             }
             else {
-                if(currentBarrack.getTrainingItemList().size() == 0) {
+                if(currentBarrack.getTrainingItemList().isEmpty()) {
                     System.out.println("NHÀ LÍNH ĐANG TRỐNG");
                     send(new ResponseTrainingSuccess(ErrorConst.BARRACK_TRAIN_LIST_EMPTY),user);
                     return;
@@ -148,12 +150,16 @@ public class TroopHandler extends BaseClientRequestHandler {
 
                 String firstTroopCfgId = currentBarrack.getTrainingItemList().get(0).cfgId;
                 System.out.println("PASS              "+firstTroopCfgId);
-                int trainingTime =(int) Math.ceil(GameConfig.getInstance().troopBaseConfig.get(firstTroopCfgId).trainingTime/10);
-                if(Common.currentTimeInSecond() - currentBarrack.getLastTrainingTime() >= trainingTime){
+                int curTime = Common.currentTimeInSecond();
+                int lastTime = currentBarrack.getLastTrainingTime();
+
+                int trainingTime =(int) Math.ceil((double) GameConfig.getInstance().troopBaseConfig.get(firstTroopCfgId).trainingTime/10);
+                if(curTime - lastTime >= trainingTime){
                     System.out.println("ĐỒNG Ý CHO LÍNH RA");
                     currentBarrack.removeFirstTroop();
-                    currentBarrack.setLastTrainingTime(Common.currentTimeInSecond());
-                    System.out.println( currentBarrack.getId());
+                    currentBarrack.setLastTrainingTime(curTime);
+                    System.out.println(currentBarrack.getId());
+                    System.out.println("GO ");
                     send(new ResponseTrainingSuccess(ErrorConst.SUCCESS,currentBarrack.getId(),0, firstTroopCfgId),user);
                     return;
                 }
@@ -165,10 +171,11 @@ public class TroopHandler extends BaseClientRequestHandler {
 
 
 
-        }catch (Exception e) {
-            System.out.println("HANDLE TRAITROOOP SUCCESS ERROR:     ");
-            send(new ResponseTrainingSuccess(ErrorConst.UNKNOWN),user);
         }
+//        catch (Exception e) {
+//            System.out.println("HANDLE TRAITROOOP SUCCESS ERROR:     " + e);
+//            send(new ResponseTrainingSuccess(ErrorConst.UNKNOWN),user);
+//        }
     }
 
 

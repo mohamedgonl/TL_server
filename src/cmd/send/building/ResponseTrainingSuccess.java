@@ -7,17 +7,17 @@ import model.CollectorBuilding;
 import java.nio.ByteBuffer;
 
 public class ResponseTrainingSuccess extends BaseMsg {
-    private int barrackId;
-    private int isDoneNow;
+    private int barrackId ;
+    private int isDoneNow ;
 
-    private String cfgId;
+    private String cfgId ;
 
     public ResponseTrainingSuccess(short error) {
         super(CmdDefine.TRAIN_TROOP_SUCCESS, error);
     }
 
     public ResponseTrainingSuccess(short error, int barrackId, int isDoneNow, String cfgId) {
-        super(CmdDefine.COLLECT_RESOURCE, error);
+        super(CmdDefine.TRAIN_TROOP_SUCCESS, error);
         this.barrackId = barrackId;
         this.isDoneNow = isDoneNow;
         this.cfgId = cfgId;
@@ -27,10 +27,12 @@ public class ResponseTrainingSuccess extends BaseMsg {
     @Override
     public byte[] createData() {
         ByteBuffer bf = makeBuffer();
-        bf.putInt(isDoneNow);
-        bf.putInt(barrackId);
-        putStr(bf, cfgId);
-        
+
+            bf.putInt(isDoneNow);
+            bf.putInt(barrackId);
+            putStr(bf, cfgId);
+
+
         return packBuffer(bf);
     }
 }
