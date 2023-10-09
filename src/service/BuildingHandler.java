@@ -20,6 +20,7 @@ import util.GameConfig;
 import util.config.*;
 import util.server.ServerConstant;
 
+import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -81,6 +82,10 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 case CmdDefine.UPGRADE_LIST_WALL:
                     RequestUpgradeListWall reqUpgradeListWall = new RequestUpgradeListWall(dataCmd);
                     upgradeListWall(user, reqUpgradeListWall);
+                    break;
+                case CmdDefine.MOVE_LIST_WALL:
+                    RequestMoveListWall reqMoveListWall = new RequestMoveListWall(dataCmd);
+                    moveListWall(user, reqMoveListWall);
                     break;
             }
         } catch (Exception e) {
@@ -868,6 +873,108 @@ public class BuildingHandler extends BaseClientRequestHandler {
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseUpgradeListWall(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void moveListWall(User user, RequestMoveListWall reqData) {
+        try {
+            if (!reqData.isValid()) {
+                send(new ResponseMoveListWall(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            if (reqData.getFirstPos().x < 0 || reqData.getFirstPos().x >= GameConfig.MAP_WIDTH
+                    || reqData.getFirstPos().y < 0 || reqData.getFirstPos().y >= GameConfig.MAP_HEIGHT
+                    || reqData.getNextFirstPos().x < 0 || reqData.getNextFirstPos().x >= GameConfig.MAP_WIDTH
+                    || reqData.getNextFirstPos().y < 0 || reqData.getNextFirstPos().y >= GameConfig.MAP_HEIGHT) {
+                send(new ResponseMoveListWall(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            //get user from cache
+            PlayerInfo playerInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (playerInfo == null) {
+                send(new ResponseMoveListWall(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            synchronized (playerInfo) {
+                int[][] map = playerInfo.getMap();
+                int posX = reqData.getFirstPos().x;
+                int posY = reqData.getFirstPos().y;
+                int nextPosX = reqData.getNextFirstPos().x;
+                int nextPosY = reqData.getNextFirstPos().y;
+                ArrayList<Building> listWall = new ArrayList<>();
+                ArrayList<Point> listNewPostion = new ArrayList<>();
+
+                for (short i = 0; i < reqData.getAmount(); i++) {
+                    int wallId = map[posY][posX];
+                    if (wallId == 0) {
+                        send(new ResponseMoveListWall(ErrorConst.BUILDING_NOT_EXIST), user);
+                        return;
+                    }
+
+                    Building wall = getBuildingInListById(playerInfo.getListBuildings(), wallId);
+
+                    if (wall == null) {
+                        send(new ResponseMoveListWall(ErrorConst.BUILDING_NOT_EXIST), user);
+                        return;
+                    }
+
+                    if (!BuildingFactory.isWall(wall.getType())) {
+                        send(new ResponseMoveListWall(ErrorConst.UNEXPECTED_BUILDING), user);
+                        return;
+                    }
+                    listWall.add(wall);
+                    listNewPostion.add(new Point(nextPosX, nextPosY));
+                    posX += reqData.getDx();
+                    posY += reqData.getDy();
+                    nextPosX += reqData.getNewDx();
+                    nextPosY += reqData.getNewDy();
+                }
+
+
+                //check position
+                int[][] tempMap = map.clone();
+                for (Building wall : listWall) {
+                    BaseBuildingConfig buildingDetail = GameConfig.getInstance().getBuildingConfig(wall.getType(), wall.getLevel());
+                    for (int i = 0; i < buildingDetail.width; i++)
+                        for (int j = 0; j < buildingDetail.height; j++) {
+                            int tempPosX = (int) (wall.getPosition().getX() + i);
+                            int tempPosY = (int) (wall.getPosition().getY() + j);
+                            if (tempPosX < GameConfig.MAP_WIDTH && tempPosY < GameConfig.MAP_HEIGHT)
+                                tempMap[tempPosY][tempPosX] = 0;
+                        }
+                }
+                for (int i = 0; i < listWall.size(); i++) {
+                    Building wall = listWall.get(i);
+                    Point newPos = listNewPostion.get(i);
+                    BaseBuildingConfig buildingDetail = GameConfig.getInstance().getBuildingConfig(wall.getType(), wall.getLevel());
+                    for (int x = 0; x < buildingDetail.width; x++)
+                        for (int y = 0; y < buildingDetail.height; y++) {
+                            int tempPosX = (int) (newPos.getX() + x);
+                            int tempPosY = (int) (newPos.getY() + y);
+                            if (tempPosX >= GameConfig.MAP_WIDTH || tempPosY >= GameConfig.MAP_HEIGHT || tempMap[tempPosY][tempPosX] > 0){
+                                send(new ResponseMoveListWall(ErrorConst.BUILDING_CANT_BE_MOVED), user);
+                                return;
+                            }
+                            tempMap[tempPosY][tempPosX] = wall.getId();
+                        }
+                }
+                //success
+                for (int i = 0; i < listWall.size(); i++) {
+                    Building wall = listWall.get(i);
+                    Point newPos = listNewPostion.get(i);
+                    wall.setPosition(newPos);
+                }
+                playerInfo.setMap(tempMap);
+            }
+            playerInfo.saveModel(user.getId());
+            send(new ResponseMoveListWall(ErrorConst.SUCCESS), user);
+        } catch (Exception e) {
+            logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
+            send(new ResponseMoveListWall(ErrorConst.UNKNOWN), user);
         }
     }
 

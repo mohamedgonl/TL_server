@@ -11,9 +11,9 @@ public class BuildingFactory {
     public static Building getBuilding(int id, String type, int level, Point position) {
         if (isResourceBuilding(type))
             return new CollectorBuilding(id, type, level, position);
-        if(isBarrack(type))
+        if (isBarrack(type))
             return new Barrack(id, type, level, position);
-        if(isObstacle(type))
+        if (isObstacle(type))
             return new Obstacle(id, type, level, position);
         return new Building(id, type, level, position);
     }
@@ -38,5 +38,11 @@ public class BuildingFactory {
         return type.startsWith("OBS");
     }
 
-    public static boolean isBarrack(String type) {return type.startsWith("BAR");}
+    public static boolean isWall(String type) {
+        return type.startsWith("WAL");
+    }
+
+    public static boolean isBarrack(String type) {
+        return type.startsWith("BAR");
+    }
 }
