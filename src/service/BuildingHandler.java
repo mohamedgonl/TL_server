@@ -87,6 +87,10 @@ public class BuildingHandler extends BaseClientRequestHandler {
                     RequestMoveListWall reqMoveListWall = new RequestMoveListWall(dataCmd);
                     moveListWall(user, reqMoveListWall);
                     break;
+                case CmdDefine.FINISH_WORK_BY_GEM:
+                    RequestFinishWorkByGem reqFinishWorkByGem = new RequestFinishWorkByGem(dataCmd);
+                    finishWorkByGem(user, reqFinishWorkByGem);
+                    break;
             }
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
@@ -307,25 +311,29 @@ public class BuildingHandler extends BaseClientRequestHandler {
                     return;
                 }
 
-                //success
-                building.buildSuccess();
-                playerInfo.freeBuilder(1);
+                onBuildSucess(playerInfo, building);
 
-                if (BuildingFactory.isStorageBuilding(building.getType())) {
-                    StorageConfig storage = (StorageConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
-                    switch (storage.type) {
-                        case "gold":
-                            playerInfo.setGoldCapacity(playerInfo.getGoldCapacity() + storage.capacity);
-                        case "elixir":
-                            playerInfo.setElixirCapacity(playerInfo.getElixir() + storage.capacity);
-                    }
-                }
             }
             playerInfo.saveModel(user.getId());
             send(new ResponseBuildSuccess(ErrorConst.SUCCESS, building.getId()), user);
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseBuildSuccess(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void onBuildSucess(PlayerInfo playerInfo, Building building){
+        building.buildSuccess();
+        playerInfo.freeBuilder(1);
+
+        if (BuildingFactory.isStorageBuilding(building.getType())) {
+            StorageConfig storage = (StorageConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
+            switch (storage.type) {
+                case "gold":
+                    playerInfo.setGoldCapacity(playerInfo.getGoldCapacity() + storage.capacity);
+                case "elixir":
+                    playerInfo.setElixirCapacity(playerInfo.getElixir() + storage.capacity);
+            }
         }
     }
 
@@ -506,28 +514,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
                     return;
                 }
 
-                //success
-                building.upgradeSuccess();
-                playerInfo.freeBuilder(1);
-
-                //update resource capacity
-                if (BuildingFactory.isStorageBuilding(building.getType())) {
-                    StorageConfig storage = (StorageConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel() - 1);
-                    StorageConfig storageNextLevel = (StorageConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
-                    int capacity = storageNextLevel.capacity - storage.capacity;
-                    switch (storage.type) {
-                        case "gold":
-                            playerInfo.setGoldCapacity(playerInfo.getGoldCapacity() + capacity);
-                        case "elixir":
-                            playerInfo.setElixirCapacity(playerInfo.getElixirCapacity() + capacity);
-                    }
-                } else if (BuildingFactory.isTownHallBuilding(building.getType())) {
-                    TownHallConfig townHall = (TownHallConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel() - 1);
-                    TownHallConfig townHallNextLv = (TownHallConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
-
-                    playerInfo.setGoldCapacity(playerInfo.getGoldCapacity() + townHallNextLv.capacityGold - townHall.capacityGold);
-                    playerInfo.setElixirCapacity(playerInfo.getElixirCapacity() + townHallNextLv.capacityElixir - townHall.capacityElixir);
-                }
+                onUpgradeSuccess(playerInfo, building);
             }
             playerInfo.saveModel(user.getId());
             send(new ResponseUpgradeSuccess(ErrorConst.SUCCESS, building.getId()), user);
@@ -535,6 +522,31 @@ public class BuildingHandler extends BaseClientRequestHandler {
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseUpgradeSuccess(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void onUpgradeSuccess(PlayerInfo playerInfo, Building building){
+        //success
+        building.upgradeSuccess();
+        playerInfo.freeBuilder(1);
+
+        //update resource capacity
+        if (BuildingFactory.isStorageBuilding(building.getType())) {
+            StorageConfig storage = (StorageConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel() - 1);
+            StorageConfig storageNextLevel = (StorageConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
+            int capacity = storageNextLevel.capacity - storage.capacity;
+            switch (storage.type) {
+                case "gold":
+                    playerInfo.setGoldCapacity(playerInfo.getGoldCapacity() + capacity);
+                case "elixir":
+                    playerInfo.setElixirCapacity(playerInfo.getElixirCapacity() + capacity);
+            }
+        } else if (BuildingFactory.isTownHallBuilding(building.getType())) {
+            TownHallConfig townHall = (TownHallConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel() - 1);
+            TownHallConfig townHallNextLv = (TownHallConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
+
+            playerInfo.setGoldCapacity(playerInfo.getGoldCapacity() + townHallNextLv.capacityGold - townHall.capacityGold);
+            playerInfo.setElixirCapacity(playerInfo.getElixirCapacity() + townHallNextLv.capacityElixir - townHall.capacityElixir);
         }
     }
 
@@ -780,13 +792,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
                     return;
                 }
 
-                //success
-                ObstacleConfig buildingDetail = (ObstacleConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
-
-                building.buildSuccess();
-                playerInfo.freeBuilder(1);
-                playerInfo.addResources(0, buildingDetail.rewardElixir, 0);
-                removeBuilding(playerInfo, building, buildingDetail);
+                onRemoveObstacleSuccess(playerInfo, building);
             }
             playerInfo.saveModel(user.getId());
             send(new ResponseRemoveObstacleSuccess(ErrorConst.SUCCESS, building.getId()), user);
@@ -794,6 +800,15 @@ public class BuildingHandler extends BaseClientRequestHandler {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseRemoveObstacleSuccess(ErrorConst.UNKNOWN), user);
         }
+    }
+
+    private void onRemoveObstacleSuccess(PlayerInfo playerInfo, Building building){
+        ObstacleConfig buildingDetail = (ObstacleConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
+
+        building.buildSuccess();
+        playerInfo.freeBuilder(1);
+        playerInfo.addResources(0, buildingDetail.rewardElixir, 0);
+        removeBuilding(playerInfo, building, buildingDetail);
     }
 
     private void upgradeListWall(User user, RequestUpgradeListWall reqData) {
@@ -955,7 +970,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
                         for (int y = 0; y < buildingDetail.height; y++) {
                             int tempPosX = (int) (newPos.getX() + x);
                             int tempPosY = (int) (newPos.getY() + y);
-                            if (tempPosX >= GameConfig.MAP_WIDTH || tempPosY >= GameConfig.MAP_HEIGHT || tempMap[tempPosY][tempPosX] > 0){
+                            if (tempPosX >= GameConfig.MAP_WIDTH || tempPosY >= GameConfig.MAP_HEIGHT || tempMap[tempPosY][tempPosX] > 0) {
                                 send(new ResponseMoveListWall(ErrorConst.BUILDING_CANT_BE_MOVED), user);
                                 return;
                             }
@@ -975,6 +990,64 @@ public class BuildingHandler extends BaseClientRequestHandler {
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseMoveListWall(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void finishWorkByGem(User user, RequestFinishWorkByGem reqData) {
+        try {
+            if (!reqData.isValid()) {
+                send(new ResponseFinishWorkByGem(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            //get user from cache
+            PlayerInfo playerInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (playerInfo == null) {
+                send(new ResponseFinishWorkByGem(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            Building building;
+            synchronized (playerInfo) {
+                //get building by id
+                int buildingId = reqData.getBuildingId();
+                building = getBuildingInListById(playerInfo.getListBuildings(), buildingId);
+
+                if (building == null) {
+                    send(new ResponseFinishWorkByGem(ErrorConst.BUILDING_NOT_EXIST), user);
+                    return;
+                }
+
+                if (building.getStatus() == Building.Status.DONE) {
+                    send(new ResponseFinishWorkByGem(ErrorConst.BUILD_DONE), user);
+                    return;
+                }
+
+                int currentTime = Common.currentTimeInSecond();
+                int gemCost = building.getEndTime() > currentTime ? getGemByTimeInSecond(building.getEndTime() - currentTime) : 0;
+
+                if (playerInfo.getGem() < gemCost) {
+                    send(new ResponseFinishWorkByGem(ErrorConst.NOT_ENOUGH_RESOURCES), user);
+                    return;
+                }
+
+                //success
+                playerInfo.useResources(0, 0, gemCost);
+                if (building.getStatus() == Building.Status.ON_BUILD){
+                    if (BuildingFactory.isObstacle(building.getType()))
+                        onRemoveObstacleSuccess(playerInfo, building);
+                    else onBuildSucess(playerInfo, building);
+                }
+                else if (building.getStatus() == Building.Status.ON_UPGRADE){
+                    onUpgradeSuccess(playerInfo, building);
+                }
+            }
+            playerInfo.saveModel(user.getId());
+            send(new ResponseFinishWorkByGem(ErrorConst.SUCCESS, playerInfo.getGem()), user);
+        } catch (Exception e) {
+            logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
+            send(new ResponseFinishWorkByGem(ErrorConst.UNKNOWN), user);
         }
     }
 
@@ -1022,6 +1095,12 @@ public class BuildingHandler extends BaseClientRequestHandler {
             }
         }
         return null;
+    }
+
+    public int getGemByTimeInSecond(int time) {
+        int secondPerHour = 3600;
+        int gemPerHour = 15;
+        return (int) Math.ceil((double) (gemPerHour * time) / secondPerHour);
     }
 
 }
