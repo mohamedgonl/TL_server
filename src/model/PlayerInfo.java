@@ -1,6 +1,7 @@
 package model;
 
 import util.GameConfig;
+import util.config.ArmyCampConfig;
 import util.database.DataModel;
 
 import java.util.ArrayList;
@@ -257,7 +258,7 @@ public class PlayerInfo extends DataModel {
         for (int i = 0; i < this.listBuildings.size(); i++) {
             if(this.listBuildings.get(i).getType().startsWith("AMC")) {
                 int level = this.listBuildings.get(i).getLevel();
-                max += GameConfig.getInstance().armyCampConfig.get("AMC_1").get(level).capacity;
+                max += ((ArmyCampConfig)GameConfig.getInstance().getBuildingConfig("AMC_1", level)).capacity;
             }
         }
         return max;
