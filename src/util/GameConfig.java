@@ -38,77 +38,77 @@ public class GameConfig {
     public void init() {
         Gson gson = new Gson();
         try {
-            FileReader reader = new FileReader("./gameConfig/InitGame.json");
+            FileReader reader = new FileReader("./conf/InitGame.json");
             initGameConfig = gson.fromJson(reader, InitGameConfig.class);
 
             //building config
             buildingConfig = new HashMap<>();
 
-            reader = new FileReader("./gameConfig/ArmyCamp.json");
+            reader = new FileReader("./conf/ArmyCamp.json");
             Map<String, Map<Integer, BaseBuildingConfig>> armyCampConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, ArmyCampConfig>>>() {
             }.getType());
             buildingConfig.putAll(armyCampConfig);
 
-            reader = new FileReader("./gameConfig/TownHall.json");
+            reader = new FileReader("./conf/TownHall.json");
             Map<String, Map<Integer, BaseBuildingConfig>> townHallConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, TownHallConfig>>>() {
             }.getType());
             buildingConfig.putAll(townHallConfig);
 
-            reader = new FileReader("./gameConfig/BuilderHut.json");
+            reader = new FileReader("./conf/BuilderHut.json");
             Map<String, Map<Integer, BaseBuildingConfig>> builderHutConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, BuilderHutConfig>>>() {
             }.getType());
             buildingConfig.putAll(builderHutConfig);
 
-            reader = new FileReader("./gameConfig/ClanCastle.json");
+            reader = new FileReader("./conf/ClanCastle.json");
             Map<String, Map<Integer, BaseBuildingConfig>> clanCastleConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, ClanCastleConfig>>>() {
             }.getType());
             buildingConfig.putAll(clanCastleConfig);
 
-            reader = new FileReader("./gameConfig/Obstacle.json");
+            reader = new FileReader("./conf/Obstacle.json");
             Map<String, Map<Integer, BaseBuildingConfig>> obstacleConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, ObstacleConfig>>>() {
             }.getType());
             buildingConfig.putAll(obstacleConfig);
 
-            reader = new FileReader("./gameConfig/Resource.json");
+            reader = new FileReader("./conf/Resource.json");
             Map<String, Map<Integer, BaseBuildingConfig>> resourceConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, ResourceConfig>>>() {
             }.getType());
             buildingConfig.putAll(resourceConfig);
 
-            reader = new FileReader("./gameConfig/Storage.json");
+            reader = new FileReader("./conf/Storage.json");
             Map<String, Map<Integer, BaseBuildingConfig>> storageConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, StorageConfig>>>() {
             }.getType());
             buildingConfig.putAll(storageConfig);
 
-            reader = new FileReader("./gameConfig/Barrack.json");
+            reader = new FileReader("./conf/Barrack.json");
             Map<String, Map<Integer, BaseBuildingConfig>> barrackConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, BarrackConfig>>>() {
             }.getType());
             buildingConfig.putAll(barrackConfig);
 
-            reader = new FileReader("./gameConfig/Defence.json");
+            reader = new FileReader("./conf/Defence.json");
             Map<String, Map<Integer, BaseBuildingConfig>> defenceConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, DefenceConfig>>>() {
             }.getType());
             buildingConfig.putAll(defenceConfig);
 
-            reader = new FileReader("./gameConfig/Laboratory.json");
+            reader = new FileReader("./conf/Laboratory.json");
             Map<String, Map<Integer, BaseBuildingConfig>> laboratoryConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, LaboratoryConfig>>>() {
             }.getType());
             buildingConfig.putAll(laboratoryConfig);
 
-            reader = new FileReader("./gameConfig/Wall.json");
+            reader = new FileReader("./conf/Wall.json");
             Map<String, Map<Integer, BaseBuildingConfig>> wallConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, WallConfig>>>() {
             }.getType());
             buildingConfig.putAll(wallConfig);
 
             //
-            reader = new FileReader("./gameConfig/ShopResItem.json");
+            reader = new FileReader("./conf/ShopResItem.json");
             shopResItemConfig = gson.fromJson(reader, new TypeToken<Map<String, List<ShopResourceItemConfig>>>() {
             }.getType());
 
-            reader = new FileReader("./gameConfig/Troop.json");
+            reader = new FileReader("./conf/Troop.json");
             troopConfig = gson.fromJson(reader, new TypeToken<Map<String, Map<Integer, TroopConfig>>>() {
             }.getType());
 
-            reader = new FileReader("./gameConfig/TroopBase.json");
+            reader = new FileReader("./conf/TroopBase.json");
             troopBaseConfig = gson.fromJson(reader, new TypeToken<Map<String, TroopBaseConfig>>() {
             }.getType());
 
