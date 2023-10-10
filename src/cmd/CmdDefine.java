@@ -7,6 +7,8 @@ public class CmdDefine {
     public static final short GET_MAP_INFO = 1002;
     public static final short GET_TIME_SERVER = 1003;
 
+    public static final short CHEAT_RESOURCE = 1900;
+
     //building
     public static final short BUY_BUILDING = 2001;
     public static final short CANCEL_BUILD = 2002;
@@ -39,6 +41,5 @@ public class CmdDefine {
     public static final short GET_TRAINING_LIST = 5003;
 
     public static final short CANCLE_TRAIN_TROOP = 5004;
-
 
 }

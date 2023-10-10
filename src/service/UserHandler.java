@@ -7,25 +7,18 @@ import bitzero.server.core.IBZEvent;
 import bitzero.server.entities.User;
 import bitzero.server.extensions.BaseClientRequestHandler;
 import bitzero.server.extensions.data.DataCmd;
-
 import cmd.CmdDefine;
-
 import cmd.ErrorConst;
-import cmd.receive.user.RequestUserInfo;
-
+import cmd.receive.user.RequestCheatResource;
+import cmd.send.user.ResponseCheatResource;
 import cmd.send.user.ResponseGetMapInfo;
 import cmd.send.user.ResponseGetTimeServer;
 import cmd.send.user.ResponseGetUserInfo;
-
 import event.eventType.DemoEventParam;
 import event.eventType.DemoEventType;
 import extension.FresherExtension;
-
 import model.PlayerInfo;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.Common;
@@ -68,7 +61,6 @@ public class UserHandler extends BaseClientRequestHandler {
         try {
             switch (dataCmd.getId()) {
                 case CmdDefine.GET_USER_INFO:
-                    RequestUserInfo reqInfo = new RequestUserInfo(dataCmd);
                     getUserInfo(user);
                     break;
                 case CmdDefine.GET_MAP_INFO:
@@ -76,6 +68,10 @@ public class UserHandler extends BaseClientRequestHandler {
                     break;
                 case CmdDefine.GET_TIME_SERVER:
                     getTimeServer(user);
+                    break;
+                case CmdDefine.CHEAT_RESOURCE:
+                    RequestCheatResource reqCheatResource = new RequestCheatResource(dataCmd);
+                    cheatResource(user, reqCheatResource);
                     break;
             }
         } catch (Exception e) {
@@ -123,6 +119,32 @@ public class UserHandler extends BaseClientRequestHandler {
             send(new ResponseGetTimeServer(ErrorConst.SUCCESS, Common.currentTimeInSecond()), user);
         } catch (Exception e) {
             send(new ResponseGetTimeServer(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void cheatResource(User user, RequestCheatResource reqData) {
+        try {
+            if (!reqData.isValid()) {
+                send(new ResponseCheatResource(ErrorConst.PARAM_INVALID), user);
+                return;
+            }
+
+            //get user from cache
+            PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (userInfo == null) {
+                send(new ResponseCheatResource(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            userInfo.setGold(userInfo.getGold() + reqData.getGold());
+            userInfo.setElixir(userInfo.getElixir() + reqData.getElixir());
+            userInfo.setGem(userInfo.getGem() + reqData.getGem());
+
+            userInfo.saveModel(user.getId());
+            send(new ResponseCheatResource(ErrorConst.SUCCESS, userInfo.getGold(), userInfo.getElixir(), userInfo.getGem()), user);
+        } catch (Exception e) {
+            send(new ResponseCheatResource(ErrorConst.UNKNOWN), user);
         }
     }
 
