@@ -103,7 +103,8 @@ public class ShopHandler extends BaseClientRequestHandler {
                         float percent = resItem.nganhko_percent;
 
                         userInfo.addResources(resItem.value_type.equals("RESOURCE_TYPE.GOLD") ?  (int) (userInfo.getGoldCapacity()*percent) : 0,
-                                resItem.value_type.equals("RESOURCE_TYPE.ELIXIR") ?  (int) (userInfo.getElixirCapacity()*percent) : 0,userInfo.getGem() - resItem.price);
+                                resItem.value_type.equals("RESOURCE_TYPE.ELIXIR") ?  (int) (userInfo.getElixirCapacity()*percent) : 0,0);
+                        userInfo.setGem(userInfo.getGem() - resItem.price);
 
                         userInfo.saveModel(userInfo.getId());
 
