@@ -306,8 +306,9 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 }
 
                 //check if build not done
-                if (building.getEndTime() > Common.currentTimeInSecond()) {
-                    send(new ResponseBuildSuccess(ErrorConst.BUILD_NOT_DONE), user);
+                int timeLeft = building.getEndTime() - Common.currentTimeInSecond();
+                if (timeLeft > 0) {
+                    send(new ResponseBuildSuccess(ErrorConst.BUILD_NOT_DONE, buildingId, timeLeft), user);
                     return;
                 }
 
