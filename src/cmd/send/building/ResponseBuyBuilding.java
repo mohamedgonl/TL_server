@@ -24,8 +24,8 @@ public class ResponseBuyBuilding extends BaseMsg {
         if (building != null) {
             bf.putInt(building.getId());
             putStr(bf, building.getType());
-            bf.putInt(building.getPosition().x);
-            bf.putInt(building.getPosition().y);
+            bf.putShort((short) building.getPosition().x);
+            bf.putShort((short) building.getPosition().y);
             bf.putShort(building.getStatus().getValue());
             bf.putInt(building.getStartTime());
             bf.putInt(building.getEndTime());

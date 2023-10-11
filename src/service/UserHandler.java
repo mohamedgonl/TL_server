@@ -137,9 +137,12 @@ public class UserHandler extends BaseClientRequestHandler {
                 return;
             }
 
-            userInfo.setGold(userInfo.getGold() + reqData.getGold());
-            userInfo.setElixir(userInfo.getElixir() + reqData.getElixir());
-            userInfo.setGem(userInfo.getGem() + reqData.getGem());
+            if (reqData.getGold() >= 0)
+                userInfo.setGold(reqData.getGold());
+            if (reqData.getElixir() >= 0)
+                userInfo.setElixir(reqData.getElixir());
+            if (reqData.getGem() >= 0)
+                userInfo.setGem(reqData.getGem());
 
             userInfo.saveModel(user.getId());
             send(new ResponseCheatResource(ErrorConst.SUCCESS, userInfo.getGold(), userInfo.getElixir(), userInfo.getGem()), user);
