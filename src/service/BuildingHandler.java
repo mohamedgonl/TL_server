@@ -323,7 +323,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
         }
     }
 
-    private void onBuildSucess(PlayerInfo playerInfo, Building building){
+    private void onBuildSucess(PlayerInfo playerInfo, Building building) {
         building.buildSuccess();
         playerInfo.freeBuilder(1);
 
@@ -510,8 +510,9 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 }
 
                 //check if upgrade not done
-                if (building.getEndTime() > Common.currentTimeInSecond()) {
-                    send(new ResponseUpgradeSuccess(ErrorConst.BUILD_NOT_DONE), user);
+                int timeLeft = building.getEndTime() - Common.currentTimeInSecond();
+                if (timeLeft > 0) {
+                    send(new ResponseUpgradeSuccess(ErrorConst.BUILD_NOT_DONE, buildingId, timeLeft), user);
                     return;
                 }
 
@@ -526,7 +527,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
         }
     }
 
-    private void onUpgradeSuccess(PlayerInfo playerInfo, Building building){
+    private void onUpgradeSuccess(PlayerInfo playerInfo, Building building) {
         //success
         building.upgradeSuccess();
         playerInfo.freeBuilder(1);
@@ -803,7 +804,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
         }
     }
 
-    private void onRemoveObstacleSuccess(PlayerInfo playerInfo, Building building){
+    private void onRemoveObstacleSuccess(PlayerInfo playerInfo, Building building) {
         ObstacleConfig buildingDetail = (ObstacleConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel());
 
         building.buildSuccess();
@@ -1035,12 +1036,11 @@ public class BuildingHandler extends BaseClientRequestHandler {
 
                 //success
                 playerInfo.useResources(0, 0, gemCost);
-                if (building.getStatus() == Building.Status.ON_BUILD){
+                if (building.getStatus() == Building.Status.ON_BUILD) {
                     if (BuildingFactory.isObstacle(building.getType()))
                         onRemoveObstacleSuccess(playerInfo, building);
                     else onBuildSucess(playerInfo, building);
-                }
-                else if (building.getStatus() == Building.Status.ON_UPGRADE){
+                } else if (building.getStatus() == Building.Status.ON_UPGRADE) {
                     onUpgradeSuccess(playerInfo, building);
                 }
             }
