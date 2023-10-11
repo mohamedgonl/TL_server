@@ -120,11 +120,22 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 return;
             }
 
-            //get building detail
-            BaseBuildingConfig building = GameConfig.getInstance().getBuildingConfig(type, 1);
-
             Building newBuilding;
             synchronized (playerInfo) {
+                //get building detail
+                BaseBuildingConfig building;
+                boolean isBuilderHut = BuildingFactory.isBuilderHutBuilding(type);
+                if (isBuilderHut) {
+                    int totalBDH = playerInfo.getBuildingAmount().getOrDefault(type, 0);
+                    building = GameConfig.getInstance().getBuildingConfig(type, totalBDH + 1);
+                    if (building == null) {
+                        send(new ResponseBuyBuilding(ErrorConst.UNEXPECTED_BUILDING), user);
+                        return;
+                    }
+                } else {
+                    building = GameConfig.getInstance().getBuildingConfig(type, 1);
+                }
+
                 //check resources
                 if (playerInfo.getGold() < building.gold || playerInfo.getElixir() < building.elixir || playerInfo.getGem() < building.coin) {
                     send(new ResponseBuyBuilding(ErrorConst.NOT_ENOUGH_RESOURCES), user);
@@ -145,14 +156,16 @@ public class BuildingHandler extends BaseClientRequestHandler {
 
                 //check amount building
                 TownHallConfig townHall = (TownHallConfig) GameConfig.getInstance().getBuildingConfig(playerInfo.getTownHallType(), playerInfo.getTownHallLv());
-
-                Field buildingTypeField = townHall.getClass().getField(type);
-                buildingTypeField.setAccessible(true);
-
-                int maximumAmount = (int) buildingTypeField.get(townHall);
-                if (playerInfo.getBuildingAmount().getOrDefault(type, 0) >= maximumAmount) {
-                    send(new ResponseBuyBuilding(ErrorConst.TOWNHALL_LEVEL_TOO_LOW), user);
-                    return;
+                try {
+                    Field buildingTypeField = townHall.getClass().getField(type);
+                    buildingTypeField.setAccessible(true);
+                    int maximumAmount = (int) buildingTypeField.get(townHall);
+                    if (playerInfo.getBuildingAmount().getOrDefault(type, 0) >= maximumAmount) {
+                        send(new ResponseBuyBuilding(ErrorConst.TOWNHALL_LEVEL_TOO_LOW), user);
+                        return;
+                    }
+                } catch (NoSuchFieldException fieldException) {
+                    //no limit
                 }
 
                 //check position
