@@ -15,6 +15,13 @@ public class ResponseTrainingCreate extends BaseMsg {
 
     public ResponseTrainingCreate(short error) {
         super(CmdDefine.TRAIN_TROOP_CREATE, error);
+        this.trainingItem = new TrainingItem("",1);
+    }
+
+    public ResponseTrainingCreate(short error, int barrackId) {
+        super(CmdDefine.TRAIN_TROOP_CREATE, error);
+        this.barrackId = barrackId;
+        this.trainingItem = new TrainingItem("",1);
     }
 
     public ResponseTrainingCreate(short error, TrainingItem trainingItem, int barrackId, int lastTrainingTime) {
@@ -28,7 +35,9 @@ public class ResponseTrainingCreate extends BaseMsg {
     public byte[] createData() {
         ByteBuffer bf = makeBuffer();
         bf.putInt(this.barrackId);
-        putStr(bf, this.trainingItem.cfgId);
+        if(this.trainingItem.cfgId != null){
+            putStr(bf, this.trainingItem.cfgId);
+        }
         bf.putInt(this.trainingItem.count);
         bf.putInt(this.lastTrainingTime);
         return packBuffer(bf);

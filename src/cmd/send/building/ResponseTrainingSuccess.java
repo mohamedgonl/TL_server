@@ -15,8 +15,10 @@ public class ResponseTrainingSuccess extends BaseMsg {
 
     private int gem;
 
-    public ResponseTrainingSuccess(short error) {
+    public ResponseTrainingSuccess(short error, int barrackId) {
         super(CmdDefine.TRAIN_TROOP_SUCCESS, error);
+        this.cfgId = "";
+        this.barrackId = barrackId;
     }
 
     public ResponseTrainingSuccess(short error, int barrackId, int isDoneNow, String cfgId, int lastTrainingTime, int gem) {
