@@ -36,6 +36,8 @@ public class CmdDefine {
     public static final short SET_NAME = 3003;
 
     public static final short BUY_RESOURCE = 4001;
+    public static final short BUY_RESOURCE_BY_GEM = 4002;
+
     public static final short TRAIN_TROOP_CREATE = 5001;
     public static final short TRAIN_TROOP_SUCCESS = 5002;
 
