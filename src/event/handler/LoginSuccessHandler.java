@@ -104,13 +104,21 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
             id++;
         }
 
-        for (Map.Entry<Integer, InitGameConfig.ObsElement> entry : initGameConfig.obs.entrySet()) {
-            InitGameConfig.ObsElement data = entry.getValue();
+//        for (Map.Entry<Integer, InitGameConfig.ObsElement> entry : initGameConfig.obs.entrySet()) {
+//            InitGameConfig.ObsElement data = entry.getValue();
+//
+//            Building building = BuildingFactory.getBuilding(id, data.type, 1, new Point(data.posX - 1, data.posY - 1));
+//            buildings.add(building);
+//            id++;
+//        }
 
-            Building building = BuildingFactory.getBuilding(id, data.type, 1, new Point(data.posX - 1, data.posY - 1));
-            buildings.add(building);
-            id++;
-        }
+        Building building = BuildingFactory.getBuilding(id++, "BAR_1", 1, new Point(3, 3));
+        Building building2 = null;
+        buildings.add(building);
+        Building building3 = BuildingFactory.getBuilding(id++, "BAR_1", 1, new Point(17, 3));
+        buildings.add(building3);
+        building2 = BuildingFactory.getBuilding(id++, "AMC_1", 1, new Point(9, 10));
+        buildings.add(building2);
 
         playerInfo.setListBuildings((ArrayList<Building>) buildings);
     }
@@ -186,6 +194,8 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         for (Building building : listBuildingToRemove){
             playerInfo.getListBuildings().remove(building);
         }
+
+
         playerInfo.setMap(map);
         playerInfo.setBuildingAmount(buildingAmount);
         playerInfo.setAvaiableBuilders(availableBuilders);

@@ -13,6 +13,8 @@ public class ResponseTrainingCreate extends BaseMsg {
     private TrainingItem trainingItem;
     private int barrackId;
 
+    private int newElixirResource;
+
     public ResponseTrainingCreate(short error) {
         super(CmdDefine.TRAIN_TROOP_CREATE, error);
         this.trainingItem = new TrainingItem("",1);
@@ -24,11 +26,12 @@ public class ResponseTrainingCreate extends BaseMsg {
         this.trainingItem = new TrainingItem("",1);
     }
 
-    public ResponseTrainingCreate(short error, TrainingItem trainingItem, int barrackId, int lastTrainingTime) {
+    public ResponseTrainingCreate(short error, TrainingItem trainingItem, int barrackId, int lastTrainingTime, int newElixirResource) {
         super(CmdDefine.TRAIN_TROOP_CREATE, error);
         this.trainingItem = trainingItem;
         this.barrackId = barrackId;
         this.lastTrainingTime = lastTrainingTime;
+        this.newElixirResource = newElixirResource;
     }
 
     @Override
@@ -40,6 +43,7 @@ public class ResponseTrainingCreate extends BaseMsg {
         }
         bf.putInt(this.trainingItem.count);
         bf.putInt(this.lastTrainingTime);
+        bf.putInt(this.newElixirResource);
         return packBuffer(bf);
     }
 }
