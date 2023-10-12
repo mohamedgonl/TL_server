@@ -562,6 +562,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
 
             playerInfo.setGoldCapacity(playerInfo.getGoldCapacity() + townHallNextLv.capacityGold - townHall.capacityGold);
             playerInfo.setElixirCapacity(playerInfo.getElixirCapacity() + townHallNextLv.capacityElixir - townHall.capacityElixir);
+            playerInfo.setTownHallLv(building.getLevel());
         }
     }
 
