@@ -197,6 +197,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
         } else if (newBuilding.getStatus() == Building.Status.DONE) {
             if (BuildingFactory.isBuilderHutBuilding(newBuilding.getType())) {
                 playerInfo.setTotalBuilders(playerInfo.getTotalBuilders() + 1);
+                playerInfo.setAvaiableBuilders(playerInfo.getAvaiableBuilders() + 1);
             }
         }
 
