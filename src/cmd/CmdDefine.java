@@ -6,6 +6,7 @@ public class CmdDefine {
     public static final short GET_USER_INFO = 1001;
     public static final short GET_MAP_INFO = 1002;
     public static final short GET_TIME_SERVER = 1003;
+    public static final short GET_ARMY_INFO = 1004;
 
     public static final short CHEAT_RESOURCE = 1900;
 

@@ -10,10 +10,7 @@ import bitzero.server.extensions.data.DataCmd;
 import cmd.CmdDefine;
 import cmd.ErrorConst;
 import cmd.receive.user.RequestCheatResource;
-import cmd.send.user.ResponseCheatResource;
-import cmd.send.user.ResponseGetMapInfo;
-import cmd.send.user.ResponseGetTimeServer;
-import cmd.send.user.ResponseGetUserInfo;
+import cmd.send.user.*;
 import event.eventType.DemoEventParam;
 import event.eventType.DemoEventType;
 import extension.FresherExtension;
@@ -66,6 +63,9 @@ public class UserHandler extends BaseClientRequestHandler {
                 case CmdDefine.GET_MAP_INFO:
                     getMapInfo(user);
                     break;
+                case CmdDefine.GET_ARMY_INFO:
+                    getArmyInfo(user);
+                    break;
                 case CmdDefine.GET_TIME_SERVER:
                     getTimeServer(user);
                     break;
@@ -111,6 +111,22 @@ public class UserHandler extends BaseClientRequestHandler {
             send(new ResponseGetMapInfo(ErrorConst.SUCCESS, userInfo), user);
         } catch (Exception e) {
             send(new ResponseGetMapInfo(ErrorConst.UNKNOWN), user);
+        }
+    }
+
+    private void getArmyInfo(User user) {
+        try {
+            //get user from cache
+            PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            if (userInfo == null) {
+                send(new ResponseGetArmyInfo(ErrorConst.PLAYER_INFO_NULL), user);
+                return;
+            }
+
+            send(new ResponseGetArmyInfo(ErrorConst.SUCCESS, userInfo.getListTroops()), user);
+        } catch (Exception e) {
+            send(new ResponseGetArmyInfo(ErrorConst.UNKNOWN), user);
         }
     }
 

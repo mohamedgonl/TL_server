@@ -200,6 +200,10 @@ public class PlayerInfo extends DataModel {
         this.map = map;
     }
 
+    public Map<String, Integer> getListTroops() {
+        return listTroops;
+    }
+
     public void useResources(int gold, int elixir, int gem) {
         if (gold < 0 || elixir < 0 || gem < 0)
             return;
