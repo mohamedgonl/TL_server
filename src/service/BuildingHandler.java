@@ -1059,7 +1059,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 }
             }
             playerInfo.saveModel(user.getId());
-            send(new ResponseFinishWorkByGem(ErrorConst.SUCCESS, playerInfo.getGem()), user);
+            send(new ResponseFinishWorkByGem(ErrorConst.SUCCESS, building.getId(), playerInfo.getGem()), user);
         } catch (Exception e) {
             logger.warn("BUILDING HANDLER EXCEPTION " + e.getMessage());
             send(new ResponseFinishWorkByGem(ErrorConst.UNKNOWN), user);
