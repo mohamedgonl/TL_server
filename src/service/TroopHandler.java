@@ -100,10 +100,10 @@ public class TroopHandler extends BaseClientRequestHandler {
             }
 
             // check xem nhà lính có đủ cấp để luyện không
-            if(troopBaseConfig.barracksLevelRequired > currentBarrack.getLevel()) {
-                send(new ResponseTrainingCreate(ErrorConst.TROOP_NOT_UNLOCKED, currentBarrack.getId()), user);
-                return;
-            }
+//            if(troopBaseConfig.barracksLevelRequired > currentBarrack.getLevel()) {
+//                send(new ResponseTrainingCreate(ErrorConst.TROOP_NOT_UNLOCKED, currentBarrack.getId()), user);
+//                return;
+//            }
             // check slot còn trong nhà lính
             if(currentBarrack.getCurrentSpace() + troopBaseConfig.housingSpace > currentBarrack.getMaxSpace()) {
                 send(new ResponseTrainingCreate(ErrorConst.BARRACK_FULL, currentBarrack.getId()), user);
@@ -122,7 +122,7 @@ public class TroopHandler extends BaseClientRequestHandler {
             currentBarrack.pushNewTrainingItem(trainingItem);
             userInfo.saveModel(user.getId());
 
-            send(new ResponseTrainingCreate(ErrorConst.SUCCESS, trainingItem, reqInfo.getBarrackIdId(), currentBarrack.getLastTrainingTime()), user);
+            send(new ResponseTrainingCreate(ErrorConst.SUCCESS, trainingItem, reqInfo.getBarrackIdId(), currentBarrack.getLastTrainingTime(), userInfo.getElixir()), user);
         } catch (Exception e) {
             System.out.println("HANDLE TRAIN TROOP CREATE ERROR" + e);
             send(new ResponseGetUserInfo(ErrorConst.UNKNOWN), user);
@@ -249,6 +249,8 @@ public class TroopHandler extends BaseClientRequestHandler {
             }
 
             userInfo.addResources(0,troopConfig.trainingElixir/2,0);
+
+            userInfo.saveModel(user.getId());
 
             send(new ResponseCancleTrain(ErrorConst.SUCCESS, currentBarrack.getId(), reqInfo.getTroopCfgId(),
                     currentBarrack.getLastTrainingTime(), troopConfig.trainingElixir/2), user);
