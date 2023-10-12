@@ -143,7 +143,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 }
 
                 //check builder
-                if (building.buildTime > 0 && playerInfo.getAvaiableBuilders() == 0) {
+                if (playerInfo.getAvaiableBuilders() == 0) {
                     send(new ResponseBuyBuilding(ErrorConst.NOT_ENOUGH_BUILDER), user);
                     return;
                 }
@@ -403,7 +403,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 }
 
                 //check builder
-                if (buildingDetail.buildTime > 0 && playerInfo.getAvaiableBuilders() == 0) {
+                if (playerInfo.getAvaiableBuilders() == 0) {
                     send(new ResponseUpgradeBuilding(ErrorConst.NOT_ENOUGH_BUILDER), user);
                     return;
                 }
@@ -739,21 +739,20 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 }
 
                 //check builder
-                if (buildingDetail.buildTime > 0 && playerInfo.getAvaiableBuilders() == 0) {
+                if (playerInfo.getAvaiableBuilders() == 0) {
                     send(new ResponseRemoveObstacle(ErrorConst.NOT_ENOUGH_BUILDER), user);
                     return;
                 }
 
                 //success
                 playerInfo.useResources(buildingDetail.gold, buildingDetail.elixir, buildingDetail.coin);
+                obstacle.startBuilding(Common.currentTimeInSecond(), buildingDetail.buildTime);
 
-                if (buildingDetail.buildTime > 0) {
+                if (obstacle.getStatus() == Building.Status.ON_BUILD) {
                     playerInfo.useBuilder(1);
-                    obstacle.startBuilding(Common.currentTimeInSecond(), buildingDetail.buildTime);
                 } else {
                     //remove obstacle from map
                     removeBuilding(playerInfo, obstacle, buildingDetail);
-                    obstacle.buildSuccess();
                 }
             }
             playerInfo.saveModel(user.getId());
