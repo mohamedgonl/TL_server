@@ -143,7 +143,7 @@ public class ShopHandler extends BaseClientRequestHandler {
                 playerInfo.addResources(reqData.getGold(), reqData.getElixir(), 0);
             }
             playerInfo.saveModel(user.getId());
-            send(new ResponseBuyResourceByGem(ErrorConst.SUCCESS, playerInfo.getGem()), user);
+            send(new ResponseBuyResourceByGem(ErrorConst.SUCCESS, playerInfo.getGem(), playerInfo.getGold(), playerInfo.getElixir()), user);
         } catch (Exception e) {
             System.out.println("BUY ITEM ERROR " + e.getMessage());
             send(new ResponseBuyResourceByGem(ErrorConst.UNKNOWN), user);
