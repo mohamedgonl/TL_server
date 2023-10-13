@@ -130,6 +130,7 @@ public class TroopHandler extends BaseClientRequestHandler {
     }
 
     private void trainTroopSuccess(User user, RequestTrainingSuccess reqInfo) {
+        System.out.println("HANDLE TRAIN SUCCESS WITH BARRACK ID : " + reqInfo.getBarrackId());
         Barrack currentBarrack;
         PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
         ArrayList<Building> userBuilding = userInfo.getListBuildings();
@@ -148,7 +149,9 @@ public class TroopHandler extends BaseClientRequestHandler {
                     send(new ResponseTrainingSuccess(ErrorConst.NOT_ENOUGH_DONE_TRAIN_NOW_COST, currentBarrack.getId()), user);
                     return;
                 } else {
-                    userInfo.setGem(userInfo.getGem() - doneNowCost);
+                    System.out.println("ON  DONE NOW HANDLE");
+                    int newGem = Math.max(userInfo.getGem() - doneNowCost, 0);
+                    userInfo.setGem(newGem);
                     //get all troop in barrack and mark as done
                     ArrayList<TrainingItem> troopItems = currentBarrack.getTrainingItemList();
 
@@ -162,6 +165,8 @@ public class TroopHandler extends BaseClientRequestHandler {
                     int lastTrainTime = Common.currentTimeInSecond();
                     currentBarrack.setLastTrainingTime(lastTrainTime);
                     userInfo.saveModel(user.getId());
+
+                    this.printBarrackTroopList(currentBarrack);
                     send(new ResponseTrainingSuccess(ErrorConst.SUCCESS, currentBarrack.getId(), 1, "", lastTrainTime, userInfo.getGem()), user);
                     return;
                 }
@@ -184,12 +189,7 @@ public class TroopHandler extends BaseClientRequestHandler {
                     userInfo.pushToListTroop(doneList);
                     userInfo.saveModel(user.getId());
 
-                    // print list training
-                    System.out.println("LIST TRAINING CURRENT OF BARACK "+ currentBarrack.getId());
-                    for (int i = 0; i < currentBarrack.getTrainingItemList().size(); i++) {
-                        System.out.println("TROOP: " + currentBarrack.getTrainingItemList().get(i).cfgId + " COUNT: "+ currentBarrack.getTrainingItemList().get(i).count);
-                    }
-
+                    this.printBarrackTroopList(currentBarrack);
                     send(new ResponseTrainingSuccess(ErrorConst.SUCCESS, currentBarrack.getId(), 0, firstTroopCfgId, lastTrainingTime, userInfo.getGem()), user);
                     return;
                 } else {
@@ -289,6 +289,14 @@ public class TroopHandler extends BaseClientRequestHandler {
             }
         }
         return null;
+    }
+
+    private void  printBarrackTroopList (Barrack currentBarrack)  {
+        // print list training
+        System.out.println("LIST TRAINING CURRENT OF BARACK "+ currentBarrack.getId());
+        for (int i = 0; i < currentBarrack.getTrainingItemList().size(); i++) {
+            System.out.println("TROOP: " + currentBarrack.getTrainingItemList().get(i).cfgId + " COUNT: "+ currentBarrack.getTrainingItemList().get(i).count);
+        }
     }
 
 
