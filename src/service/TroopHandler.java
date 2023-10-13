@@ -84,7 +84,7 @@ public class TroopHandler extends BaseClientRequestHandler {
     }
 
     private void trainTroopCreate(User user, RequestTrainingCreate reqInfo) {
-        System.out.println("HANDLE CREATE TROOP");
+        System.out.println("HANDLE CREATE TROOP with type : " + reqInfo.getTroopCfgId());
         try {
             int troopLevel = 1; // sau đổi thành lấy từ building LAB
             //get user from cache
@@ -183,6 +183,13 @@ public class TroopHandler extends BaseClientRequestHandler {
                     doneList.add(new TrainingItem(cfgId, 1));
                     userInfo.pushToListTroop(doneList);
                     userInfo.saveModel(user.getId());
+
+                    // print list training
+                    System.out.println("LIST TRAINING CURRENT OF BARACK "+ currentBarrack.getId());
+                    for (int i = 0; i < currentBarrack.getTrainingItemList().size(); i++) {
+                        System.out.println("TROOP: " + currentBarrack.getTrainingItemList().get(i).cfgId + " COUNT: "+ currentBarrack.getTrainingItemList().get(i).count);
+                    }
+
                     send(new ResponseTrainingSuccess(ErrorConst.SUCCESS, currentBarrack.getId(), 0, firstTroopCfgId, lastTrainingTime, userInfo.getGem()), user);
                     return;
                 } else {
