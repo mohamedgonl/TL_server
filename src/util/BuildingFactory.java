@@ -31,7 +31,7 @@ public class BuildingFactory {
     }
 
     public static boolean isStorageBuilding(String type) {
-        return type.startsWith("BDH");
+        return type.startsWith("STO");
     }
 
     public static boolean isObstacle(String type) {
