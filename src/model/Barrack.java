@@ -83,10 +83,9 @@ public class Barrack extends Building{
         // update lasttime when train first troop
         if(this.trainingItemList.size() == 0) {
             int curent = Common.currentTimeInSecond();
-            System.out.println("RESET lasttime + " +curent);
             this.lastTrainingTime = curent;
-            this.trainingItemList.add(trainingItem);
         }
+        this.trainingItemList.add(trainingItem);
 
     }
 
