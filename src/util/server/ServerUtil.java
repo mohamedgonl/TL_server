@@ -29,6 +29,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class ServerUtil {
     public static String SQL_DATABASE = "Portal";
+    private static final String DATA_VERSION = "3";             // khi muon reset data thi tang version len 1
 
     public ServerUtil() {
         super();
@@ -55,6 +56,7 @@ public class ServerUtil {
 
     public static String getModelKeyName(String model, String key) {
         StringBuilder sb = new StringBuilder();
+        sb.append(DATA_VERSION);
         sb.append(ServerConstant.GAME_DATA_KEY_PREFIX);
         sb.append(ServerConstant.SEPERATOR);
         sb.append(key);
@@ -66,6 +68,7 @@ public class ServerUtil {
 
     public static String getModelKeyName(String model, int userId) {
         StringBuilder sb = new StringBuilder();
+        sb.append(DATA_VERSION);
         sb.append(ServerConstant.GAME_DATA_KEY_PREFIX);
         sb.append(ServerConstant.SEPERATOR);
         sb.append(userId);
@@ -77,6 +80,7 @@ public class ServerUtil {
 
     public static String getModelKeyName(String model, long userId) {
         StringBuilder sb = new StringBuilder();
+        sb.append(DATA_VERSION);
         sb.append(ServerConstant.GAME_DATA_KEY_PREFIX);
         sb.append(ServerConstant.SEPERATOR);
         sb.append(userId);
