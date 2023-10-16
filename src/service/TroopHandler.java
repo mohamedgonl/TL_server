@@ -100,10 +100,10 @@ public class TroopHandler extends BaseClientRequestHandler {
             }
 
             // check xem nhà lính có đủ cấp để luyện không
-//            if(troopBaseConfig.barracksLevelRequired > currentBarrack.getLevel()) {
-//                send(new ResponseTrainingCreate(ErrorConst.TROOP_NOT_UNLOCKED, currentBarrack.getId()), user);
-//                return;
-//            }
+            if(troopBaseConfig.barracksLevelRequired > currentBarrack.getLevel()) {
+                send(new ResponseTrainingCreate(ErrorConst.TROOP_NOT_UNLOCKED, currentBarrack.getId()), user);
+                return;
+            }
             // check slot còn trong nhà lính
             if(currentBarrack.getCurrentSpace() + troopBaseConfig.housingSpace > currentBarrack.getMaxSpace()) {
                 send(new ResponseTrainingCreate(ErrorConst.BARRACK_FULL, currentBarrack.getId()), user);
