@@ -154,9 +154,9 @@ public class UserHandler extends BaseClientRequestHandler {
             }
 
             if (reqData.getGold() >= 0)
-                userInfo.setGold(reqData.getGold());
+                userInfo.setGold(Math.min(reqData.getGold(), userInfo.getGoldCapacity()));
             if (reqData.getElixir() >= 0)
-                userInfo.setElixir(reqData.getElixir());
+                userInfo.setElixir(Math.min(reqData.getElixir(), userInfo.getElixirCapacity()));
             if (reqData.getGem() >= 0)
                 userInfo.setGem(reqData.getGem());
 
