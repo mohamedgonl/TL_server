@@ -143,7 +143,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 }
 
                 //check builder
-                if (playerInfo.getAvaiableBuilders() == 0) {
+                if (playerInfo.getAvaiableBuilders() == 0 && (building.coin == 0 || building.buildTime > 0)) {
                     send(new ResponseBuyBuilding(ErrorConst.NOT_ENOUGH_BUILDER), user);
                     return;
                 }
