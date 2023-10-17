@@ -1085,7 +1085,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
     }
 
     public boolean checkBuildingPosition(int[][] map, int posX, int posY, int width, int height) {
-        if (map.length == 0 || posY < 0 || posX < 0 || posY + width >= map.length || posX + height >= map[0].length)
+        if (map.length == 0 || posY < 0 || posX < 0 || posY + width - 1 >= map.length || posX + height - 1 >= map[0].length)
             return false;
         for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
@@ -1095,7 +1095,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
     }
 
     public boolean checkBuildingPosition(int[][] map, int posX, int posY, int width, int height, int buildingId) {
-        if (map.length == 0 || posY < 0 || posX < 0 || posY + width >= map.length || posX + height >= map[0].length)
+        if (map.length == 0 || posY < 0 || posX < 0 || posY + width - 1 >= map.length || posX + height - 1 >= map[0].length)
             return false;
         for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
