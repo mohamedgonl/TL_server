@@ -20,8 +20,8 @@ public class CollectorBuilding extends Building{
         this.lastCollectTime = lastCollectTime;
     }
 
-    public void collect() {
-        this.lastCollectTime = Common.currentTimeInSecond();
+    public void collect(int collectTime) {
+        this.lastCollectTime = collectTime;
     }
 
     @Override
