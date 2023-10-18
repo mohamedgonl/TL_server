@@ -347,7 +347,7 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 case "gold":
                     playerInfo.setGoldCapacity(playerInfo.getGoldCapacity() + storage.capacity);
                 case "elixir":
-                    playerInfo.setElixirCapacity(playerInfo.getElixir() + storage.capacity);
+                    playerInfo.setElixirCapacity(playerInfo.getElixirCapacity() + storage.capacity);
             }
         }
     }
