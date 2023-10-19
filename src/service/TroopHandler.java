@@ -181,6 +181,14 @@ public class TroopHandler extends BaseClientRequestHandler {
                 int trainingTime = (int) Math.ceil((double) GameConfig.getInstance().troopBaseConfig.get(firstTroopCfgId).trainingTime / 10);
                 if (Common.currentTimeInSecond() - currentBarrack.getLastTrainingTime() >= trainingTime) {
 
+                    // check nếu vượt quá tổng space
+                    TrainingItem firstTroop = currentBarrack.getFirstTrainingItem();
+                    TroopBaseConfig troopBaseConfig = GameConfig.getInstance().troopBaseConfig.get(firstTroop.cfgId);
+                    if(userInfo.getCurrentSpace() + troopBaseConfig.housingSpace > userInfo.getMaxArmySpace()) {
+                        send(new ResponseTrainingSuccess(ErrorConst.ARMY_MAX_SPACE, currentBarrack.getId()),user);
+                        return;
+                    }
+
                     String cfgId = currentBarrack.removeFirstTroop();
                     int lastTrainingTime = Common.currentTimeInSecond();
                     currentBarrack.setLastTrainingTime(lastTrainingTime);
@@ -217,10 +225,10 @@ public class TroopHandler extends BaseClientRequestHandler {
                 return;
             }
             // cập nhập lai danh sách luyện
-            ArrayList<TrainingItem> trainingList = currentBarrack.updateTrainingList();
-
+            ArrayList<TrainingItem> doneList = currentBarrack.updateTrainingList(userInfo);
+            ArrayList<TrainingItem>trainingList = currentBarrack.getTrainingItemList();
             // lính dc train lưu vào player info;
-            userInfo.pushToListTroop(trainingList);
+            userInfo.pushToListTroop(doneList);
 
             // lưu thông tin
             userInfo.saveModel(user.getId());
