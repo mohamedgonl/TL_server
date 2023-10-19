@@ -556,10 +556,8 @@ public class BuildingHandler extends BaseClientRequestHandler {
             switch (storage.type) {
                 case "gold":
                     playerInfo.setGoldCapacity(playerInfo.getGoldCapacity() + capacity);
-                    break;
                 case "elixir":
                     playerInfo.setElixirCapacity(playerInfo.getElixirCapacity() + capacity);
-                    break;
             }
         } else if (BuildingFactory.isTownHallBuilding(building.getType())) {
             TownHallConfig townHall = (TownHallConfig) GameConfig.getInstance().getBuildingConfig(building.getType(), building.getLevel() - 1);
