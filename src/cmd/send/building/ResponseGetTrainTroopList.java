@@ -12,17 +12,20 @@ public class ResponseGetTrainTroopList extends BaseMsg {
 
     private ArrayList<TrainingItem> trainingItems;
 
+    private ArrayList<TrainingItem> doneList;
+
     private int lastTrainingTime;
 
     public ResponseGetTrainTroopList(short error) {
         super(CmdDefine.GET_TRAINING_LIST, error);
     }
 
-    public ResponseGetTrainTroopList(short error, int barrackId, ArrayList<TrainingItem> trainingItems, int lastTrainingTime){
+    public ResponseGetTrainTroopList(short error, int barrackId, ArrayList<TrainingItem> trainingItems, ArrayList<TrainingItem> doneList, int lastTrainingTime) {
         super(CmdDefine.GET_TRAINING_LIST, error);
         this.barrackId = barrackId;
         this.trainingItems = trainingItems;
         this.lastTrainingTime = lastTrainingTime;
+        this.doneList = doneList;
     }
 
     @Override
@@ -32,9 +35,15 @@ public class ResponseGetTrainTroopList extends BaseMsg {
         bf.putInt(this.lastTrainingTime);
 
         bf.putInt(this.trainingItems.size());
-        for (int i = 0; i < this.trainingItems.size(); i++) {
-            putStr(bf, this.trainingItems.get(i).cfgId);
-            bf.putInt(this.trainingItems.get(i).count);
+        for (TrainingItem item : this.trainingItems) {
+            putStr(bf, item.cfgId);
+            bf.putInt(item.count);
+        }
+
+        bf.putInt(this.doneList.size());
+        for (TrainingItem trainingItem : this.doneList) {
+            putStr(bf, trainingItem.cfgId);
+            bf.putInt(trainingItem.count);
         }
         return packBuffer(bf);
     }
