@@ -29,7 +29,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class ServerUtil {
     public static String SQL_DATABASE = "Portal";
-    private static final String DATA_VERSION = "3";             // khi muon reset data thi tang version len 1
+    private static final String DATA_VERSION = "4";             // khi muon reset data thi tang version len 1
 
     public ServerUtil() {
         super();
