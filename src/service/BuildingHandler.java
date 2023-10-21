@@ -346,8 +346,10 @@ public class BuildingHandler extends BaseClientRequestHandler {
             switch (storage.type) {
                 case "gold":
                     playerInfo.setGoldCapacity(playerInfo.getGoldCapacity() + storage.capacity);
+                    break;
                 case "elixir":
                     playerInfo.setElixirCapacity(playerInfo.getElixirCapacity() + storage.capacity);
+                    break;
             }
         }
     }
@@ -610,18 +612,28 @@ public class BuildingHandler extends BaseClientRequestHandler {
                 //check resources
                 int currentTime = Common.currentTimeInSecond();
 
-                int quantity = collectorConfig.productivity * (currentTime - collector.getLastCollectTime()) / 3600;
-                if (quantity > collectorConfig.capacity)
-                    quantity = collectorConfig.capacity;
+                int maxQuantity = collectorConfig.productivity * (currentTime - collector.getLastCollectTime()) / 3600;
+                if (maxQuantity > collectorConfig.capacity)
+                    maxQuantity = collectorConfig.capacity;
 
                 //success
-                collector.collect();
+                int collectTime = currentTime;
+                int quantity = maxQuantity;
 
                 if (collectorConfig.type.equals("gold")) {
+                    quantity = Math.min(playerInfo.getGoldCapacity() - playerInfo.getGold(), maxQuantity);
                     playerInfo.addResources(quantity, 0, 0);
                 } else if (collectorConfig.type.equals("elixir")) {
+                    quantity = Math.min(playerInfo.getElixirCapacity() - playerInfo.getElixir(), maxQuantity);
                     playerInfo.addResources(0, quantity, 0);
                 }
+
+                if (quantity < maxQuantity) {
+                    collectTime = collector.getLastCollectTime() +
+                            (int) Math.ceil((double) quantity * (currentTime - collector.getLastCollectTime()) / maxQuantity);
+                }
+
+                collector.collect(collectTime);
             }
             playerInfo.saveModel(user.getId());
             send(new ResponseCollectResource(ErrorConst.SUCCESS, collector, playerInfo.getGold(), playerInfo.getElixir()), user);

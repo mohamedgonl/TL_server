@@ -1,11 +1,14 @@
 package model;
 
+import bitzero.util.socialcontroller.bean.UserInfo;
 import util.Common;
 import util.GameConfig;
 import util.config.BarrackConfig;
+import util.config.TroopBaseConfig;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Barrack extends Building{
@@ -29,6 +32,10 @@ public class Barrack extends Building{
 
     public void setTrainingItemList() {
 
+    }
+
+    public TrainingItem getFirstTrainingItem() {
+        return  this.trainingItemList.get(0);
     }
 
     public boolean removeTroop (String troopCfgId) {
@@ -114,16 +121,24 @@ public class Barrack extends Building{
         return cost;
     }
 
-    public ArrayList<TrainingItem> updateTrainingList(){
+    public ArrayList<TrainingItem> updateTrainingList(PlayerInfo userInfo){
+        ArrayList<TrainingItem> doneList = new ArrayList<>();
         if(!this.trainingItemList.isEmpty()){
             int timeLeft =  Common.currentTimeInSecond() - lastTrainingTime;
-            this.lastTrainingTime = Common.currentTimeInSecond();
-            while (timeLeft > 0) {
+            while (timeLeft > 0 && !this.trainingItemList.isEmpty()) {
+                TrainingItem firstTroop = this.getFirstTrainingItem();
+                TroopBaseConfig troopBaseConfig = GameConfig.getInstance().troopBaseConfig.get(firstTroop.cfgId);
+                // nếu con lính tiếp theo vượt max space
+                if(troopBaseConfig.housingSpace + userInfo.getCurrentSpace() > userInfo.getMaxArmySpace()) {
+                    break;
+                }
                 String troopCfgId = this.removeFirstTroop();
+                doneList.add(new TrainingItem(troopCfgId,1));
                 timeLeft -= (int) Math.ceil((double) GameConfig.getInstance().troopBaseConfig.get(troopCfgId).trainingTime / 10);
             }
+            this.lastTrainingTime = Common.currentTimeInSecond();
         }
-        return this.trainingItemList;
+        return doneList;
     }
 
 
