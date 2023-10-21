@@ -255,12 +255,12 @@ public class TroopHandler extends BaseClientRequestHandler {
                 send(new ResponseCancleTrain(ErrorConst.TROOP_NOT_FOUND),user);
             }
 
-            userInfo.addResources(0,troopConfig.trainingElixir/2,0);
+            userInfo.addResources(0,troopConfig.trainingElixir,0);
 
             userInfo.saveModel(user.getId());
 
             send(new ResponseCancleTrain(ErrorConst.SUCCESS, currentBarrack.getId(), reqInfo.getTroopCfgId(),
-                    currentBarrack.getLastTrainingTime(), troopConfig.trainingElixir/2), user);
+                    currentBarrack.getLastTrainingTime(), troopConfig.trainingElixir), user);
             return;
 
         }catch (Exception e){
