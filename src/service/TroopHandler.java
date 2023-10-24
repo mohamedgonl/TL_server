@@ -40,7 +40,7 @@ import java.util.List;
 
 public class TroopHandler extends BaseClientRequestHandler {
     public static short TROOP_MULTI_IDS = 5000;
-    private final Logger logger = LoggerFactory.getLogger("UserHandler");
+    private final Logger logger = LoggerFactory.getLogger("TroopHandler");
 
     public TroopHandler() {
         super();

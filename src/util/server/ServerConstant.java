@@ -4,6 +4,8 @@ import bitzero.server.config.ConfigHandle;
 
 public class ServerConstant {
     public static final String PLAYER_INFO = "player_info";
+
+    public static final String LIST_USER_DATA_ID = "LIST_USER_DATA";
     public static final String PLAYER_TRANSIENT = "player_transient";
     public static final String MACHINE_TRANSIENT = "machine_transient";
 

@@ -8,6 +8,7 @@ import bitzero.server.extensions.ExtensionLogLevel;
 import bitzero.util.ExtensionUtility;
 import event.eventType.DemoEventParam;
 import model.Building;
+import model.ListPlayerData;
 import model.Obstacle;
 import model.PlayerInfo;
 import util.BuildingFactory;
@@ -38,47 +39,60 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
      * @param user description: after login successful to server, core framework will dispatch this event
      */
     private void onLoginSuccess(User user) {
-        trace(ExtensionLogLevel.DEBUG, "On Login Success ", user.getName());
-        PlayerInfo pInfo = null;
         try {
-            //get from db
-            pInfo = (PlayerInfo) PlayerInfo.getModel(user.getId(), PlayerInfo.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        if (pInfo == null) {
-            pInfo = new PlayerInfo(user.getId(), "username_" + user.getId());
-            try {
+
+            trace(ExtensionLogLevel.DEBUG, "On Login Success ", user.getName());
+            PlayerInfo pInfo = null;
+
+            pInfo = (PlayerInfo) PlayerInfo.getModel(user.getId(), PlayerInfo.class);
+
+
+            ListPlayerData listUserData = null;
+
+            listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
+
+            if (listUserData == null) {
+                listUserData = new ListPlayerData();
+            }
+
+
+            if (pInfo == null) {
+                pInfo = new PlayerInfo(user.getId(), "username_" + user.getId());
+
                 initNewPlayerInfo(pInfo);
                 //save to db
                 pInfo.saveModel(user.getId());
-            } catch (Exception e) {
-                e.printStackTrace();
+                listUserData.addNewUserId(user.getId());
+
             }
-        }
+            listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
 
-        //init map & capacity from buildings
-        initPlayerData(pInfo);
+            //init map & capacity from buildings
+            initPlayerData(pInfo);
 
-        /**
-         * cache playerinfo in RAM
-         */
-        user.setProperty(ServerConstant.PLAYER_INFO, pInfo);
+            /**
+             * cache playerinfo in RAM
+             */
+            user.setProperty(ServerConstant.PLAYER_INFO, pInfo);
 
-        /**
-         * send login success to client
-         * after receive this message, client begin to send game logic packet to server
-         */
-        ExtensionUtility.instance().sendLoginOK(user);
+            /**
+             * send login success to client
+             * after receive this message, client begin to send game logic packet to server
+             */
+            ExtensionUtility.instance().sendLoginOK(user);
 
-        /**
-         * dispatch event here
-         */
-        Map evtParams = new HashMap();
-        evtParams.put(DemoEventParam.USER, user);
-        evtParams.put(DemoEventParam.NAME, user.getName());
+            /**
+             * dispatch event here
+             */
+            Map evtParams = new HashMap();
+            evtParams.put(DemoEventParam.USER, user);
+            evtParams.put(DemoEventParam.NAME, user.getName());
 //        ExtensionUtility.dispatchEvent(new BZEvent(DemoEventType.LOGIN_SUCCESS, evtParams));
+        }
+        catch (Exception e) {
+            trace("LOGIN HANDLE ERROR ::: " + e.getMessage());
+        }
     }
 
     private void initNewPlayerInfo(PlayerInfo playerInfo) throws Exception {
