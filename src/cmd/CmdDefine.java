@@ -45,6 +45,10 @@ public class CmdDefine {
 
     public static final short CANCLE_TRAIN_TROOP = 5004;
 
+    // battle
+
     public static final short BATTLE_MATCHING = 6001;
+
+
 
 }

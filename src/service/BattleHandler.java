@@ -1,10 +1,15 @@
 package service;
 
+import battle_models.BattleBuilding;
 import bitzero.server.entities.User;
 import bitzero.server.extensions.BaseClientRequestHandler;
 import bitzero.server.extensions.data.DataCmd;
 import cmd.CmdDefine;
+import cmd.ErrorConst;
+import cmd.send.battle.ResponseMatchingPlayer;
+import model.Building;
 import model.ListPlayerData;
+import model.Match;
 import model.PlayerInfo;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -12,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import util.BattleConst;
 import util.server.ServerConstant;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -69,20 +75,26 @@ public class BattleHandler extends BaseClientRequestHandler {
             if (enemyInfo == null) {
                 enemyInfo = this.getPlayerSameRank(user, 200);
             }
-            if(enemyInfo == null) {
+            if (enemyInfo == null) {
+                // TODO: Handle trường hợp không tìm được đối thủ thỏa mãn
                 System.out.println("CANT FOUND ENEMY");
                 return;
             }
 
-            System.out.println("FOUND PLAYER SAME RANK ::: " + enemyInfo);
-
-
             //TODO: convert city map => battle map
+            ArrayList<BattleBuilding> buildings = this.convertToBattleBuilding(enemyInfo.getListBuildings());
 
-            //TODO: Lấy lính đi đánh
+            //TODO: Lấy list troops
             Map<String, Integer> army = userInfo.getListTroops();
 
-            System.out.println("TROOP LIST :::: " + army);
+            //TODO: Tạo 1 match với các data trên
+            Match newMatch = new Match(enemyInfo.getId(), enemyInfo.getName(),
+                    buildings,
+                    army,
+                    (int) (enemyInfo.getGold() * BattleConst.RESOURCE_RATE),
+                    (int) (enemyInfo.getElixir() * BattleConst.RESOURCE_RATE));
+
+            send(new ResponseMatchingPlayer(ErrorConst.SUCCESS, newMatch), user);
 
         } catch (Exception e) {
             System.out.println("HANDLE MATCHING PLAYER ERROR :: " + e.getMessage());
@@ -97,9 +109,21 @@ public class BattleHandler extends BaseClientRequestHandler {
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
             int userRank = userInfo.getRank();
             ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
-            List<PlayerInfo> playersList = listUserData.getPlayersInRangeRank(userRank - range, userRank+range);
-            Random random = new Random();
-            int randomIndex = random.nextInt(playersList.size());
+
+            List<PlayerInfo> playersList = listUserData.getPlayersInRangeRank(userRank - range, userRank + range);
+
+            if (playersList.isEmpty()) {
+                return null;
+            }
+
+            int randomIndex;
+            do {
+                Random random = new Random();
+                randomIndex = random.nextInt(playersList.size());
+                listUserData.updateUserState(user.getId(), false);
+            }
+            while (playersList.get(randomIndex).getId() == user.getId());
+
             return playersList.get(randomIndex);
 
         } catch (Exception e) {
@@ -123,9 +147,20 @@ public class BattleHandler extends BaseClientRequestHandler {
         return null;
     }
 
-    public void getBattleMap(User user) {
+    public void getBattleMap(PlayerInfo playerInfo) {
 
+    }
 
+//    public int[][] convertCityMapToBattleMap(int[][] cityMap){
+//
+//    }
+
+    public ArrayList<BattleBuilding> convertToBattleBuilding(ArrayList<Building> buildings) {
+        ArrayList<BattleBuilding> battleBuildings = new ArrayList<>();
+        for (Building building : buildings) {
+            battleBuildings.add(BattleBuilding.convertFromCityBuilding(building));
+        }
+        return battleBuildings;
     }
 
 
