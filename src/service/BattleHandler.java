@@ -58,7 +58,15 @@ public class BattleHandler extends BaseClientRequestHandler {
         try {
             //get user from cache
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            // không đủ tiền tạo trận
+            if(userInfo.getGold() - BattleConst.MatchingGoldCost < 0) {
+                send(new ResponseMatchingPlayer(ErrorConst.NOT_ENOUGH_MATCHING_COST), user);
+                return;
+            }
+
             userInfo.setGold(userInfo.getGold() - BattleConst.MatchingGoldCost);
+            userInfo.saveModel(user.getId());
 
             PlayerInfo enemyInfo;
 
@@ -76,8 +84,8 @@ public class BattleHandler extends BaseClientRequestHandler {
                 enemyInfo = this.getPlayerSameRank(user, 200);
             }
             if (enemyInfo == null) {
-                // TODO: Handle trường hợp không tìm được đối thủ thỏa mãn
-                System.out.println("CANT FOUND ENEMY");
+                // không tìm được trận
+                send(new ResponseMatchingPlayer(ErrorConst.CANT_GET_MATCH), user);
                 return;
             }
 
