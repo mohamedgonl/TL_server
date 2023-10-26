@@ -1,4 +1,4 @@
-package service;
+package service.city;
 
 import bitzero.server.entities.User;
 import bitzero.server.extensions.BaseClientRequestHandler;

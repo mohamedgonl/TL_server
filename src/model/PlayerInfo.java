@@ -1,5 +1,6 @@
 package model;
 
+import battle_models.BattleMatch;
 import util.GameConfig;
 import util.config.ArmyCampConfig;
 import util.database.DataModel;
@@ -31,6 +32,8 @@ public class PlayerInfo extends DataModel {
     private transient int totalBuilders;
     private transient int[][] map;
     private transient Map<String, Integer> buildingAmount;
+
+    private ArrayList<BattleMatch> battleMatches = new ArrayList<>();
 
     public PlayerInfo() {
     }
@@ -276,6 +279,9 @@ public class PlayerInfo extends DataModel {
         return total;
     }
 
+    public void pushNewMatch(BattleMatch match) {
+        this.battleMatches.add(match);
+    }
 
 
 

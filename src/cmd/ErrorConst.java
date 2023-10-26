@@ -42,6 +42,8 @@ public class ErrorConst {
     public static final short CANT_GET_MATCH = 61;
 
     public static final short NOT_ENOUGH_MATCHING_COST = 62;
+    public static final short TROOP_LIST_EMPTY = 63;
+    public static final short IN_A_MATCH = 64;
 
 
 

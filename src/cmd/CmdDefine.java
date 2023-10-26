@@ -48,6 +48,7 @@ public class CmdDefine {
     // battle
 
     public static final short BATTLE_MATCHING = 6001;
+    public static final short SEND_ACTION = 6002;
 
 
 
