@@ -28,6 +28,10 @@ import org.json.JSONObject;
 
 import service.*;
 
+import service.battle.BattleHandler;
+import service.city.BuildingHandler;
+import service.city.ShopHandler;
+import service.city.TroopHandler;
 import util.GuestLogin;
 
 import util.GameConfig;

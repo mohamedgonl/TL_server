@@ -1,4 +1,4 @@
-package service;
+package service.battle;
 
 import battle_models.BattleBuilding;
 import bitzero.server.entities.User;
@@ -6,15 +6,18 @@ import bitzero.server.extensions.BaseClientRequestHandler;
 import bitzero.server.extensions.data.DataCmd;
 import cmd.CmdDefine;
 import cmd.ErrorConst;
+import cmd.receive.battle.RequestSendAction;
 import cmd.send.battle.ResponseMatchingPlayer;
+import cmd.send.battle.ResponseSendAction;
 import model.Building;
 import model.ListPlayerData;
-import model.Match;
+import battle_models.BattleMatch;
 import model.PlayerInfo;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.BattleConst;
+import util.Common;
 import util.server.ServerConstant;
 
 import java.util.ArrayList;
@@ -22,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.*;
-import java.util.function.Function;
 
 public class BattleHandler extends BaseClientRequestHandler {
     public static short BATTLE_MULTI_IDS = 6000;
@@ -44,6 +46,11 @@ public class BattleHandler extends BaseClientRequestHandler {
                     handleMatchingPlayers(user);
                     break;
                 }
+                case CmdDefine.SEND_ACTION: {
+                    RequestSendAction action = new RequestSendAction(dataCmd);
+                    handleReceiveAction(user, action);
+                    break;
+                }
             }
 
         } catch (Exception e) {
@@ -51,14 +58,35 @@ public class BattleHandler extends BaseClientRequestHandler {
             logger.warn(ExceptionUtils.getStackTrace(e));
         }
 
+
     }
 
 
     public void handleMatchingPlayers(User user) {
+        System.out.println("HANDLE MATCHING PLAYER START");
         try {
             //get user from cache
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+
+            // check có đang trong trận không
+            if(this.isInAMatch(user)) {
+                send(new ResponseMatchingPlayer(ErrorConst.IN_A_MATCH), user);
+                return;
+            }
+
+            // không có lính
+            if(userInfo.getCurrentSpace() == 0) {
+                send(new ResponseMatchingPlayer(ErrorConst.TROOP_LIST_EMPTY), user);
+                return;
+            }
+            // không đủ tiền tạo trận
+            if(userInfo.getGold() - BattleConst.MatchingGoldCost < 0) {
+                send(new ResponseMatchingPlayer(ErrorConst.NOT_ENOUGH_MATCHING_COST), user);
+                return;
+            }
+
             userInfo.setGold(userInfo.getGold() - BattleConst.MatchingGoldCost);
+            userInfo.saveModel(user.getId());
 
             PlayerInfo enemyInfo;
 
@@ -76,8 +104,8 @@ public class BattleHandler extends BaseClientRequestHandler {
                 enemyInfo = this.getPlayerSameRank(user, 200);
             }
             if (enemyInfo == null) {
-                // TODO: Handle trường hợp không tìm được đối thủ thỏa mãn
-                System.out.println("CANT FOUND ENEMY");
+                // không tìm được trận
+                send(new ResponseMatchingPlayer(ErrorConst.CANT_GET_MATCH), user);
                 return;
             }
 
@@ -88,19 +116,45 @@ public class BattleHandler extends BaseClientRequestHandler {
             Map<String, Integer> army = userInfo.getListTroops();
 
             //TODO: Tạo 1 match với các data trên
-            Match newMatch = new Match(enemyInfo.getId(), enemyInfo.getName(),
+            BattleMatch newMatch = new BattleMatch(enemyInfo.getId(), enemyInfo.getName(),
                     buildings,
                     army,
                     (int) (enemyInfo.getGold() * BattleConst.RESOURCE_RATE),
                     (int) (enemyInfo.getElixir() * BattleConst.RESOURCE_RATE));
 
-            send(new ResponseMatchingPlayer(ErrorConst.SUCCESS, newMatch), user);
+            user.setProperty(ServerConstant.MATCH, newMatch);
+
+            send(new ResponseMatchingPlayer(ErrorConst.SUCCESS, newMatch, userInfo), user);
 
         } catch (Exception e) {
             System.out.println("HANDLE MATCHING PLAYER ERROR :: " + e.getMessage());
+            send(new ResponseMatchingPlayer(ErrorConst.UNKNOWN), user);
+        }
+        finally {
+            System.out.println("HANDLE MATCHING PLAYER END");
         }
     }
 
+
+
+    public void handleReceiveAction(User user, RequestSendAction action) {
+        System.out.println("HANDLE SEND ACTION START");
+        try {
+
+
+
+
+        }
+        catch (Exception e) {
+            System.out.println("HANDLE RECEIVE ACTION ERROR :: " + e.getMessage());
+            send(new ResponseSendAction(ErrorConst.UNKNOWN), user);
+        }
+        finally {
+            System.out.println("HANDLE SEND ACTION END");
+        }
+    }
+
+    // helpers
 
     public PlayerInfo getPlayerSameRank(User user, int range) {
         try {
@@ -146,13 +200,6 @@ public class BattleHandler extends BaseClientRequestHandler {
         return null;
     }
 
-    public void getBattleMap(PlayerInfo playerInfo) {
-
-    }
-
-//    public int[][] convertCityMapToBattleMap(int[][] cityMap){
-//
-//    }
 
     public ArrayList<BattleBuilding> convertToBattleBuilding(ArrayList<Building> buildings) {
         ArrayList<BattleBuilding> battleBuildings = new ArrayList<>();
@@ -160,6 +207,11 @@ public class BattleHandler extends BaseClientRequestHandler {
             battleBuildings.add(BattleBuilding.convertFromCityBuilding(building));
         }
         return battleBuildings;
+    }
+
+    private boolean isInAMatch(User user) {
+
+        return false;
     }
 
 

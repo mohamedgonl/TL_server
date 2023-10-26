@@ -3,22 +3,25 @@ package cmd.send.battle;
 import battle_models.BattleBuilding;
 import bitzero.server.extensions.data.BaseMsg;
 import cmd.CmdDefine;
-import model.Match;
+import battle_models.BattleMatch;
+import model.PlayerInfo;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Map;
 
 public class ResponseMatchingPlayer extends BaseMsg {
-    private Match match;
+    private BattleMatch match;
+    private PlayerInfo playerInfo;
 
     public ResponseMatchingPlayer(short error) {
         super(CmdDefine.BATTLE_MATCHING, error);
     }
 
-    public ResponseMatchingPlayer(short error, Match match) {
+    public ResponseMatchingPlayer(short error, BattleMatch match, PlayerInfo playerInfo) {
         super(CmdDefine.BATTLE_MATCHING, error);
         this.match = match;
+        this.playerInfo = playerInfo;
     }
 
     @Override
@@ -55,8 +58,19 @@ public class ResponseMatchingPlayer extends BaseMsg {
             }
         }
 
+        // điểm danh vọng
+        bf.putInt(this.match.winPoint);
+        bf.putInt(this.match.losePoint);
 
+        // tài nguyên người chơi
 
+        bf.putInt(this.playerInfo.getGold());
+        bf.putInt(this.playerInfo.getGoldCapacity());
+
+        bf.putInt(this.playerInfo.getElixir());
+        bf.putInt(this.playerInfo.getElixirCapacity());
+
+        bf.putInt(this.playerInfo.getGem());
 
         return packBuffer(bf);
     }

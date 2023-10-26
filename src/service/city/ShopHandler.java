@@ -1,4 +1,4 @@
-package service;
+package service.city;
 
 import bitzero.server.core.IBZEvent;
 import bitzero.server.entities.User;
