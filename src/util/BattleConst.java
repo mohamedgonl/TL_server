@@ -11,6 +11,10 @@ public class BattleConst {
         STARTED, ENDED, HAPPENING
     }
 
+    public static int ACTION_START = 0;
+    public static int ACTION_THROW_TROOP = 1;
+    public static int ACTION_END = 2;
+
     public static int MAX_POINT = 30;
     public static int MIN_POINT = 15;
 
