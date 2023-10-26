@@ -69,18 +69,18 @@ public class BattleHandler extends BaseClientRequestHandler {
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
 
             // check có đang trong trận không
-//            if(this.isInAMatch(user)) {
-//                send(new ResponseMatchingPlayer(ErrorConst.IN_A_MATCH), user);
-//                return;
-//            }
+            if(this.isInAMatch(user)) {
+                send(new ResponseMatchingPlayer(ErrorConst.IN_A_MATCH), user);
+                return;
+            }
 
             // không có lính
-            if(userInfo.getCurrentSpace() == 0) {
+            if (userInfo.getCurrentSpace() == 0) {
                 send(new ResponseMatchingPlayer(ErrorConst.TROOP_LIST_EMPTY), user);
                 return;
             }
             // không đủ tiền tạo trận
-            if(userInfo.getGold() - BattleConst.MatchingGoldCost < 0) {
+            if (userInfo.getGold() - BattleConst.MatchingGoldCost < 0) {
                 send(new ResponseMatchingPlayer(ErrorConst.NOT_ENOUGH_MATCHING_COST), user);
                 return;
             }
@@ -128,12 +128,10 @@ public class BattleHandler extends BaseClientRequestHandler {
         } catch (Exception e) {
             System.out.println("HANDLE MATCHING PLAYER ERROR :: " + e.getMessage());
             send(new ResponseMatchingPlayer(ErrorConst.UNKNOWN), user);
-        }
-        finally {
+        } finally {
             System.out.println("HANDLE MATCHING PLAYER END");
         }
     }
-
 
 
     public void handleReceiveAction(User user, RequestSendAction requestSendAction) {
@@ -143,53 +141,50 @@ public class BattleHandler extends BaseClientRequestHandler {
             ListPlayerData listPlayerData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
 
             // Match ended
-            if(match.state == BattleConst.MATCH_ENDED) {
+            if (match.state == BattleConst.MATCH_ENDED) {
                 send(new ResponseSendAction(ErrorConst.MATCH_ENDED), user);
                 return;
             }
 
             // action start game
-            if(requestSendAction.getAction().type == BattleConst.ACTION_START && match.state == BattleConst.MATCH_NEW) {
+            if (requestSendAction.getAction().type == BattleConst.ACTION_START && match.state == BattleConst.MATCH_NEW) {
                 match.state = BattleConst.MATCH_HAPPENING;
                 match.startTime = Common.currentTimeInSecond();
 
-            }
-            else {
+            } else {
                 send(new ResponseSendAction(ErrorConst.BATTLE_ACTION_INVALID), user);
                 return;
             }
 
 
             // action thả lính
-            if(requestSendAction.getAction().type == BattleConst.ACTION_THROW_TROOP && match.state == BattleConst.MATCH_HAPPENING) {
+            if (requestSendAction.getAction().type == BattleConst.ACTION_THROW_TROOP && match.state == BattleConst.MATCH_HAPPENING) {
                 // trận đấu đã kết thúc, không nhận action thả lính
-                if(Common.currentTimeInSecond() > match.startTime + BattleConst.MAX_TIME_A_MATCH){
+                if (Common.currentTimeInSecond() > match.startTime + BattleConst.MAX_TIME_A_MATCH) {
                     match.state = BattleConst.MATCH_ENDED;
                     send(new ResponseSendAction(ErrorConst.MATCH_ENDED), user);
                     user.setProperty(ServerConstant.MATCH, match);
                 }
                 // nếu đã thả hết lính => không lưu action
-                else if(!match.checkValidActionThrowTroop(requestSendAction.getAction())) {
+                else if (!match.checkValidActionThrowTroop(requestSendAction.getAction())) {
                     send(new ResponseSendAction(ErrorConst.TROOP_EMPTY), user);
                     return;
                 }
             }
 
             // action kết thúc trận
-            if(requestSendAction.getAction().type == BattleConst.ACTION_END && match.state == BattleConst.MATCH_ENDED) {
+            if (requestSendAction.getAction().type == BattleConst.ACTION_END && match.state == BattleConst.MATCH_ENDED) {
                 send(new ResponseSendAction(ErrorConst.BATTLE_ACTION_INVALID), user);
                 return;
             }
 
             match.pushAction(requestSendAction.getAction());
             user.setProperty(ServerConstant.MATCH, match);
-            send(new ResponseSendAction(ErrorConst.SUCCESS),user);
-        }
-        catch (Exception e) {
+            send(new ResponseSendAction(ErrorConst.SUCCESS), user);
+        } catch (Exception e) {
             System.out.println("HANDLE RECEIVE ACTION ERROR :: " + e.getMessage());
             send(new ResponseSendAction(ErrorConst.UNKNOWN), user);
-        }
-        finally {
+        } finally {
             System.out.println("HANDLE SEND ACTION END");
         }
     }
@@ -203,7 +198,7 @@ public class BattleHandler extends BaseClientRequestHandler {
             int userRank = userInfo.getRank();
             ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
             PlayerInfo playerInfo = listUserData.getRandomPlayerInRangeRank(userRank - range, userRank + range);
-            return  playerInfo;
+            return playerInfo;
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -238,15 +233,14 @@ public class BattleHandler extends BaseClientRequestHandler {
 
     private boolean isInAMatch(User user) {
         BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
-        if(match == null) return false;
 
-        if(match.state == BattleConst.MATCH_NEW && match.createTime + BattleConst.COUNT_DOWN_TIME <= Common.currentTimeInSecond() ) {
+        if (match == null) return false;
+
+        else if (match.state == BattleConst.MATCH_NEW
+                && match.createTime + BattleConst.MAX_TIME_A_MATCH > Common.currentTimeInSecond()
+                && match.createTime + BattleConst.COUNT_DOWN_TIME <= Common.currentTimeInSecond()) {
             match.state = BattleConst.MATCH_HAPPENING;
-        }
-        else if(match.state == BattleConst.MATCH_NEW && match.createTime + BattleConst.MAX_TIME_A_MATCH > Common.currentTimeInSecond() ) {
-            match.state = BattleConst.MATCH_HAPPENING;
-        }
-        else if(match.state == BattleConst.MATCH_NEW && match.createTime + BattleConst.MAX_TIME_A_MATCH < Common.currentTimeInSecond()) {
+        } else if (match.state == BattleConst.MATCH_NEW && match.createTime + BattleConst.MAX_TIME_A_MATCH < Common.currentTimeInSecond()) {
             match.state = BattleConst.MATCH_ENDED;
         }
 
