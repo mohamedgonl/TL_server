@@ -11,8 +11,8 @@ public class BattleDefence extends BattleBuilding{
 
     }
 
-    public BattleDefence(String type, int level, int posX, int posY){
-        super(type, level, posX, posY);
+    public BattleDefence(int id, String type, int level, int posX, int posY){
+        super(id ,type, level, posX, posY);
         this.defBase = (DefenceConfig) GameConfig.getInstance().getBuildingConfig(type,level);
 
     }

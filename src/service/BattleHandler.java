@@ -98,7 +98,6 @@ public class BattleHandler extends BaseClientRequestHandler {
 
         } catch (Exception e) {
             System.out.println("HANDLE MATCHING PLAYER ERROR :: " + e.getMessage());
-
         }
     }
 

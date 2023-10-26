@@ -24,16 +24,22 @@ public class ResponseMatchingPlayer extends BaseMsg {
     @Override
     public byte[] createData() {
         ByteBuffer bf = makeBuffer();
+        bf.putInt(this.match.id);
+        // thông tin đối thủ
+        bf.putInt(this.match.enemyId);
+        putStr(bf,this.match.enemyName);
+        bf.putInt(this.match.maxGold);
+        bf.putInt(this.match.maxElixir);
+
+
 
         // list building
         ArrayList<BattleBuilding> battleBuildings = this.match.buildings;
         bf.putInt(battleBuildings.size());
         for (BattleBuilding building : battleBuildings) {
-//          bf.putInt(building.getId());
+            bf.putInt(building.id);
             putStr(bf, building.type);
             bf.putInt(building.level);
-            bf.putInt(building.gold);
-            bf.putInt(building.elixir);
             bf.putInt(building.posX);
             bf.putInt(building.posY);
         }
