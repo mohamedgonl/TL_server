@@ -6,13 +6,13 @@ import util.database.DataModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Random;
 
 public class ListPlayerData extends DataModel {
     public Map<Integer, Boolean> userIds = new HashMap<>();
 
-    public void addNewUserId (int newUID) {
-        this.userIds.putIfAbsent(newUID, true);
+    public void updateUser(int newUID, boolean isGettingAttacked) {
+        this.userIds.putIfAbsent(newUID, isGettingAttacked);
         System.out.println(this.userIds);
     }
 
@@ -24,7 +24,10 @@ public class ListPlayerData extends DataModel {
             for (Map.Entry<Integer, Boolean> userId : userIds.entrySet()) {
                 PlayerInfo playerInfo;
                 try {
-                    if (!userId.getValue() || Common.isUserOnline(userId.getKey())) continue;
+                    // if user is getting attackd hoặc đang online thì không match
+                    if (userId.getValue()
+//                            || Common.isUserOnline(userId.getKey())
+                    ) continue;
 
                     playerInfo = (PlayerInfo) PlayerInfo.getModel(userId.getKey(), PlayerInfo.class);
                     if (playerInfo != null) {
@@ -44,17 +47,21 @@ public class ListPlayerData extends DataModel {
 
 //    public void setPlayerState
 
-    public ArrayList<PlayerInfo> getPlayersInRangeRank(int min, int max) {
-
-        ArrayList<PlayerInfo> listPlayers = new ArrayList<>();
-        for (PlayerInfo player : this.getAllPlayersOffline()) {
-            int rank = player.getRank();
-            if (rank >= min && rank <= max) {
-                listPlayers.add(player);
+    public PlayerInfo getRandomPlayerInRangeRank(int min, int max) {
+        PlayerInfo playerInfo;
+        do {
+            ArrayList<Map.Entry<Integer, Boolean>> entryList = new ArrayList<>(userIds.entrySet());
+            Random random = new Random();
+            Map.Entry<Integer, Boolean> randomEntry = entryList.get(random.nextInt(entryList.size()));
+            try {
+                playerInfo = (PlayerInfo) PlayerInfo.getModel(randomEntry.getKey(), PlayerInfo.class);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
+        while (playerInfo.getRank() < min || playerInfo.getRank() > max);
 
-        return listPlayers;
+        return playerInfo;
     }
 
 

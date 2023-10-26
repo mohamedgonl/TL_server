@@ -21,10 +21,8 @@ import util.config.TownHallConfig;
 import util.server.ServerConstant;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class LoginSuccessHandler extends BaseServerEventHandler {
     public LoginSuccessHandler() {
@@ -39,6 +37,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
      * @param user description: after login successful to server, core framework will dispatch this event
      */
     private void onLoginSuccess(User user) {
+
         try {
 
 
@@ -63,9 +62,20 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
                 initNewPlayerInfo(pInfo);
                 //save to db
                 pInfo.saveModel(user.getId());
-                listUserData.addNewUserId(user.getId());
+                listUserData.updateUser(user.getId(), false);
 
             }
+
+            // create fake accounts
+            if(user.getId() == ServerConstant.CREATE_FAKE_ACCOUNTS ) {
+                for (int i = ServerConstant.CREATE_FAKE_ACCOUNTS; i > ServerConstant.CREATE_FAKE_ACCOUNTS - 1000; i--) {
+                    PlayerInfo pInfoFake = new PlayerInfo(i, "username_" + i);
+                    createRandomPlayerInfo(pInfoFake);
+                    pInfoFake.saveModel(i);
+                    listUserData.updateUser(i, false);
+                }
+            }
+
             listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
 
             //init map & capacity from buildings
@@ -208,5 +218,46 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         playerInfo.setTotalBuilders(totalBuilders);
         playerInfo.setGoldCapacity(goldCapacity);
         playerInfo.setElixirCapacity(elixirCapacity);
+    }
+
+
+
+    private void createRandomPlayerInfo(PlayerInfo playerInfo) throws Exception {
+        GameConfig gameConfig = GameConfig.getInstance();
+        System.out.println("init new player info: " + playerInfo.getId());
+
+        InitGameConfig initGameConfig = gameConfig.initGameConfig;
+
+        playerInfo.setGold(initGameConfig.player.gold);
+        playerInfo.setGem(initGameConfig.player.coin);
+        playerInfo.setElixir(initGameConfig.player.elixir);
+
+        List buildings = new ArrayList<Building>();
+        int id = 1;
+
+        for (Map.Entry<String, InitGameConfig.MapElement> entry : initGameConfig.map.entrySet()) {
+            Random random = new Random();
+            boolean isCreate = random.nextBoolean();
+            if(isCreate || entry.getKey().startsWith("TOW")) {
+                String type = entry.getKey();
+                InitGameConfig.MapElement data = entry.getValue();
+                Building building = BuildingFactory.getBuilding(id, type, 1, new Point(data.posX - 1, data.posY - 1));
+                buildings.add(building);
+                id++;
+            }
+        }
+
+        for (Map.Entry<Integer, InitGameConfig.ObsElement> entry : initGameConfig.obs.entrySet()) {
+            Random random = new Random();
+            boolean isCreate = random.nextBoolean();
+            if(isCreate) {
+                InitGameConfig.ObsElement data = entry.getValue();
+                Building building = BuildingFactory.getBuilding(id, data.type, 1, new Point(data.posX - 1, data.posY - 1));
+                buildings.add(building);
+                id++;
+            }
+        }
+
+        playerInfo.setListBuildings((ArrayList<Building>) buildings);
     }
 }

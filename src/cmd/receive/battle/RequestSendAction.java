@@ -17,7 +17,9 @@ public class RequestSendAction extends BaseCmd {
         unpackData();
     }
 
-
+    public BattleAction getAction() {
+        return action;
+    }
 
     @Override
     public void unpackData() {
