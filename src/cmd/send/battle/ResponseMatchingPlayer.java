@@ -27,6 +27,7 @@ public class ResponseMatchingPlayer extends BaseMsg {
     @Override
     public byte[] createData() {
         ByteBuffer bf = makeBuffer();
+        if(this.match != null) {
         bf.putInt(this.match.id);
         // thông tin đối thủ
         bf.putInt(this.match.enemyId);
@@ -72,6 +73,7 @@ public class ResponseMatchingPlayer extends BaseMsg {
 
         bf.putInt(this.playerInfo.getGem());
 
+        }
         return packBuffer(bf);
     }
 }

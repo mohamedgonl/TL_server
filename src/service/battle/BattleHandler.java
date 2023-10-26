@@ -97,7 +97,7 @@ public class BattleHandler extends BaseClientRequestHandler {
             if (enemyInfo == null) {
                 enemyInfo = this.executeInMaxTime(() -> {
                     return this.getPlayerSameRank(user, 100);
-                }, 1000);
+                }, 10000);
             }
 
             if (enemyInfo == null) {
@@ -210,6 +210,7 @@ public class BattleHandler extends BaseClientRequestHandler {
     }
 
     private boolean isInAMatch(User user) {
+        BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
 
         return false;
     }
