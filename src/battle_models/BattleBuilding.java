@@ -1,6 +1,7 @@
 package battle_models;
 
 import model.Building;
+import util.BattleConst;
 import util.GameConfig;
 import util.config.BaseBuildingConfig;
 
@@ -26,7 +27,9 @@ public class BattleBuilding {
     }
 
     public static BattleBuilding convertFromCityBuilding(Building building) {
-        return new BattleBuilding(building.getId(), building.getType(), building.getLevel(), building.getPosition().x * 3 + 3, building.getPosition().y * 3 + 3);
+        return new BattleBuilding(building.getId(), building.getType(), building.getLevel(),
+                (building.getPosition().x+ BattleConst.BATTLE_MAP_BORDER) * BattleConst.BATTLE_MAP_SCALE,
+                (building.getPosition().y +BattleConst.BATTLE_MAP_BORDER)* BattleConst.BATTLE_MAP_SCALE );
     }
 
 }
