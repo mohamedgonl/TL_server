@@ -60,8 +60,8 @@ public class ResponseMatchingPlayer extends BaseMsg {
         }
 
         // điểm danh vọng
-        bf.putInt(this.match.winPoint);
-        bf.putInt(this.match.losePoint);
+        bf.putInt(this.match.winTrophy);
+        bf.putInt(this.match.loseTrophy);
 
         // tài nguyên người chơi
 

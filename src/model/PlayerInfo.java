@@ -260,6 +260,23 @@ public class PlayerInfo extends DataModel {
         }
     }
 
+    public void removeTroop(Map<String, Integer> troops) {
+        for (Map.Entry<String, Integer> entry : troops.entrySet()) {
+            String key = entry.getKey();
+            Integer sub = entry.getValue();
+
+            if (this.listTroops.containsKey(key)) {
+                Integer count = listTroops.get(key);
+                if(count - sub < 0) {
+                    listTroops.put(key, 0);
+                }
+                    listTroops.put(key, count - sub);
+            }
+        }
+    }
+
+
+
     public int getMaxArmySpace(){
         int max  = 0;
         for (int i = 0; i < this.listBuildings.size(); i++) {

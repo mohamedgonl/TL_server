@@ -7,6 +7,10 @@ public class BattleConst {
         AVAILABLE, NOT_AVAILABLE, DESTROYED
     }
 
+    public enum ResourceType {
+        GOLD, ELIXIR
+    }
+
     public static int MATCH_NEW = 0;
     public static int MATCH_HAPPENING = 1;
     public static int MATCH_ENDED = 2;
@@ -19,7 +23,7 @@ public class BattleConst {
     public static int MIN_POINT = 15;
 
     public static int[] rankRange = {50,100,200};
-    public static int BATTLE_MAP_SIZE = 126;
+    public static int BATTLE_MAP_SIZE = 132;
 
     public static int MAX_TIME_A_MATCH = 150;
 
@@ -32,6 +36,10 @@ public class BattleConst {
 
     public static int BATTLE_MAP_BORDER = 2;
     public static int BATTLE_MAP_SCALE = 3;
+
+    public static int TICK_PER_SECOND = 60;
+
+    public static int MAX_TICK_PER_GAME = (COUNT_DOWN_TIME + MAX_TIME_A_MATCH) * TICK_PER_SECOND;
 
 
 

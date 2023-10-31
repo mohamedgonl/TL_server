@@ -27,7 +27,7 @@ public class RequestSendAction extends BaseCmd {
         try {
 
             this.action.type = readInt(bf);
-            this.action.dt = readInt(bf);
+            this.action.tick = readInt(bf);
 
             // đọc data của action
             if(this.action.type == BattleConst.ACTION_THROW_TROOP) {
