@@ -19,7 +19,8 @@ public class BattleMatch {
     public int winTrophy;
     public int loseTrophy;
 
-    private transient int[][] map = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
+    private transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
+    private transient int[][] troopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
 
     public int createTime; // thời điểm tạo trận
     public int startTime;
@@ -71,7 +72,7 @@ public class BattleMatch {
         for (BattleBuilding building: this.buildings) {
             for (int i = 0; i < building.baseBuildingStats.width*BattleConst.BATTLE_MAP_SCALE; i++) {
                 for (int j = 0; j < building.baseBuildingStats.height*BattleConst.BATTLE_MAP_SCALE; j++) {
-                    this.map[i + building.posX][j+building.posY] = building.id;
+                    this.battleMap[i + building.posX][j+building.posY] = building.id;
                 }
             }
         }
@@ -80,7 +81,7 @@ public class BattleMatch {
     public void printGridMap () {
         for (int row = 0; row < BattleConst.BATTLE_MAP_SIZE; row++) {
             for (int col = 0; col < BattleConst.BATTLE_MAP_SIZE; col++) {
-                String cellValue = String.format("%3d", this.map[row][col]);
+                String cellValue = String.format("%3d", this.battleMap[row][col]);
                 System.out.print(cellValue);
             }
             System.out.println();
