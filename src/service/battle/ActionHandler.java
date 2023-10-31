@@ -51,10 +51,14 @@ public class ActionHandler {
                     throw new CustomException(ErrorConst.MATCH_ENDED);
 
                 }
+                // vị trí ko hợp lệ
+                else if (!match.checkValidThrowTroopPos(requestSendAction.getAction().posX, requestSendAction.getAction().posY)) {
+                    throw  new CustomException(ErrorConst.INVALID_THROW_TROOP_POSITION);
+                }
+
                 // nếu đã thả hết lính => không lưu action
                 else if (!match.checkValidTroopCount(requestSendAction.getAction())) {
                     throw new CustomException(ErrorConst.TROOP_EMPTY);
-
                 }
 
             } else if (match.state == BattleConst.MATCH_NEW) {

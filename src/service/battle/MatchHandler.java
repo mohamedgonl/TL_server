@@ -61,7 +61,9 @@ public class MatchHandler {
         }
 
         if (enemyInfo == null) {
-            enemyInfo = getPlayerSameRank(user, 200);
+            enemyInfo = executeInMaxTime(() -> {
+                return getPlayerSameRank(user, 100);
+            }, 50);
         }
         if (enemyInfo == null) {
             // không tìm được trận

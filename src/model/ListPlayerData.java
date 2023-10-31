@@ -20,7 +20,7 @@ public class ListPlayerData extends DataModel {
 
         ArrayList<PlayerInfo> listPlayers = new ArrayList<>();
 
-        if(userIds != null) {
+        if (userIds != null) {
             for (Map.Entry<Integer, Boolean> userId : userIds.entrySet()) {
                 PlayerInfo playerInfo;
                 try {
@@ -39,7 +39,7 @@ public class ListPlayerData extends DataModel {
         return listPlayers;
     }
 
-    public void updateUserState (int userId, boolean canMatch) {
+    public void updateUserState(int userId, boolean canMatch) {
         this.userIds.put(userId, canMatch);
     }
 
@@ -47,23 +47,22 @@ public class ListPlayerData extends DataModel {
 
     public PlayerInfo getRandomPlayerInRangeRank(int min, int max) {
         PlayerInfo playerInfo;
-        do {
-            ArrayList<Map.Entry<Integer, Boolean>> entryList = new ArrayList<>(userIds.entrySet());
-            Random random = new Random();
-            Map.Entry<Integer, Boolean> randomEntry = entryList.get(random.nextInt(entryList.size()));
-            try {
-                playerInfo = (PlayerInfo) PlayerInfo.getModel(randomEntry.getKey(), PlayerInfo.class);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        ArrayList<Map.Entry<Integer, Boolean>> entryList = new ArrayList<>(userIds.entrySet());
+        int id;
+        try {
+            do {
+                Random random = new Random();
+                Map.Entry<Integer, Boolean> randomEntry = entryList.get(random.nextInt(entryList.size()));
+                id = randomEntry.getKey();
+                playerInfo = (PlayerInfo) PlayerInfo.getModel(id, PlayerInfo.class);
             }
+            while (playerInfo.getRank() < min || playerInfo.getRank() > max || Common.isUserOnline(playerInfo.getId()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        while (playerInfo.getRank() < min || playerInfo.getRank() > max);
 
         return playerInfo;
     }
-
-
-
 
 
 }

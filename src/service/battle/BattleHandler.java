@@ -108,7 +108,7 @@ public class BattleHandler extends BaseClientRequestHandler {
     }
 
     public void handleEndGame(User user, RequestEndGame requestSendAction) {
-        System.out.println("HANDLE END GAME START");
+        System.out.println(logPrefix + "HANDLE END GAME START" + logPrefix);
         try {
             ResponseEndGame response = MatchHandler.handleEndGame(user, requestSendAction);
             send(response, user);

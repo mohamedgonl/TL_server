@@ -19,14 +19,9 @@ public class BattleMatch {
     public int winTrophy;
     public int loseTrophy;
 
-    private transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
-    private transient int[][] troopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
-
     public int createTime; // thời điểm tạo trận
     public int startTime;
 
-    private transient ArrayList<BattleTroop> troops; // Lưu thông tin từng con lính trong trận
-    public ArrayList<BattleBuilding> buildings;
 
     public Map<String, Integer> army; // Lượng lính mang đi đánh
 
@@ -37,13 +32,18 @@ public class BattleMatch {
     private int goldGot = 0; // vàng chiếm dc
     private int elixirGot = 0; // dầu chiếm dc
 
-    private ArrayList<BattleAction> actionsList;
-    
     public boolean isWin;
     public float winPercentage;
 
     public int stars;
 
+    private transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
+    private transient int[][] troopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
+
+    private transient ArrayList<BattleTroop> troops; // Lưu thông tin từng con lính trong trận
+    public ArrayList<BattleBuilding> buildings;
+    private ArrayList<BattleAction> actionsList;
+    
 
     public BattleMatch(int enemyId, String enemyName, ArrayList<BattleBuilding> buildings, Map<String, Integer> army, int maxGold, int maxElixir) {
         this.enemyId = enemyId;
@@ -103,6 +103,48 @@ public class BattleMatch {
         return false;
     }
 
+    public void updateResourceGot(int addition, BattleConst.ResourceType type) {
+
+        if(type == BattleConst.ResourceType.GOLD) {
+            if(this.goldGot + addition <= this.maxGold ) {
+                this.goldGot += addition;
+            }
+        }
+
+        if(type == BattleConst.ResourceType.ELIXIR) {
+            if(this.elixirGot + addition <= this.maxElixir ) {
+                this.elixirGot += addition;
+            }
+        }
+
+
+    }
+
+    public void throwTroop(BattleTroop troop) {
+
+    }
+
+    public boolean checkValidThrowTroopPos (int posX, int posY) {
+        int n = this.battleMap.length;
+
+        for (int i = -BattleConst.BATTLE_MAP_BORDER; i <= BattleConst.BATTLE_MAP_BORDER; i++) {
+            for (int j = -BattleConst.BATTLE_MAP_BORDER; j <= BattleConst.BATTLE_MAP_BORDER; j++) {
+                int newRow = posX + i;
+                int newCol = posY + j;
+
+                if (newRow >= 0 && newRow < n && newCol >= 0 && newCol < n && (newRow != posX || newCol != posY)) {
+                    if (this.battleMap[newRow][newCol] != 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false; // Không có ô nào có gi
+    }
+
+
+
     public int getTroopCount(String type) {
         int count = 0;
         for (int i = 0; i < this.actionsList.size(); i++) {
@@ -123,7 +165,6 @@ public class BattleMatch {
 
             if(this.actionsList.get(actionIndex).tick == tick) {
                 //TODO: do action
-
             }
 
 
@@ -135,23 +176,6 @@ public class BattleMatch {
 
             tick++;
         }
-
-    }
-
-    public void updateResourceGot(int addition, BattleConst.ResourceType type) {
-
-        if(type == BattleConst.ResourceType.GOLD) {
-            if(this.goldGot + addition <= this.maxGold ) {
-                this.goldGot += addition;
-            }
-        }
-
-        if(type == BattleConst.ResourceType.ELIXIR) {
-            if(this.elixirGot + addition <= this.maxElixir ) {
-                this.elixirGot += addition;
-            }
-        }
-
 
     }
 
