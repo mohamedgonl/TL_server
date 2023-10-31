@@ -2,16 +2,16 @@ package battle_models;
 
 public class BattleAction {
     public int type;
-    public int dt;
+    public int tick;
 
     public String troopType;
     public int posX;
     public int posY;
 
 
-    public BattleAction(int type, int dt) {
+    public BattleAction(int type, int tick) {
         this.type = type;
-        this.dt = dt;
+        this.tick = tick;
     }
 
     public void setData(String troopType, int posX, int posY) {

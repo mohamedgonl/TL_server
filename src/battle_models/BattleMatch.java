@@ -14,11 +14,12 @@ public class BattleMatch {
     public String enemyName;
 
     public int state;
+    public int trophy;
 
-    public int winPoint;
-    public int losePoint;
+    public int winTrophy;
+    public int loseTrophy;
 
-    private transient int[][] map;
+    private transient int[][] map = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
 
     public int createTime; // thời điểm tạo trận
     public int startTime;
@@ -32,10 +33,15 @@ public class BattleMatch {
 
     public int maxElixir;
 
-    private int goldGot = 0;
-    private int elixirGot = 0;
+    private int goldGot = 0; // vàng chiếm dc
+    private int elixirGot = 0; // dầu chiếm dc
 
     private ArrayList<BattleAction> actionsList;
+    
+    public boolean isWin;
+    public float winPercentage;
+
+    public int stars;
 
 
     public BattleMatch(int enemyId, String enemyName, ArrayList<BattleBuilding> buildings, Map<String, Integer> army, int maxGold, int maxElixir) {
@@ -53,8 +59,32 @@ public class BattleMatch {
         this.createTime = Common.currentTimeInSecond();
 
         Random random = new Random();
-        this.winPoint = random.nextInt(BattleConst.MAX_POINT - BattleConst.MIN_POINT + 1) + BattleConst.MIN_POINT;
-        this.losePoint = random.nextInt(BattleConst.MAX_POINT - BattleConst.MIN_POINT + 1) + BattleConst.MIN_POINT;
+        this.winTrophy = random.nextInt(BattleConst.MAX_POINT - BattleConst.MIN_POINT + 1) + BattleConst.MIN_POINT;
+        this.loseTrophy = random.nextInt(BattleConst.MAX_POINT - BattleConst.MIN_POINT + 1) + BattleConst.MIN_POINT;
+        
+        this.initGridMap();
+//        this.printGridMap();
+
+    }
+    
+    public void initGridMap () {
+        for (BattleBuilding building: this.buildings) {
+            for (int i = 0; i < building.baseBuildingStats.width*BattleConst.BATTLE_MAP_SCALE; i++) {
+                for (int j = 0; j < building.baseBuildingStats.height*BattleConst.BATTLE_MAP_SCALE; j++) {
+                    this.map[i + building.posX][j+building.posY] = building.id;
+                }
+            }
+        }
+    }
+
+    public void printGridMap () {
+        for (int row = 0; row < BattleConst.BATTLE_MAP_SIZE; row++) {
+            for (int col = 0; col < BattleConst.BATTLE_MAP_SIZE; col++) {
+                String cellValue = String.format("%3d", this.map[row][col]);
+                System.out.print(cellValue);
+            }
+            System.out.println();
+        }
     }
 
     public void pushAction(BattleAction action) {
@@ -65,12 +95,9 @@ public class BattleMatch {
         return this.actionsList;
     }
 
-    public boolean checkValidActionThrowTroop(BattleAction action) {
+    public boolean checkValidTroopCount(BattleAction action) {
         if (action.type == BattleConst.ACTION_THROW_TROOP) {
-            if (this.army.get(action.type) <= this.getTroopCount(action.troopType)) {
-                return false;
-            }
-            return true;
+            return this.army.get(action.troopType) > this.getTroopCount(action.troopType);
         }
         return false;
     }
@@ -83,6 +110,48 @@ public class BattleMatch {
             }
         }
         return count;
+    }
+
+    public void startGameLoop() {
+
+        // ignore action start
+        int actionIndex = 1;
+
+        int tick = 0;
+        while (tick < BattleConst.MAX_TICK_PER_GAME || this.actionsList.get(actionIndex).type != BattleConst.ACTION_END) {
+
+            if(this.actionsList.get(actionIndex).tick == tick) {
+                //TODO: do action
+
+            }
+
+
+            //TODO: update state
+
+
+
+
+
+            tick++;
+        }
+
+    }
+
+    public void updateResourceGot(int addition, BattleConst.ResourceType type) {
+
+        if(type == BattleConst.ResourceType.GOLD) {
+            if(this.goldGot + addition <= this.maxGold ) {
+                this.goldGot += addition;
+            }
+        }
+
+        if(type == BattleConst.ResourceType.ELIXIR) {
+            if(this.elixirGot + addition <= this.maxElixir ) {
+                this.elixirGot += addition;
+            }
+        }
+
+
     }
 
 

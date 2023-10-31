@@ -21,6 +21,8 @@ public class BattleTroop {
 
     }
 
+
+
     public BattleTroop(String type, int level, int posX, int posY){
         this.stats = GameConfig.getInstance().troopConfig.get(type).get(level) ;
         this.baseStats  = GameConfig.getInstance().troopBaseConfig.get(type);

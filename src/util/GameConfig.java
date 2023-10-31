@@ -24,6 +24,7 @@ public class GameConfig {
 
     public Map<String, Map<Integer, TroopConfig>> troopConfig;
     public Map<String, TroopBaseConfig> troopBaseConfig;
+    public Map<String, DefenceBaseConfig> defenceBaseConfig;
 
     private GameConfig() {
     }
@@ -110,6 +111,10 @@ public class GameConfig {
 
             reader = new FileReader("./conf/TroopBase.json");
             troopBaseConfig = gson.fromJson(reader, new TypeToken<Map<String, TroopBaseConfig>>() {
+            }.getType());
+
+            reader = new FileReader("./conf/DefenceBase.json");
+            defenceBaseConfig = gson.fromJson(reader, new TypeToken<Map<String, DefenceBaseConfig>>() {
             }.getType());
 
         } catch (Exception e) {
