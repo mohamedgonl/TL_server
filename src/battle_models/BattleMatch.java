@@ -29,6 +29,14 @@ public class BattleMatch {
 
     public int maxElixir;
 
+    public void setGoldGot(int goldGot) {
+        this.goldGot = goldGot;
+    }
+
+    public void setElixirGot(int elixirGot) {
+        this.elixirGot = elixirGot;
+    }
+
     private int goldGot = 0; // vàng chiếm dc
     private int elixirGot = 0; // dầu chiếm dc
 
@@ -40,10 +48,10 @@ public class BattleMatch {
     private transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
     private transient int[][] troopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
 
-    private transient ArrayList<BattleTroop> troops; // Lưu thông tin từng con lính trong trận
+    private transient ArrayList<BattleTroop> troops = new ArrayList<>(); // Lưu thông tin từng con lính trong trận
     public ArrayList<BattleBuilding> buildings;
-    private ArrayList<BattleAction> actionsList;
-    
+    private ArrayList<BattleAction> actionsList = new ArrayList<>();
+
 
     public BattleMatch(int enemyId, String enemyName, ArrayList<BattleBuilding> buildings, Map<String, Integer> army, int maxGold, int maxElixir) {
         this.enemyId = enemyId;
@@ -62,26 +70,26 @@ public class BattleMatch {
         Random random = new Random();
         this.winTrophy = random.nextInt(BattleConst.MAX_POINT - BattleConst.MIN_POINT + 1) + BattleConst.MIN_POINT;
         this.loseTrophy = random.nextInt(BattleConst.MAX_POINT - BattleConst.MIN_POINT + 1) + BattleConst.MIN_POINT;
-        
-        this.initGridMap();
-//        this.printGridMap();
+
+        this.initBattleMap();
+        this.printGridMap(this.battleMap);
 
     }
-    
-    public void initGridMap () {
-        for (BattleBuilding building: this.buildings) {
-            for (int i = 0; i < building.baseBuildingStats.width*BattleConst.BATTLE_MAP_SCALE; i++) {
-                for (int j = 0; j < building.baseBuildingStats.height*BattleConst.BATTLE_MAP_SCALE; j++) {
-                    this.battleMap[i + building.posX][j+building.posY] = building.id;
+
+    public void initBattleMap() {
+        for (BattleBuilding building : this.buildings) {
+            for (int i = 0; i < building.baseBuildingStats.width * BattleConst.BATTLE_MAP_SCALE; i++) {
+                for (int j = 0; j < building.baseBuildingStats.height * BattleConst.BATTLE_MAP_SCALE; j++) {
+                    this.battleMap[i + building.posX][j + building.posY] = building.id;
                 }
             }
         }
     }
 
-    public void printGridMap () {
-        for (int row = 0; row < BattleConst.BATTLE_MAP_SIZE; row++) {
-            for (int col = 0; col < BattleConst.BATTLE_MAP_SIZE; col++) {
-                String cellValue = String.format("%3d", this.battleMap[row][col]);
+    public void printGridMap(int [][] map) {
+        for (int row = 0; row < map.length; row++) {
+            for (int col = 0; col < map[row].length; col++) {
+                String cellValue = String.format("%3d", map[row][col]);
                 System.out.print(cellValue);
             }
             System.out.println();
@@ -105,14 +113,14 @@ public class BattleMatch {
 
     public void updateResourceGot(int addition, BattleConst.ResourceType type) {
 
-        if(type == BattleConst.ResourceType.GOLD) {
-            if(this.goldGot + addition <= this.maxGold ) {
+        if (type == BattleConst.ResourceType.GOLD) {
+            if (this.goldGot + addition <= this.maxGold) {
                 this.goldGot += addition;
             }
         }
 
-        if(type == BattleConst.ResourceType.ELIXIR) {
-            if(this.elixirGot + addition <= this.maxElixir ) {
+        if (type == BattleConst.ResourceType.ELIXIR) {
+            if (this.elixirGot + addition <= this.maxElixir) {
                 this.elixirGot += addition;
             }
         }
@@ -124,7 +132,7 @@ public class BattleMatch {
 
     }
 
-    public boolean checkValidThrowTroopPos (int posX, int posY) {
+    public boolean checkValidThrowTroopPos(int posX, int posY) {
         int n = this.battleMap.length;
 
         for (int i = -BattleConst.BATTLE_MAP_BORDER; i <= BattleConst.BATTLE_MAP_BORDER; i++) {
@@ -142,7 +150,6 @@ public class BattleMatch {
 
         return false; // Không có ô nào có gi
     }
-
 
 
     public int getTroopCount(String type) {
@@ -163,15 +170,17 @@ public class BattleMatch {
         int tick = 0;
         while (tick < BattleConst.MAX_TICK_PER_GAME || this.actionsList.get(actionIndex).type != BattleConst.ACTION_END) {
 
-            if(this.actionsList.get(actionIndex).tick == tick) {
+            if (this.actionsList.get(actionIndex).tick == tick && actionIndex < this.actionsList.size()) {
                 //TODO: do action
+
+
+
+
+                actionIndex ++;
             }
 
 
             //TODO: update state
-
-
-
 
 
             tick++;

@@ -1,11 +1,14 @@
 package service.battle;
 
+import battle_models.BattleAction;
 import battle_models.BattleBuilding;
 import battle_models.BattleMatch;
 import bitzero.server.entities.User;
 import cmd.ErrorConst;
 import cmd.receive.battle.RequestEndGame;
+import cmd.receive.battle.RequestGetMatch;
 import cmd.send.battle.ResponseEndGame;
+import cmd.send.battle.ResponseGetMatch;
 import cmd.send.battle.ResponseMatchingPlayer;
 import model.Building;
 import model.ListPlayerData;
@@ -20,7 +23,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 public class MatchHandler {
-    public static ResponseMatchingPlayer createMatch(User user) throws CustomException {
+    public static ResponseMatchingPlayer createMatch(User user) throws Exception {
         //get user from cache
         PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
 
@@ -82,6 +85,12 @@ public class MatchHandler {
                 (int) (enemyInfo.getGold() * BattleConst.RESOURCE_RATE),
                 (int) (enemyInfo.getElixir() * BattleConst.RESOURCE_RATE));
 
+        // update enemy state
+        ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
+        listUserData.updateUser(newMatch.enemyId, true);
+        listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
+
+
         user.setProperty(ServerConstant.MATCH, newMatch);
         return new ResponseMatchingPlayer(ErrorConst.SUCCESS, newMatch, userInfo);
     }
@@ -126,7 +135,6 @@ public class MatchHandler {
 
     private static boolean isInAMatch(User user) {
         BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
-
         if (match == null) return false;
 
         else if (match.state == BattleConst.MATCH_NEW
@@ -143,15 +151,44 @@ public class MatchHandler {
     }
 
     public static ResponseEndGame handleEndGame(User user, RequestEndGame requestEndGame) {
-        PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
-        userInfo.addResources(requestEndGame.getGoldGot(), requestEndGame.getElixirGot(), 0);
-        userInfo.setRank(userInfo.getRank() + requestEndGame.getTrophy());
-        userInfo.removeTroop(requestEndGame.getArmy());
+
         try {
+            PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+            userInfo.addResources(requestEndGame.getGoldGot(), requestEndGame.getElixirGot(), 0);
+            userInfo.setRank(userInfo.getRank() + requestEndGame.getTrophy());
+            userInfo.removeTroop(requestEndGame.getArmy());
+
+            BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
+            if (match != null) {
+                match.isWin = requestEndGame.getResult();
+                match.trophy = requestEndGame.getTrophy();
+                match.stars = requestEndGame.getStars();
+                match.setGoldGot(requestEndGame.getGoldGot());
+                match.setElixirGot(requestEndGame.getElixirGot());
+                match.pushAction(new BattleAction(BattleConst.ACTION_END, requestEndGame.getTick()));
+
+                ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
+                listUserData.updateUser(match.enemyId, false);
+                listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
+            }
             userInfo.saveModel(user.getId());
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return new  ResponseEndGame(ErrorConst.SUCCESS);
+        return new ResponseEndGame(ErrorConst.SUCCESS);
+    }
+
+    public static ResponseGetMatch handleGetMatch(User user, RequestGetMatch requestGetMatch) throws Exception {
+        PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+        ArrayList<BattleMatch> matches = userInfo.getBattleMatches();
+
+        for (BattleMatch match :
+                matches) {
+            if (match.id == requestGetMatch.getMatchId()) {
+                return new ResponseGetMatch(ErrorConst.SUCCESS, match);
+            }
+            }
+        throw  new CustomException(ErrorConst.NO_MATCH_FOUND);
     }
 }

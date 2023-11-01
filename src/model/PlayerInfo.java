@@ -33,6 +33,10 @@ public class PlayerInfo extends DataModel {
     private transient int[][] map;
     private transient Map<String, Integer> buildingAmount;
 
+    public ArrayList<BattleMatch> getBattleMatches() {
+        return battleMatches;
+    }
+
     private ArrayList<BattleMatch> battleMatches = new ArrayList<>();
 
     public PlayerInfo() {

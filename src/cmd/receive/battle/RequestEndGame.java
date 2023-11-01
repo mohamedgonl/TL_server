@@ -29,7 +29,7 @@ public class RequestEndGame extends BaseCmd {
         return stars;
     }
 
-    public boolean isResult() {
+    public boolean getResult() {
         return result;
     }
 
@@ -44,6 +44,8 @@ public class RequestEndGame extends BaseCmd {
     private int stars;
 
     private boolean result;
+
+    private int tick;
 
     private Map<String, Integer> army = new HashMap<>();
 
@@ -72,8 +74,27 @@ public class RequestEndGame extends BaseCmd {
                 }
             }
 
+            this.tick = readInt(bf);
+
         } catch (Exception e) {
             CommonHandle.writeErrLog(e);
         }
+    }
+
+    public int getTick() {
+        return tick;
+    }
+
+    @Override
+    public String toString() {
+        return "RequestEndGame{" +
+                "goldGot=" + goldGot +
+                ", elixirGot=" + elixirGot +
+                ", trophy=" + trophy +
+                ", stars=" + stars +
+                ", result=" + result +
+                ", tick=" + tick +
+                ", army=" + army +
+                '}';
     }
 }

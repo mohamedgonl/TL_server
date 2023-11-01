@@ -25,7 +25,7 @@ public class ListPlayerData extends DataModel {
                 PlayerInfo playerInfo;
                 try {
                     // if user is getting attackd hoặc đang online thì không match
-                    if (userId.getValue() || Common.isUserOnline(userId.getKey())) continue;
+                    if (userId.getValue() || Common.checkUserOnline(userId.getKey())) continue;
 
                     playerInfo = (PlayerInfo) PlayerInfo.getModel(userId.getKey(), PlayerInfo.class);
                     if (playerInfo != null) {
@@ -56,7 +56,7 @@ public class ListPlayerData extends DataModel {
                 id = randomEntry.getKey();
                 playerInfo = (PlayerInfo) PlayerInfo.getModel(id, PlayerInfo.class);
             }
-            while (playerInfo.getRank() < min || playerInfo.getRank() > max || Common.isUserOnline(playerInfo.getId()));
+            while (playerInfo.getRank() < min || playerInfo.getRank() > max || Common.checkUserOnline(playerInfo.getId()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

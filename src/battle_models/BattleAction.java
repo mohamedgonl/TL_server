@@ -21,7 +21,16 @@ public class BattleAction {
     }
 
 
-
+    @Override
+    public String toString() {
+        return "BattleAction{" +
+                "type=" + type +
+                ", tick=" + tick +
+                ", troopType='" + troopType + '\'' +
+                ", posX=" + posX +
+                ", posY=" + posY +
+                '}';
+    }
 }
 
 

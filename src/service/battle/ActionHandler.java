@@ -12,7 +12,7 @@ import util.server.CustomException;
 import util.server.ServerConstant;
 
 public class ActionHandler {
-    public static ResponseSendAction handleReceiveAction(User user, RequestSendAction requestSendAction) throws CustomException {
+    public static ResponseSendAction handleReceiveAction(User user, RequestSendAction requestSendAction) throws Exception {
 
         BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
 
@@ -75,9 +75,14 @@ public class ActionHandler {
         if (requestSendAction.getAction().type == BattleConst.ACTION_END) {
             if (match.state == BattleConst.MATCH_HAPPENING) {
                 match.state = BattleConst.MATCH_ENDED;
+
+                // reset enemy state
+                ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
+                listUserData.updateUser(match.enemyId, false);
+                listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
+
             } else {
                 throw new CustomException(ErrorConst.BATTLE_ACTION_INVALID);
-
             }
         }
 

@@ -213,7 +213,7 @@ public class TroopHandler extends BaseClientRequestHandler {
     }
 
     private void handleGetTrainTroopList(User user, RequestGetTrainTroopList reqInfo){
-        System.out.println("HANDLE GET TRAINING LIST with barrackId::::" + reqInfo.getBarrackId());
+        System.out.println("HANDLE GET TRAINING LIST " + reqInfo.toString());
         try {
             // tìm barrack theo đúng id
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);

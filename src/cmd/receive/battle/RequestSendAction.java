@@ -41,4 +41,38 @@ public class RequestSendAction extends BaseCmd {
             CommonHandle.writeErrLog(e);
         }
     }
+
+    public static ByteBuffer createByteBuffer(BattleAction action){
+
+
+        int bufferSize = 4 * 2; // Kích thước cho type và tick
+
+        if (action.type == BattleConst.ACTION_THROW_TROOP) {
+            bufferSize += 4 + action.troopType.length() + 4 + 4; // Kích thước cho troopType, posX và posY
+        }
+
+        ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+        buffer.putInt(action.type);
+        buffer.putInt(action.tick);
+
+        if (action.type == BattleConst.ACTION_THROW_TROOP) {
+            byte[] troopTypeBytes = action.troopType.getBytes();
+            buffer.putInt(troopTypeBytes.length);
+            buffer.put(troopTypeBytes);
+            buffer.putInt(action.posX);
+            buffer.putInt(action.posY);
+        }
+
+        buffer.flip(); // Đảm bảo rằng buffer sẽ đọc từ đầu
+
+        return buffer;
+
+    }
+
+    @Override
+    public String toString() {
+        return "RequestSendAction{" +
+                "action=" + action +
+                '}';
+    }
 }
