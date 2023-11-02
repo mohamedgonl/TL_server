@@ -12,7 +12,7 @@ import util.server.CustomException;
 import util.server.ServerConstant;
 
 public class ActionHandler {
-    public static ResponseSendAction handleReceiveAction(User user, RequestSendAction requestSendAction) throws CustomException {
+    public static ResponseSendAction handleReceiveAction(User user, RequestSendAction requestSendAction) throws Exception {
 
         BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
 
@@ -51,10 +51,14 @@ public class ActionHandler {
                     throw new CustomException(ErrorConst.MATCH_ENDED);
 
                 }
+                // vị trí ko hợp lệ
+                else if (!match.checkValidThrowTroopPos(requestSendAction.getAction().posX, requestSendAction.getAction().posY)) {
+                    throw  new CustomException(ErrorConst.INVALID_THROW_TROOP_POSITION);
+                }
+
                 // nếu đã thả hết lính => không lưu action
                 else if (!match.checkValidTroopCount(requestSendAction.getAction())) {
                     throw new CustomException(ErrorConst.TROOP_EMPTY);
-
                 }
 
             } else if (match.state == BattleConst.MATCH_NEW) {
@@ -71,9 +75,14 @@ public class ActionHandler {
         if (requestSendAction.getAction().type == BattleConst.ACTION_END) {
             if (match.state == BattleConst.MATCH_HAPPENING) {
                 match.state = BattleConst.MATCH_ENDED;
+
+                // reset enemy state
+                ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
+                listUserData.updateUser(match.enemyId, false);
+                listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
+
             } else {
                 throw new CustomException(ErrorConst.BATTLE_ACTION_INVALID);
-
             }
         }
 

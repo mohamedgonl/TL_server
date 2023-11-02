@@ -2,12 +2,15 @@ package battle_models;
 
 import util.BattleConst;
 import util.Common;
+import util.database.DataModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 
-public class BattleMatch {
+public class BattleMatch extends DataModel {
+    public static int idGenerate = 0;
     public int id;
     public int enemyId;
 
@@ -19,13 +22,9 @@ public class BattleMatch {
     public int winTrophy;
     public int loseTrophy;
 
-    private transient int[][] map = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
-
     public int createTime; // thời điểm tạo trận
     public int startTime;
 
-    private transient ArrayList<BattleTroop> troops; // Lưu thông tin từng con lính trong trận
-    public ArrayList<BattleBuilding> buildings;
 
     public Map<String, Integer> army; // Lượng lính mang đi đánh
 
@@ -36,15 +35,21 @@ public class BattleMatch {
     private int goldGot = 0; // vàng chiếm dc
     private int elixirGot = 0; // dầu chiếm dc
 
-    private ArrayList<BattleAction> actionsList;
-    
     public boolean isWin;
-    public float winPercentage;
+    public float winPercentage = 0;
 
     public int stars;
 
+    private transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
+    private transient int[][] troopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
+
+    private transient ArrayList<BattleTroop> troops = new ArrayList<>(); // Lưu thông tin từng con lính trong trận
+    public ArrayList<BattleBuilding> buildings;
+    private ArrayList<BattleAction> actionsList = new ArrayList<>();
+
 
     public BattleMatch(int enemyId, String enemyName, ArrayList<BattleBuilding> buildings, Map<String, Integer> army, int maxGold, int maxElixir) {
+        this.id = idGenerate ++;
         this.enemyId = enemyId;
         this.enemyName = enemyName;
         this.maxGold = maxGold;
@@ -61,26 +66,70 @@ public class BattleMatch {
         Random random = new Random();
         this.winTrophy = random.nextInt(BattleConst.MAX_POINT - BattleConst.MIN_POINT + 1) + BattleConst.MIN_POINT;
         this.loseTrophy = random.nextInt(BattleConst.MAX_POINT - BattleConst.MIN_POINT + 1) + BattleConst.MIN_POINT;
-        
-        this.initGridMap();
-//        this.printGridMap();
+
+        this.initBattleMap();
+//        this.printGridMap(this.battleMap);
 
     }
-    
-    public void initGridMap () {
-        for (BattleBuilding building: this.buildings) {
-            for (int i = 0; i < building.baseBuildingStats.width*BattleConst.BATTLE_MAP_SCALE; i++) {
-                for (int j = 0; j < building.baseBuildingStats.height*BattleConst.BATTLE_MAP_SCALE; j++) {
-                    this.map[i + building.posX][j+building.posY] = building.id;
+
+    public void setGoldGot(int goldGot) {
+        this.goldGot = goldGot;
+    }
+
+    public void setElixirGot(int elixirGot) {
+        this.elixirGot = elixirGot;
+    }
+
+    public int getGoldGot() {
+       return this.goldGot;
+    }
+
+    public int getElixirGot() {
+        return this.elixirGot;
+    }
+
+    @Override
+    public String toString() {
+        return "BattleMatch{" +
+                "id=" + id +
+                ", enemyId=" + enemyId +
+                ", enemyName='" + enemyName + '\'' +
+                ", state=" + state +
+                ", trophy=" + trophy +
+                ", winTrophy=" + winTrophy +
+                ", loseTrophy=" + loseTrophy +
+                ", createTime=" + createTime +
+                ", startTime=" + startTime +
+                ", army=" + army +
+                ", maxGold=" + maxGold +
+                ", maxElixir=" + maxElixir +
+                ", goldGot=" + goldGot +
+                ", elixirGot=" + elixirGot +
+                ", isWin=" + isWin +
+                ", winPercentage=" + winPercentage +
+                ", stars=" + stars +
+                ", battleMap=" + Arrays.toString(battleMap) +
+                ", troopMap=" + Arrays.toString(troopMap) +
+                ", troops=" + troops +
+                ", buildings=" + buildings +
+                ", actionsList=" + actionsList +
+                '}';
+    }
+
+    public void initBattleMap() {
+        for (BattleBuilding building : this.buildings) {
+            for (int i = 0; i < building.baseBuildingStats.width * BattleConst.BATTLE_MAP_SCALE; i++) {
+                for (int j = 0; j < building.baseBuildingStats.height * BattleConst.BATTLE_MAP_SCALE; j++) {
+                    this.battleMap[i + building.posX][j + building.posY] = building.id;
                 }
             }
         }
     }
 
-    public void printGridMap () {
-        for (int row = 0; row < BattleConst.BATTLE_MAP_SIZE; row++) {
-            for (int col = 0; col < BattleConst.BATTLE_MAP_SIZE; col++) {
-                String cellValue = String.format("%3d", this.map[row][col]);
+    public void printGridMap(int [][] map) {
+        for (int row = 0; row < map.length; row++) {
+            for (int col = 0; col < map[row].length; col++) {
+                String cellValue = String.format("%3d", map[row][col]);
                 System.out.print(cellValue);
             }
             System.out.println();
@@ -102,6 +151,47 @@ public class BattleMatch {
         return false;
     }
 
+    public void updateResourceGot(int addition, BattleConst.ResourceType type) {
+
+        if (type == BattleConst.ResourceType.GOLD) {
+            if (this.goldGot + addition <= this.maxGold) {
+                this.goldGot += addition;
+            }
+        }
+
+        if (type == BattleConst.ResourceType.ELIXIR) {
+            if (this.elixirGot + addition <= this.maxElixir) {
+                this.elixirGot += addition;
+            }
+        }
+
+
+    }
+
+    public void throwTroop(BattleTroop troop) {
+
+    }
+
+    public boolean checkValidThrowTroopPos(int posX, int posY) {
+        int n = this.battleMap.length;
+
+        for (int i = -BattleConst.BATTLE_MAP_BORDER; i <= BattleConst.BATTLE_MAP_BORDER; i++) {
+            for (int j = -BattleConst.BATTLE_MAP_BORDER; j <= BattleConst.BATTLE_MAP_BORDER; j++) {
+                int newRow = posX + i;
+                int newCol = posY + j;
+
+                if (newRow >= 0 && newRow < n && newCol >= 0 && newCol < n && (newRow != posX || newCol != posY)) {
+                    if (this.battleMap[newRow][newCol] != 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false; // Không có ô nào có gi
+    }
+
+
     public int getTroopCount(String type) {
         int count = 0;
         for (int i = 0; i < this.actionsList.size(); i++) {
@@ -120,37 +210,21 @@ public class BattleMatch {
         int tick = 0;
         while (tick < BattleConst.MAX_TICK_PER_GAME || this.actionsList.get(actionIndex).type != BattleConst.ACTION_END) {
 
-            if(this.actionsList.get(actionIndex).tick == tick) {
+            if (this.actionsList.get(actionIndex).tick == tick && actionIndex < this.actionsList.size()) {
                 //TODO: do action
 
+
+
+
+                actionIndex ++;
             }
 
 
             //TODO: update state
 
 
-
-
-
             tick++;
         }
-
-    }
-
-    public void updateResourceGot(int addition, BattleConst.ResourceType type) {
-
-        if(type == BattleConst.ResourceType.GOLD) {
-            if(this.goldGot + addition <= this.maxGold ) {
-                this.goldGot += addition;
-            }
-        }
-
-        if(type == BattleConst.ResourceType.ELIXIR) {
-            if(this.elixirGot + addition <= this.maxElixir ) {
-                this.elixirGot += addition;
-            }
-        }
-
 
     }
 

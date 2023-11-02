@@ -52,6 +52,8 @@ public class CmdDefine {
 
     public static final short END_GAME = 6003;
 
+    public static final short GET_MATCH = 6004;
+
 
 
 }

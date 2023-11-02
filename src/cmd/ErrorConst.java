@@ -49,8 +49,9 @@ public class ErrorConst {
     public static final short MATCH_ENDED = 70;
     public static final short BATTLE_ACTION_INVALID = 71;
     public static final short TROOP_EMPTY = 72;
+    public static final short INVALID_THROW_TROOP_POSITION = 73;
 //    public static final short MATCH_ENDED = 70;
-//    public static final short MATCH_ENDED = 70;
+    public static final short NO_MATCH_FOUND = 80;
 
 
 

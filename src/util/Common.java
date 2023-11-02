@@ -1,5 +1,7 @@
 package util;
 
+import bitzero.server.entities.User;
+import bitzero.util.ExtensionUtility;
 import bitzero.util.common.business.CommonHandle;
 import bitzero.util.config.bean.ConstantMercury;
 import bitzero.util.datacontroller.business.DataController;
@@ -64,4 +66,11 @@ public class Common {
                                                          ConstantMercury.SUFFIX_ONLINE);
         return (isOnline == 1);
     }
+
+    public static boolean checkUserOnline(int userId) {
+        User user = ExtensionUtility.globalUserManager.getUserById(userId);
+        return user != null && user.isConnected();
+    }
+
+
 }

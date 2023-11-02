@@ -5,10 +5,7 @@ import util.GameConfig;
 import util.config.ArmyCampConfig;
 import util.database.DataModel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PlayerInfo extends DataModel {
     private int id;
@@ -32,6 +29,10 @@ public class PlayerInfo extends DataModel {
     private transient int totalBuilders;
     private transient int[][] map;
     private transient Map<String, Integer> buildingAmount;
+
+    public ArrayList<BattleMatch> getBattleMatches() {
+        return battleMatches;
+    }
 
     private ArrayList<BattleMatch> battleMatches = new ArrayList<>();
 
@@ -194,6 +195,9 @@ public class PlayerInfo extends DataModel {
     public void setListBuildings(ArrayList<Building> listBuildings) {
         this.listBuildings = listBuildings;
     }
+    public void setListTroops(Map<String, Integer> listTroops) {
+        this.listTroops = listTroops;
+    }
 
     public int[][] getMap() {
         return map;
@@ -301,9 +305,28 @@ public class PlayerInfo extends DataModel {
     }
 
 
-
-
+    @Override
     public String toString() {
-        return String.format("%s|%s|%s|%s|%s", id, name, gold, gem, elixir, level);
+        return "PlayerInfo{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", level=" + level +
+                ", rank=" + rank +
+                ", gold=" + gold +
+                ", elixir=" + elixir +
+                ", gem=" + gem +
+                ", goldCapacity=" + goldCapacity +
+                ", elixirCapacity=" + elixirCapacity +
+                ", listTroops=" + listTroops +
+                ", listBuildings=" + listBuildings +
+                ", townHallType='" + townHallType + '\'' +
+                ", townHallLv=" + townHallLv +
+                ", avaiableBuilders=" + avaiableBuilders +
+                ", totalBuilders=" + totalBuilders +
+                ", map=" + Arrays.toString(map) +
+                ", buildingAmount=" + buildingAmount +
+                ", battleMatches=" + battleMatches +
+                '}';
     }
 }

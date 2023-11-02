@@ -27,4 +27,11 @@ public class RequestGetTrainTroopList extends BaseCmd {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public String toString() {
+        return "RequestGetTrainTroopList{" +
+                "barrackId=" + barrackId +
+                '}';
+    }
 }
