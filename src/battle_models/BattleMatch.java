@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class BattleMatch extends DataModel {
-    public static int idGenerate = 0;
+    public static int idGenerate = 1;
     public int id;
     public int enemyId;
 
@@ -43,13 +43,16 @@ public class BattleMatch extends DataModel {
     private transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
     private transient int[][] troopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
 
+    private transient int[][] throwTroopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
+
+
     private transient ArrayList<BattleTroop> troops = new ArrayList<>(); // Lưu thông tin từng con lính trong trận
     public ArrayList<BattleBuilding> buildings;
     private ArrayList<BattleAction> actionsList = new ArrayList<>();
 
 
-    public BattleMatch(int enemyId, String enemyName, ArrayList<BattleBuilding> buildings, Map<String, Integer> army, int maxGold, int maxElixir) {
-        this.id = idGenerate ++;
+    public BattleMatch(int id, int enemyId, String enemyName, ArrayList<BattleBuilding> buildings, Map<String, Integer> army, int maxGold, int maxElixir) {
+        this.id = id;
         this.enemyId = enemyId;
         this.enemyName = enemyName;
         this.maxGold = maxGold;
@@ -57,6 +60,10 @@ public class BattleMatch extends DataModel {
         this.army = army;
         this.buildings = buildings;
         this.initData();
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void initData() {
@@ -68,6 +75,7 @@ public class BattleMatch extends DataModel {
         this.loseTrophy = random.nextInt(BattleConst.MAX_POINT - BattleConst.MIN_POINT + 1) + BattleConst.MIN_POINT;
 
         this.initBattleMap();
+        this.initThrowTroopMap();
 //        this.printGridMap(this.battleMap);
 
     }
@@ -81,7 +89,7 @@ public class BattleMatch extends DataModel {
     }
 
     public int getGoldGot() {
-       return this.goldGot;
+        return this.goldGot;
     }
 
     public int getElixirGot() {
@@ -126,7 +134,31 @@ public class BattleMatch extends DataModel {
         }
     }
 
-    public void printGridMap(int [][] map) {
+    public void initThrowTroopMap() {
+        for (BattleBuilding building : this.buildings) {
+            int width = building.baseBuildingStats.width + BattleConst.BATTLE_MAP_BORDER,
+                    height = building.baseBuildingStats.height + BattleConst.BATTLE_MAP_BORDER,
+            posX = Math.max(building.posX - BattleConst.BATTLE_MAP_BORDER/2 * BattleConst.BATTLE_MAP_SCALE, 0), posY = Math.max(building.posY - BattleConst.BATTLE_MAP_BORDER/2 * BattleConst.BATTLE_MAP_SCALE, 0);
+            if (building.type.startsWith("OBS")) {
+                width = building.baseBuildingStats.width;
+                height = building.baseBuildingStats.height;
+                posX = posX == 0 ? 0 : posX + BattleConst.BATTLE_MAP_BORDER/2 * BattleConst.BATTLE_MAP_SCALE;
+                posY = posY == 0 ? 0 : posY +  BattleConst.BATTLE_MAP_BORDER/2 * BattleConst.BATTLE_MAP_SCALE;
+            }
+            else {
+                System.out.println(building.id);
+            }
+
+            for (int i = 0; i < width * BattleConst.BATTLE_MAP_SCALE; i++) {
+                for (int j = 0; j <height * BattleConst.BATTLE_MAP_SCALE; j++) {
+                    this.throwTroopMap[i + posX][j + posY] = building.id;
+                }
+            }
+        }
+    }
+
+
+    public void printGridMap(int[][] map) {
         for (int row = 0; row < map.length; row++) {
             for (int col = 0; col < map[row].length; col++) {
                 String cellValue = String.format("%3d", map[row][col]);
@@ -172,23 +204,23 @@ public class BattleMatch extends DataModel {
 
     }
 
-    public boolean checkValidThrowTroopPos(int posX, int posY) {
-        int n = this.battleMap.length;
+    public BattleBuilding getBattleBuildingByPos(int posX, int posY) {
+        return this.getBattleBuildingById(this.battleMap[posX][posY]);
+    }
 
-        for (int i = -BattleConst.BATTLE_MAP_BORDER; i <= BattleConst.BATTLE_MAP_BORDER; i++) {
-            for (int j = -BattleConst.BATTLE_MAP_BORDER; j <= BattleConst.BATTLE_MAP_BORDER; j++) {
-                int newRow = posX + i;
-                int newCol = posY + j;
-
-                if (newRow >= 0 && newRow < n && newCol >= 0 && newCol < n && (newRow != posX || newCol != posY)) {
-                    if (this.battleMap[newRow][newCol] != 0) {
-                        return true;
-                    }
-                }
+    public BattleBuilding getBattleBuildingById(int id) {
+        for (BattleBuilding building :
+                this.buildings) {
+            if (building.id == id) {
+                return building;
             }
         }
+        return null;
+    }
 
-        return false; // Không có ô nào có gi
+
+    public boolean checkValidThrowTroopPos(int posX, int posY) {
+        return this.throwTroopMap[posX][posY] == 0;
     }
 
 
@@ -214,9 +246,7 @@ public class BattleMatch extends DataModel {
                 //TODO: do action
 
 
-
-
-                actionIndex ++;
+                actionIndex++;
             }
 
 

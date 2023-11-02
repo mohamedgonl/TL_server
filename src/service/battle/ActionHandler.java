@@ -42,7 +42,13 @@ public class ActionHandler {
         // action thả lính
         if (requestSendAction.getAction().type == BattleConst.ACTION_THROW_TROOP) {
 
-            if (match.state == BattleConst.MATCH_HAPPENING) {
+            if (match.state == BattleConst.MATCH_HAPPENING || match.state == BattleConst.MATCH_NEW) {
+
+                if (match.state == BattleConst.MATCH_NEW) {
+                    match.startTime = Math.min(Common.currentTimeInSecond(), match.createTime + BattleConst.COUNT_DOWN_TIME);
+                    match.state = BattleConst.MATCH_HAPPENING;
+                }
+
                 // trận đấu đã kết thúc, không nhận action thả lính
                 if (Common.currentTimeInSecond() > match.startTime + BattleConst.MAX_TIME_A_MATCH) {
                     match.state = BattleConst.MATCH_ENDED;
@@ -61,9 +67,7 @@ public class ActionHandler {
                     throw new CustomException(ErrorConst.TROOP_EMPTY);
                 }
 
-            } else if (match.state == BattleConst.MATCH_NEW) {
-                match.startTime = Math.min(Common.currentTimeInSecond(), match.createTime + BattleConst.COUNT_DOWN_TIME);
-                match.state = BattleConst.MATCH_HAPPENING;
+
             } else {
                 throw new CustomException(ErrorConst.BATTLE_ACTION_INVALID);
 
@@ -87,6 +91,8 @@ public class ActionHandler {
         }
 
         match.pushAction(requestSendAction.getAction());
+//        match.startGameLoop();
+
         user.setProperty(ServerConstant.MATCH, match);
         return new ResponseSendAction(ErrorConst.SUCCESS);
     }

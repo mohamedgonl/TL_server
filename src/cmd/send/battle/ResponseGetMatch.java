@@ -5,6 +5,7 @@ import battle_models.BattleBuilding;
 import battle_models.BattleMatch;
 import bitzero.server.extensions.data.BaseMsg;
 import cmd.CmdDefine;
+import util.BattleConst;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -61,6 +62,15 @@ public class ResponseGetMatch extends BaseMsg {
 
             bf.putInt( this.match.getActionsList().size());
             for (BattleAction action :  this.match.getActionsList()) {
+                int type = action.type;
+                bf.putInt(type);
+                bf.putInt(action.tick);
+
+                if(type == BattleConst.ACTION_THROW_TROOP) {
+                    putStr(bf, action.troopType);
+                    bf.putInt(action.posX);
+                    bf.putInt(action.posY);
+                }
 
             }
         }
