@@ -76,15 +76,16 @@ public class MatchHandler  {
         }
 
         ArrayList<BattleBuilding> buildings = convertToBattleBuilding(enemyInfo.getListBuildings());
+        boolean hasElixirSto = buildings.stream().anyMatch(building -> "STO_2".equals(building.type) || "RES_2".equals(building.type));
 
         Map<String, Integer> army = userInfo.getListTroops();
 
         // Tạo 1 match với các data trên
-        BattleMatch newMatch = new BattleMatch(enemyInfo.getId(), enemyInfo.getName(),
+        BattleMatch newMatch = new BattleMatch(userInfo.getBattleMatches().size(), enemyInfo.getId(), enemyInfo.getName(),
                 buildings,
                 army,
                 (int) (enemyInfo.getGold() * BattleConst.RESOURCE_RATE),
-                (int) (enemyInfo.getElixir() * BattleConst.RESOURCE_RATE));
+                hasElixirSto?(int) (enemyInfo.getElixir() * BattleConst.RESOURCE_RATE):0);
 
         // update enemy state
         ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
@@ -128,7 +129,7 @@ public class MatchHandler  {
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
             int userRank = userInfo.getRank();
             ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
-            PlayerInfo playerInfo = listUserData.getRandomPlayerInRangeRank(userRank - range, userRank + range);
+            PlayerInfo playerInfo = listUserData.getRandomPlayerInRangeRank(user.getId(), userRank - range, userRank + range);
             return playerInfo;
 
         } catch (Exception e) {
@@ -195,4 +196,5 @@ public class MatchHandler  {
         }
         throw  new CustomException(ErrorConst.NO_MATCH_FOUND);
     }
+
 }

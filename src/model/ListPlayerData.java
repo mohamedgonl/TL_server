@@ -45,7 +45,7 @@ public class ListPlayerData extends DataModel {
 
 //    public void setPlayerState
 
-    public PlayerInfo getRandomPlayerInRangeRank(int min, int max) {
+    public PlayerInfo getRandomPlayerInRangeRank(int userId, int min, int max) {
         PlayerInfo playerInfo;
         ArrayList<Map.Entry<Integer, Boolean>> entryList = new ArrayList<>(userIds.entrySet());
         int id;
@@ -56,7 +56,7 @@ public class ListPlayerData extends DataModel {
                 id = randomEntry.getKey();
                 playerInfo = (PlayerInfo) PlayerInfo.getModel(id, PlayerInfo.class);
             }
-            while (playerInfo.getRank() < min || playerInfo.getRank() > max || Common.checkUserOnline(playerInfo.getId()));
+            while (playerInfo.getRank() < min || playerInfo.getRank() > max || Common.checkUserOnline(playerInfo.getId()) || id == userId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

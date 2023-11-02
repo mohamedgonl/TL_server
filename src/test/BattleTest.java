@@ -1,5 +1,6 @@
 package test;
 
+import battle_models.BattleAction;
 import battle_models.BattleMatch;
 import bitzero.engine.sessions.ISession;
 import bitzero.engine.sessions.Session;
@@ -13,6 +14,7 @@ import bitzero.server.core.BZEventParam;
 import bitzero.server.core.BZEventType;
 import bitzero.server.entities.User;
 import bitzero.server.entities.managers.BZUserManager;
+import bitzero.server.exceptions.BZException;
 import bitzero.server.extensions.IClientRequestHandler;
 import bitzero.server.extensions.data.DataCmd;
 import bitzero.server.util.ByteArray;
@@ -22,20 +24,26 @@ import bitzero.util.socialcontroller.bean.UserInfo;
 import cmd.CmdDefine;
 import cmd.receive.battle.RequestEndGame;
 import cmd.receive.battle.RequestGetMatch;
+import cmd.receive.battle.RequestSendAction;
 import cmd.send.battle.ResponseEndGame;
 import cmd.send.battle.ResponseGetMatch;
 import cmd.send.battle.ResponseMatchingPlayer;
+import cmd.send.battle.ResponseSendAction;
 import event.handler.LoginSuccessHandler;
 import extension.FresherExtension;
 import javafx.beans.binding.ObjectBinding;
 import model.PlayerInfo;
 import model.TrainingItem;
 import org.apache.commons.lang.exception.ExceptionUtils;
+
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
+
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import service.DemoHandler;
+import service.battle.ActionHandler;
 import service.battle.BattleHandler;
 import service.battle.MatchHandler;
 import util.BattleConst;
@@ -43,6 +51,7 @@ import util.server.ServerConstant;
 
 import java.awt.*;
 import java.net.SocketAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -55,25 +64,25 @@ import static test.TestConstant.CHANGE_POS;
 public class BattleTest {
 
 
-
     /**
      * Description:
      * -
-     *
-     *
+     * <p>
+     * <p>
      * Requirement:
      * -
-     *
+     * <p>
      * Actions:
      * -
      */
     @Test
     @Order(1)
-    void checkConfigDatabase(){
+    void checkConfigDatabase() {
         assertEquals("127.0.0.1:11211", ConfigHandle.instance().get("dservers"),
                 TestConstant.ERROR_MSG_DATABASE);
 
     }
+
     @Test
     @Order(0)
     void initFramework() {
@@ -108,12 +117,12 @@ public class BattleTest {
     @Order(2)
     void validateUser() {
 
-        try{
-            FresherExtension extension = (FresherExtension)BitZeroServer.getInstance().getExtensionManager().getMainExtension();
+        try {
+            FresherExtension extension = (FresherExtension) BitZeroServer.getInstance().getExtensionManager().getMainExtension();
             UserInfo uInfo = extension.getUserInfo("username_" + TestConstant.USER_ID, TestConstant.USER_ID, "127.0.0.1");
-            assertEquals(TestConstant.USER_ID +"", uInfo.getUserId(),
+            assertEquals(TestConstant.USER_ID + "", uInfo.getUserId(),
                     "\nChange setting conf/cluster.properties -> custom_login to : 2");
-        }catch(Exception e){
+        } catch (Exception e) {
             assertTrue(false,
                     "\nError:\n"
                             + ExceptionUtils.getStackTrace(e));
@@ -124,16 +133,16 @@ public class BattleTest {
 
     @Test
     @Order(3)
-    void checkCacheInRAM(){
-        try{
-            int userId = this.createUser(123).getId();
+    void checkCacheInRAM() {
+        try {
+            int userId = this.createUser(TestConstant.USER_ID).getId();
             Thread.sleep(500L);
 
             User uNew = BitZeroServer.getInstance().getUserManager().getUserById(userId);
             Object userInfo = uNew.getProperty(ServerConstant.PLAYER_INFO);
             assertNotEquals(null, userInfo, TestConstant.ERROR_MSG_CACHE_IN_RAM);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             assertTrue(false,
                     "\nError:\n"
                             + ExceptionUtils.getStackTrace(e));
@@ -142,27 +151,27 @@ public class BattleTest {
 
 //    @Test
 //    @Order(4)
-//    void createUsersForTest(){
-//        try {
-//            for (int i = 1; i <= 10000; i++) {
-//                this.createUser(i);
-//            }
-//        }
-//        catch (Exception e) {
-//            System.err.println(e.getMessage());
-//        }
-//    }
+    void createUsersForTest(){
+        try {
+            for (int i = 1; i <= 10000; i++) {
+                this.createUser(i);
+            }
+        }
+        catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }
 
 
     @Test
     @Order(4)
     void testMatching() {
-        try{
+        try {
             ByteArray byteArray = new ByteArray();
             DataCmd dataCmd = new DataCmd(byteArray.getBytes());
             dataCmd.setId(CmdDefine.BATTLE_MATCHING);
 
-            User user=  BitZeroServer.getInstance().getUserManager().getUserById(123);
+            User user = BitZeroServer.getInstance().getUserManager().getUserById(TestConstant.USER_ID);
             PlayerInfo playerInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
 
             Map<String, Integer> troopList = new HashMap<>();
@@ -175,8 +184,7 @@ public class BattleTest {
             ResponseMatchingPlayer responseMatchingPlayer = MatchHandler.createMatch(user);
 
             System.out.println(responseMatchingPlayer.toString());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
     }
@@ -185,13 +193,17 @@ public class BattleTest {
     @Order(5)
     void testSendAction() {
         try {
-            ByteArray byteArray = new ByteArray();
+            User user = BitZeroServer.getInstance().getUserManager().getUserById(TestConstant.USER_ID);
 
+            ActionHandler.handleReceiveAction(user,
+                    this.createSendActionRq(BattleConst.ACTION_THROW_TROOP, 50, "ARM_1", 5, 12));
 
-            DataCmd dataCmd = new DataCmd(byteArray.getBytes());
-            dataCmd.setId(CmdDefine.SEND_ACTION);
-        }
-        catch (Exception e) {
+            ActionHandler.handleReceiveAction(user,
+                    this.createSendActionRq(BattleConst.ACTION_END, 120));
+
+            System.out.println();
+
+        } catch (Exception e) {
             System.err.println(e);
         }
     }
@@ -201,46 +213,25 @@ public class BattleTest {
     void testEndGame() {
         try {
 
-            boolean result = true;
-            int stars = 3, trophy = 20, goldGot = 120, elixirGot = 150, armySize = 0, tick = 30;
+            ArrayList<TrainingItem> troops = new ArrayList<>();
+            troops.add(new TrainingItem("ARM_1", 3));
+            troops.add(new TrainingItem("ARM_2", 4));
+            RequestEndGame requestEndGame = this.createRequestEndGame(2,20,12,21,144,troops);
 
-            ByteArray byteArray = new ByteArray();
-
-            byteArray.writeBool(result);
-            byteArray.writeInt(stars);
-            byteArray.writeInt(trophy);
-            byteArray.writeInt(goldGot);
-            byteArray.writeInt(elixirGot);
-
-            byteArray.writeInt(armySize);
-            if(armySize != 0) {
-                for (int i = 0; i < armySize; i++) {
-                    byteArray.writeUTF("ARM_1");
-                    byteArray.writeInt(1);
-                }
-            }
-
-            byteArray.writeInt(tick);
-
-            DataCmd dataCmd = new DataCmd(byteArray.getBytes());
-            dataCmd.setId(CmdDefine.END_GAME);
-
-
-            int userId = getRandomNumber(1,1000);
-            User u = BitZeroServer.getInstance().getUserManager().getUserById(123);
+            int userId = getRandomNumber(1, 1000);
+            User u = BitZeroServer.getInstance().getUserManager().getUserById(TestConstant.USER_ID);
 
             u.getProperty(ServerConstant.MATCH);
 
+            try {
+                ResponseEndGame responseEndGame = MatchHandler.handleEndGame(u, requestEndGame);
 
-            try{
-                ResponseEndGame responseEndGame = MatchHandler.handleEndGame(u, new RequestEndGame(dataCmd));
-            }catch(Exception ef){
+            } catch (Exception ef) {
                 System.err.println(ef.getMessage());
             }
 
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
     }
@@ -248,34 +239,30 @@ public class BattleTest {
 
     @Test
     @Order(10)
-    void checkGetMatch(){
+    void checkGetMatch() {
 
-        try{
+        try {
 
             ByteArray byteArray = new ByteArray();
-            byteArray.writeInt(0);
+            byteArray.writeInt(1);
 
             DataCmd dataCmd = new DataCmd(byteArray.getBytes());
             dataCmd.setId(CmdDefine.GET_MATCH);
 
 //            int userId = getRandomNumber(1,10000);
 
-            User u = BitZeroServer.getInstance().getUserManager().getUserById(123);
+            User u = BitZeroServer.getInstance().getUserManager().getUserById(TestConstant.USER_ID);
 
 
-
-            try{
-              ResponseGetMatch responseGetMatch = MatchHandler.handleGetMatch( u,new RequestGetMatch(dataCmd));
-              System.out.println(responseGetMatch.toString());
-            }catch(Exception ef){
+            try {
+                ResponseGetMatch responseGetMatch = MatchHandler.handleGetMatch(u, new RequestGetMatch(dataCmd));
+                System.out.println(responseGetMatch.toString());
+            } catch (Exception ef) {
                 System.err.println(ef.getMessage());
             }
 
-            Thread.sleep(500L);
-
-
-        }catch(Exception e){
-
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
 
 
@@ -297,7 +284,7 @@ public class BattleTest {
         ISession dmnSession = new Session();
         dmnSession.setType(SessionType.VOID);
 
-        FresherExtension extension = (FresherExtension)BitZeroServer.getInstance().getExtensionManager().getMainExtension();
+        FresherExtension extension = (FresherExtension) BitZeroServer.getInstance().getExtensionManager().getMainExtension();
 
         UserInfo uInfo = extension.getUserInfo("username_" + userId, userId, "127.0.0.1");
         User u = ExtensionUtility.instance().canLogin(uInfo, "", dmnSession);
@@ -306,10 +293,69 @@ public class BattleTest {
         Map<Object, Object> evtParams = new HashMap<>();
         evtParams.put(BZEventParam.USER, u);
         ExtensionUtility.dispatchEvent(new BZEvent(BZEventType.USER_LOGIN, evtParams));
-        Thread.sleep(1000);
+        Thread.sleep(100);
 
         u.setProperty("userId", uInfo.getUserId());
+
         return u;
+    }
+
+    private RequestSendAction createSendActionRq(int actionType, int tick) throws BZException {
+        ByteArray byteArray = new ByteArray();
+
+        byteArray.writeInt(actionType);
+        byteArray.writeInt(tick);
+
+
+        DataCmd dataCmd = new DataCmd(byteArray.getBytes());
+
+        dataCmd.setId(CmdDefine.SEND_ACTION);
+
+        return new RequestSendAction(dataCmd);
+    }
+
+    private RequestSendAction createSendActionRq(int actionType, int tick, String troopType, int posX, int posY) throws BZException {
+        ByteArray byteArray = new ByteArray();
+
+        byteArray.writeInt(actionType);
+        byteArray.writeInt(tick);
+        byteArray.writeUTF(troopType);
+        byteArray.writeInt(posX);
+        byteArray.writeInt(posY);
+
+
+        DataCmd dataCmd = new DataCmd(byteArray.getBytes());
+
+        dataCmd.setId(CmdDefine.SEND_ACTION);
+
+        return new RequestSendAction(dataCmd);
+    }
+
+    private RequestEndGame createRequestEndGame (int stars, int trophy, int goldGot, int elixirGot, int tick, ArrayList<TrainingItem> troops) throws BZException {
+        boolean result = true;
+
+        ByteArray byteArray = new ByteArray();
+
+        byteArray.writeBool(result);
+        byteArray.writeInt(stars);
+        byteArray.writeInt(trophy);
+        byteArray.writeInt(goldGot);
+        byteArray.writeInt(elixirGot);
+
+        byteArray.writeInt(troops.size());
+        if (!troops.isEmpty()) {
+            for (int i = 0; i < troops.size(); i++) {
+                byteArray.writeUTF(troops.get(i).cfgId);
+                byteArray.writeInt(troops.get(i).count);
+            }
+        }
+
+        byteArray.writeInt(tick);
+
+        DataCmd dataCmd = new DataCmd(byteArray.getBytes());
+        dataCmd.setId(CmdDefine.END_GAME);
+
+        return new RequestEndGame(dataCmd);
     }
 
 }
