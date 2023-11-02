@@ -13,7 +13,6 @@ public class ListPlayerData extends DataModel {
 
     public void updateUser(int newUID, boolean isGettingAttacked) {
         this.userIds.putIfAbsent(newUID, isGettingAttacked);
-        System.out.println(this.userIds);
     }
 
     public ArrayList<PlayerInfo> getAllPlayersOffline() {
