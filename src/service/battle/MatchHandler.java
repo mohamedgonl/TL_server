@@ -15,6 +15,7 @@ import model.ListPlayerData;
 import model.PlayerInfo;
 import util.BattleConst;
 import util.Common;
+import util.database.DataModel;
 import util.server.CustomException;
 import util.server.ServerConstant;
 
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.*;
 
-public class MatchHandler {
+public class MatchHandler  {
     public static ResponseMatchingPlayer createMatch(User user) throws Exception {
         //get user from cache
         PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
@@ -92,6 +93,8 @@ public class MatchHandler {
 
 
         user.setProperty(ServerConstant.MATCH, newMatch);
+        newMatch.saveModel(user.getId());
+        userInfo.saveModel(user.getId());
         return new ResponseMatchingPlayer(ErrorConst.SUCCESS, newMatch, userInfo);
     }
 
@@ -171,7 +174,9 @@ public class MatchHandler {
                 listUserData.updateUser(match.enemyId, false);
                 listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
             }
+            userInfo.pushNewMatch(match);
             userInfo.saveModel(user.getId());
+            match.saveModel(match.id);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -183,12 +188,11 @@ public class MatchHandler {
         PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
         ArrayList<BattleMatch> matches = userInfo.getBattleMatches();
 
-        for (BattleMatch match :
-                matches) {
+        for (BattleMatch match : matches) {
             if (match.id == requestGetMatch.getMatchId()) {
                 return new ResponseGetMatch(ErrorConst.SUCCESS, match);
             }
-            }
+        }
         throw  new CustomException(ErrorConst.NO_MATCH_FOUND);
     }
 }

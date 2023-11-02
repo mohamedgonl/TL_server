@@ -2,12 +2,15 @@ package battle_models;
 
 import util.BattleConst;
 import util.Common;
+import util.database.DataModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 
-public class BattleMatch {
+public class BattleMatch extends DataModel {
+    public static int idGenerate = 0;
     public int id;
     public int enemyId;
 
@@ -29,19 +32,11 @@ public class BattleMatch {
 
     public int maxElixir;
 
-    public void setGoldGot(int goldGot) {
-        this.goldGot = goldGot;
-    }
-
-    public void setElixirGot(int elixirGot) {
-        this.elixirGot = elixirGot;
-    }
-
     private int goldGot = 0; // vàng chiếm dc
     private int elixirGot = 0; // dầu chiếm dc
 
     public boolean isWin;
-    public float winPercentage;
+    public float winPercentage = 0;
 
     public int stars;
 
@@ -54,6 +49,7 @@ public class BattleMatch {
 
 
     public BattleMatch(int enemyId, String enemyName, ArrayList<BattleBuilding> buildings, Map<String, Integer> army, int maxGold, int maxElixir) {
+        this.id = idGenerate ++;
         this.enemyId = enemyId;
         this.enemyName = enemyName;
         this.maxGold = maxGold;
@@ -72,8 +68,52 @@ public class BattleMatch {
         this.loseTrophy = random.nextInt(BattleConst.MAX_POINT - BattleConst.MIN_POINT + 1) + BattleConst.MIN_POINT;
 
         this.initBattleMap();
-        this.printGridMap(this.battleMap);
+//        this.printGridMap(this.battleMap);
 
+    }
+
+    public void setGoldGot(int goldGot) {
+        this.goldGot = goldGot;
+    }
+
+    public void setElixirGot(int elixirGot) {
+        this.elixirGot = elixirGot;
+    }
+
+    public int getGoldGot() {
+       return this.goldGot;
+    }
+
+    public int getElixirGot() {
+        return this.elixirGot;
+    }
+
+    @Override
+    public String toString() {
+        return "BattleMatch{" +
+                "id=" + id +
+                ", enemyId=" + enemyId +
+                ", enemyName='" + enemyName + '\'' +
+                ", state=" + state +
+                ", trophy=" + trophy +
+                ", winTrophy=" + winTrophy +
+                ", loseTrophy=" + loseTrophy +
+                ", createTime=" + createTime +
+                ", startTime=" + startTime +
+                ", army=" + army +
+                ", maxGold=" + maxGold +
+                ", maxElixir=" + maxElixir +
+                ", goldGot=" + goldGot +
+                ", elixirGot=" + elixirGot +
+                ", isWin=" + isWin +
+                ", winPercentage=" + winPercentage +
+                ", stars=" + stars +
+                ", battleMap=" + Arrays.toString(battleMap) +
+                ", troopMap=" + Arrays.toString(troopMap) +
+                ", troops=" + troops +
+                ", buildings=" + buildings +
+                ", actionsList=" + actionsList +
+                '}';
     }
 
     public void initBattleMap() {

@@ -76,4 +76,12 @@ public class ResponseMatchingPlayer extends BaseMsg {
         }
         return packBuffer(bf);
     }
+
+    @Override
+    public String toString() {
+        return "ResponseMatchingPlayer{" +
+                "match=" + match.toString() +
+                ", playerInfo=" + playerInfo.toString() +
+                '}';
+    }
 }

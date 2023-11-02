@@ -36,7 +36,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
     /**
      * @param user description: after login successful to server, core framework will dispatch this event
      */
-    private void onLoginSuccess(User user) {
+    public void onLoginSuccess(User user) {
 
         try {
 

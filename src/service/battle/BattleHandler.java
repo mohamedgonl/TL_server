@@ -64,6 +64,11 @@ public class BattleHandler extends BaseClientRequestHandler {
                     handleEndGame(user, requestEndGame);
                     break;
                 }
+                case CmdDefine.GET_MATCH: {
+                    RequestGetMatch requestGetMatch = new RequestGetMatch(dataCmd);
+                    handleGetMatch(user,requestGetMatch);
+                    break;
+                }
 
             }
 
@@ -114,7 +119,7 @@ public class BattleHandler extends BaseClientRequestHandler {
     }
 
     public void handleGetMatch(User user, RequestGetMatch requestGetMatch) {
-        System.out.println("HANDLE GET MATCH START");
+        System.out.println(logPrefix + "HANDLE GET MATCH START"+ logPrefix);
         System.out.println(requestGetMatch.toString());
         try {
             ResponseGetMatch response = MatchHandler.handleGetMatch(user, requestGetMatch);
