@@ -61,7 +61,7 @@ public class RequestEndGame extends BaseCmd {
     public void unpackData() {
         ByteBuffer bf = makeBuffer();
         try {
-            this.result = readBoolean(bf);
+            this.result = readInt(bf) != 0;
             this.stars = readInt(bf);
             this.trophy = readInt(bf);
             this.goldGot = readInt(bf);
