@@ -29,6 +29,8 @@ public class RequestEndGame extends BaseCmd {
         return stars;
     }
 
+
+
     public boolean getResult() {
         return result;
     }
@@ -40,6 +42,8 @@ public class RequestEndGame extends BaseCmd {
     private int goldGot;
     private int elixirGot;
     private int trophy;
+
+    public float percentage ;
 
     private int stars;
 
@@ -75,6 +79,7 @@ public class RequestEndGame extends BaseCmd {
             }
 
             this.tick = readInt(bf);
+//            this.percentage = readDouble(bf);
 
         } catch (Exception e) {
             CommonHandle.writeErrLog(e);
@@ -94,6 +99,7 @@ public class RequestEndGame extends BaseCmd {
                 ", stars=" + stars +
                 ", result=" + result +
                 ", tick=" + tick +
+                ", percentage=" + percentage +
                 ", army=" + army +
                 '}';
     }

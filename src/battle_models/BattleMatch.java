@@ -146,7 +146,7 @@ public class BattleMatch extends DataModel {
                 posY = posY == 0 ? 0 : posY +  BattleConst.BATTLE_MAP_BORDER/2 * BattleConst.BATTLE_MAP_SCALE;
             }
             else {
-                System.out.println(building.id);
+
             }
 
             for (int i = 0; i < width * BattleConst.BATTLE_MAP_SCALE; i++) {
