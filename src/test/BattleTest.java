@@ -25,10 +25,7 @@ import cmd.CmdDefine;
 import cmd.receive.battle.RequestEndGame;
 import cmd.receive.battle.RequestGetMatch;
 import cmd.receive.battle.RequestSendAction;
-import cmd.send.battle.ResponseEndGame;
-import cmd.send.battle.ResponseGetMatch;
-import cmd.send.battle.ResponseMatchingPlayer;
-import cmd.send.battle.ResponseSendAction;
+import cmd.send.battle.*;
 import event.handler.LoginSuccessHandler;
 import extension.FresherExtension;
 import javafx.beans.binding.ObjectBinding;
@@ -236,6 +233,25 @@ public class BattleTest {
         }
     }
 
+    @Test
+    @Order(9)
+    void testGetHistoryAttack () {
+        try {
+            ByteArray byteArray = new ByteArray();
+            DataCmd dataCmd = new DataCmd(byteArray.getBytes());
+            dataCmd.setId(CmdDefine.GET_HISTORY_ATTACK);
+
+            User u = BitZeroServer.getInstance().getUserManager().getUserById(TestConstant.USER_ID);
+
+            ResponseGetHistoryAttack responseGetHistoryAttack = MatchHandler.handleGetHistoryAttack(u);
+            System.out.println(responseGetHistoryAttack.toString());
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
 
     @Test
     @Order(10)
@@ -293,7 +309,7 @@ public class BattleTest {
         Map<Object, Object> evtParams = new HashMap<>();
         evtParams.put(BZEventParam.USER, u);
         ExtensionUtility.dispatchEvent(new BZEvent(BZEventType.USER_LOGIN, evtParams));
-        Thread.sleep(100);
+        Thread.sleep(1);
 
         u.setProperty("userId", uInfo.getUserId());
 
@@ -336,7 +352,7 @@ public class BattleTest {
 
         ByteArray byteArray = new ByteArray();
 
-        byteArray.writeBool(result);
+        byteArray.writeInt(result ? 1 : 0);
         byteArray.writeInt(stars);
         byteArray.writeInt(trophy);
         byteArray.writeInt(goldGot);

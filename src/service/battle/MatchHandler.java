@@ -8,6 +8,7 @@ import cmd.ErrorConst;
 import cmd.receive.battle.RequestEndGame;
 import cmd.receive.battle.RequestGetMatch;
 import cmd.send.battle.ResponseEndGame;
+import cmd.send.battle.ResponseGetHistoryAttack;
 import cmd.send.battle.ResponseGetMatch;
 import cmd.send.battle.ResponseMatchingPlayer;
 import model.Building;
@@ -167,6 +168,7 @@ public class MatchHandler  {
                 match.isWin = requestEndGame.getResult();
                 match.trophy = requestEndGame.getTrophy();
                 match.stars = requestEndGame.getStars();
+                match.state = BattleConst.MATCH_ENDED;
                 match.setGoldGot(requestEndGame.getGoldGot());
                 match.setElixirGot(requestEndGame.getElixirGot());
                 match.pushAction(new BattleAction(BattleConst.ACTION_END, requestEndGame.getTick()));
@@ -195,6 +197,12 @@ public class MatchHandler  {
             }
         }
         throw  new CustomException(ErrorConst.NO_MATCH_FOUND);
+    }
+
+    public static ResponseGetHistoryAttack handleGetHistoryAttack(User user) {
+        PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+        ArrayList<BattleMatch> matches = userInfo.getBattleMatches();
+        return new ResponseGetHistoryAttack(ErrorConst.SUCCESS, matches);
     }
 
 }

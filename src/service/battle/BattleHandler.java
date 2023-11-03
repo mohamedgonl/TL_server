@@ -9,11 +9,8 @@ import cmd.ErrorConst;
 import cmd.receive.battle.RequestEndGame;
 import cmd.receive.battle.RequestGetMatch;
 import cmd.receive.battle.RequestSendAction;
-import cmd.send.battle.ResponseEndGame;
+import cmd.send.battle.*;
 
-import cmd.send.battle.ResponseGetMatch;
-import cmd.send.battle.ResponseMatchingPlayer;
-import cmd.send.battle.ResponseSendAction;
 import cmd.send.user.ResponseGetMapInfo;
 import model.Building;
 import model.ListPlayerData;
@@ -67,6 +64,10 @@ public class BattleHandler extends BaseClientRequestHandler {
                 case CmdDefine.GET_MATCH: {
                     RequestGetMatch requestGetMatch = new RequestGetMatch(dataCmd);
                     handleGetMatch(user,requestGetMatch);
+                    break;
+                }
+                case CmdDefine.GET_HISTORY_ATTACK: {
+                    handleGetHistoryAttack(user);
                     break;
                 }
 
@@ -156,17 +157,22 @@ public class BattleHandler extends BaseClientRequestHandler {
         }
     }
 
-
-
-
-
-
-
-
-
-
-    public static BattleHandler getInstance() {
-        return instance;
+    public void handleGetHistoryAttack (User user) {
+        System.out.println(logPrefix + "HANDLE GET HISTORY ATTACK START" + logPrefix);
+        try {
+            ResponseGetHistoryAttack response = MatchHandler.handleGetHistoryAttack(user);
+            send(response, user);
+        }
+        catch (Exception e) {
+            System.out.println("HANDLE GET HISTORY ATTACK ERROR :: " + e.getMessage());
+            send(new ResponseSendAction(ErrorConst.UNKNOWN), user);
+        }
+        finally {
+            System.out.println(logPrefix + "HANDLE GET HISTORY ATTACK END" + logPrefix);
+        }
     }
+
+
+
 
 }

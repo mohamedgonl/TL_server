@@ -54,6 +54,8 @@ public class CmdDefine {
 
     public static final short GET_MATCH = 6004;
 
+    public static final short GET_HISTORY_ATTACK = 6005;
+
 
 
 }
