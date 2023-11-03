@@ -201,8 +201,10 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
                 switch (storage.type) {
                     case "gold":
                         goldCapacity += storage.capacity;
+                        break;
                     case "elixir":
                         elixirCapacity += storage.capacity;
+                        break;
                 }
             }
         }
@@ -210,7 +212,6 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         for (Building building : listBuildingToRemove) {
             playerInfo.getListBuildings().remove(building);
         }
-
 
         playerInfo.setMap(map);
         playerInfo.setBuildingAmount(buildingAmount);
