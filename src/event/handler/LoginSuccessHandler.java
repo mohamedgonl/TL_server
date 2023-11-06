@@ -8,6 +8,7 @@ import bitzero.server.extensions.ExtensionLogLevel;
 import bitzero.util.ExtensionUtility;
 import event.eventType.DemoEventParam;
 import model.Building;
+import model.ListPlayerData;
 import model.Obstacle;
 import model.PlayerInfo;
 import util.BuildingFactory;
@@ -20,10 +21,8 @@ import util.config.TownHallConfig;
 import util.server.ServerConstant;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class LoginSuccessHandler extends BaseServerEventHandler {
     public LoginSuccessHandler() {
@@ -37,48 +36,73 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
     /**
      * @param user description: after login successful to server, core framework will dispatch this event
      */
-    private void onLoginSuccess(User user) {
-        trace(ExtensionLogLevel.DEBUG, "On Login Success ", user.getName());
-        PlayerInfo pInfo = null;
-        try {
-            //get from db
-            pInfo = (PlayerInfo) PlayerInfo.getModel(user.getId(), PlayerInfo.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void onLoginSuccess(User user) {
 
-        if (pInfo == null) {
-            pInfo = new PlayerInfo(user.getId(), "username_" + user.getId());
-            try {
+        try {
+
+
+            trace(ExtensionLogLevel.DEBUG, "On Login Success ", user.getName());
+            PlayerInfo pInfo = null;
+
+            pInfo = (PlayerInfo) PlayerInfo.getModel(user.getId(), PlayerInfo.class);
+
+
+            ListPlayerData listUserData = null;
+
+            listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
+
+            if (listUserData == null) {
+                listUserData = new ListPlayerData();
+            }
+
+
+            if (pInfo == null) {
+                pInfo = new PlayerInfo(user.getId(), "username_" + user.getId());
+
                 initNewPlayerInfo(pInfo);
                 //save to db
                 pInfo.saveModel(user.getId());
-            } catch (Exception e) {
-                e.printStackTrace();
+                listUserData.updateUser(user.getId(), false);
+
             }
-        }
 
-        //init map & capacity from buildings
-        initPlayerData(pInfo);
+            // create fake accounts
+            if(user.getId() == ServerConstant.CREATE_FAKE_ACCOUNTS ) {
+                for (int i = ServerConstant.CREATE_FAKE_ACCOUNTS; i > ServerConstant.CREATE_FAKE_ACCOUNTS - 1000; i--) {
+                    PlayerInfo pInfoFake = new PlayerInfo(i, "username_" + i);
+                    createRandomPlayerInfo(pInfoFake);
+                    pInfoFake.saveModel(i);
+                    listUserData.updateUser(i, false);
+                }
+            }
 
-        /**
-         * cache playerinfo in RAM
-         */
-        user.setProperty(ServerConstant.PLAYER_INFO, pInfo);
+            listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
 
-        /**
-         * send login success to client
-         * after receive this message, client begin to send game logic packet to server
-         */
-        ExtensionUtility.instance().sendLoginOK(user);
+            //init map & capacity from buildings
+            initPlayerData(pInfo);
 
-        /**
-         * dispatch event here
-         */
-        Map evtParams = new HashMap();
-        evtParams.put(DemoEventParam.USER, user);
-        evtParams.put(DemoEventParam.NAME, user.getName());
+            /**
+             * cache playerinfo in RAM
+             */
+            user.setProperty(ServerConstant.PLAYER_INFO, pInfo);
+
+            /**
+             * send login success to client
+             * after receive this message, client begin to send game logic packet to server
+             */
+            ExtensionUtility.instance().sendLoginOK(user);
+
+            /**
+             * dispatch event here
+             */
+            Map evtParams = new HashMap();
+            evtParams.put(DemoEventParam.USER, user);
+            evtParams.put(DemoEventParam.NAME, user.getName());
 //        ExtensionUtility.dispatchEvent(new BZEvent(DemoEventType.LOGIN_SUCCESS, evtParams));
+        }
+        catch (Exception e) {
+            trace("LOGIN HANDLE ERROR ::: " + e.getMessage());
+        }
     }
 
     private void initNewPlayerInfo(PlayerInfo playerInfo) throws Exception {
@@ -195,5 +219,46 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         playerInfo.setTotalBuilders(totalBuilders);
         playerInfo.setGoldCapacity(goldCapacity);
         playerInfo.setElixirCapacity(elixirCapacity);
+    }
+
+
+
+    private void createRandomPlayerInfo(PlayerInfo playerInfo) throws Exception {
+        GameConfig gameConfig = GameConfig.getInstance();
+        System.out.println("init new player info: " + playerInfo.getId());
+
+        InitGameConfig initGameConfig = gameConfig.initGameConfig;
+
+        playerInfo.setGold(initGameConfig.player.gold);
+        playerInfo.setGem(initGameConfig.player.coin);
+        playerInfo.setElixir(initGameConfig.player.elixir);
+
+        List buildings = new ArrayList<Building>();
+        int id = 1;
+
+        for (Map.Entry<String, InitGameConfig.MapElement> entry : initGameConfig.map.entrySet()) {
+            Random random = new Random();
+            boolean isCreate = random.nextBoolean();
+            if(isCreate || entry.getKey().startsWith("TOW")) {
+                String type = entry.getKey();
+                InitGameConfig.MapElement data = entry.getValue();
+                Building building = BuildingFactory.getBuilding(id, type, 1, new Point(data.posX - 1, data.posY - 1));
+                buildings.add(building);
+                id++;
+            }
+        }
+
+        for (Map.Entry<Integer, InitGameConfig.ObsElement> entry : initGameConfig.obs.entrySet()) {
+            Random random = new Random();
+            boolean isCreate = random.nextBoolean();
+            if(isCreate) {
+                InitGameConfig.ObsElement data = entry.getValue();
+                Building building = BuildingFactory.getBuilding(id, data.type, 1, new Point(data.posX - 1, data.posY - 1));
+                buildings.add(building);
+                id++;
+            }
+        }
+
+        playerInfo.setListBuildings((ArrayList<Building>) buildings);
     }
 }

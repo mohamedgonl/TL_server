@@ -1,4 +1,4 @@
-package service;
+package service.city;
 
 import bitzero.server.entities.User;
 import bitzero.server.extensions.BaseClientRequestHandler;
@@ -40,7 +40,7 @@ import java.util.List;
 
 public class TroopHandler extends BaseClientRequestHandler {
     public static short TROOP_MULTI_IDS = 5000;
-    private final Logger logger = LoggerFactory.getLogger("UserHandler");
+    private final Logger logger = LoggerFactory.getLogger("TroopHandler");
 
     public TroopHandler() {
         super();
@@ -213,7 +213,7 @@ public class TroopHandler extends BaseClientRequestHandler {
     }
 
     private void handleGetTrainTroopList(User user, RequestGetTrainTroopList reqInfo){
-        System.out.println("HANDLE GET TRAINING LIST with barrackId::::" + reqInfo.getBarrackId());
+        System.out.println("HANDLE GET TRAINING LIST " + reqInfo.toString());
         try {
             // tìm barrack theo đúng id
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);

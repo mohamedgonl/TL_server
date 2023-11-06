@@ -26,11 +26,12 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import org.json.JSONObject;
 
-import service.BuildingHandler;
-import service.ShopHandler;
-import service.TroopHandler;
-import service.UserHandler;
+import service.*;
 
+import service.battle.BattleHandler;
+import service.city.BuildingHandler;
+import service.city.ShopHandler;
+import service.city.TroopHandler;
 import util.GuestLogin;
 
 import util.GameConfig;
@@ -63,6 +64,7 @@ public class FresherExtension extends BZExtension {
         addRequestHandler(BuildingHandler.BUILDING_MULTI_IDS, BuildingHandler.class);
         addRequestHandler(ShopHandler.SHOP_MULTI_IDS, ShopHandler.class);
         addRequestHandler(TroopHandler.TROOP_MULTI_IDS, TroopHandler.class);
+        addRequestHandler(BattleHandler.BATTLE_MULTI_IDS, BattleHandler.class);
         /**
          * register new event
          */
@@ -72,6 +74,8 @@ public class FresherExtension extends BZExtension {
         addEventHandler(BZEventType.USER_DISCONNECT, LogoutHandler.class);
         //init data
         GameConfig.getInstance().init();
+
+        //init
     }
 
     public ServerLoop getServerLoop() {
@@ -140,7 +144,7 @@ public class FresherExtension extends BZExtension {
 
     }
 
-    private UserInfo getUserInfo(String username, int userId, String ipAddress) throws Exception {
+    public UserInfo getUserInfo(String username, int userId, String ipAddress) throws Exception {
         int customLogin = ServerConstant.CUSTOM_LOGIN;
         switch(customLogin){
             case 1: // login zingme

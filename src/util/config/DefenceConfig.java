@@ -5,4 +5,6 @@ public class DefenceConfig extends BaseBuildingConfig {
     public int damagePerShot;
     public int costToLoad;
     public int unlockSkill;
+
+
 }
