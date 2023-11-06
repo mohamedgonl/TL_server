@@ -55,6 +55,7 @@ import java.util.Map;
 
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import static test.TestConstant.CHANGE_POS;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -146,16 +147,29 @@ public class BattleTest {
         }
     }
 
-//    @Test
-//    @Order(4)
+    @Test
+    @Order(4)
     void createUsersForTest(){
         try {
-            for (int i = 1; i <= 10000; i++) {
+            for (int i = 1; i <= 1000; i++) {
                 this.createUser(i);
             }
         }
         catch (Exception e) {
             System.err.println(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(5)
+    void checkUsers () {
+        try {
+             PlayerInfo playerInfo = (PlayerInfo) PlayerInfo.getModel(216, PlayerInfo.class);
+             int i = 0;
+             i++;
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -308,7 +322,8 @@ public class BattleTest {
 
         Map<Object, Object> evtParams = new HashMap<>();
         evtParams.put(BZEventParam.USER, u);
-        ExtensionUtility.dispatchEvent(new BZEvent(BZEventType.USER_LOGIN, evtParams));
+
+        ExtensionUtility.dispatchImmediateEvent(new BZEvent(BZEventType.USER_LOGIN, evtParams));
         Thread.sleep(1);
 
         u.setProperty("userId", uInfo.getUserId());
@@ -348,7 +363,7 @@ public class BattleTest {
     }
 
     private RequestEndGame createRequestEndGame (int stars, int trophy, int goldGot, int elixirGot, int tick, ArrayList<TrainingItem> troops) throws BZException {
-        boolean result = true;
+        boolean result = false;
 
         ByteArray byteArray = new ByteArray();
 
@@ -367,6 +382,7 @@ public class BattleTest {
         }
 
         byteArray.writeInt(tick);
+        byteArray.writeDouble(32);
 
         DataCmd dataCmd = new DataCmd(byteArray.getBytes());
         dataCmd.setId(CmdDefine.END_GAME);

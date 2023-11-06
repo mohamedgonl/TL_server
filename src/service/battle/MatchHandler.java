@@ -19,12 +19,14 @@ import util.Common;
 import util.database.DataModel;
 import util.server.CustomException;
 import util.server.ServerConstant;
+import java.util.Collections;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.*;
 
-public class MatchHandler  {
+public class MatchHandler {
     public static ResponseMatchingPlayer createMatch(User user) throws Exception {
         //get user from cache
         PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
@@ -67,7 +69,7 @@ public class MatchHandler  {
 
         if (enemyInfo == null) {
             enemyInfo = executeInMaxTime(() -> {
-                return getPlayerSameRank(user, 100);
+                return getPlayerSameRank(user, 200);
             }, 50);
         }
         if (enemyInfo == null) {
@@ -86,7 +88,7 @@ public class MatchHandler  {
                 buildings,
                 army,
                 (int) (enemyInfo.getGold() * BattleConst.RESOURCE_RATE),
-                hasElixirSto?(int) (enemyInfo.getElixir() * BattleConst.RESOURCE_RATE):0);
+                hasElixirSto ? (int) (enemyInfo.getElixir() * BattleConst.RESOURCE_RATE) : 0);
 
         // update enemy state
         ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
@@ -101,17 +103,21 @@ public class MatchHandler  {
     }
 
     public static <T> T executeInMaxTime(Callable<T> function, long time) {
-        Future<T> future = Executors.newSingleThreadExecutor().submit(function);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<T> future = executor.submit(function);
         try {
             return future.get(time, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.out.println("Luồng chính bị hủy.");
         } catch (ExecutionException e) {
+            System.out.println(e.getMessage());
             System.err.println("Lỗi xảy ra trong hàm.");
         } catch (TimeoutException e) {
             future.cancel(true);
             System.out.println("Công việc bị hủy sau " + time + " ms.");
+        } finally {
+            executor.shutdown();
         }
         return null;
     }
@@ -130,7 +136,8 @@ public class MatchHandler  {
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
             int userRank = userInfo.getRank();
             ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
-            PlayerInfo playerInfo = listUserData.getRandomPlayerInRangeRank(user.getId(), userRank - range, userRank + range);
+            PlayerInfo playerInfo = listUserData.getRandomPlayerInRangeRank(user.getId()
+                    , userRank - range, userRank + range);
             return playerInfo;
 
         } catch (Exception e) {
@@ -169,6 +176,7 @@ public class MatchHandler  {
                 match.trophy = requestEndGame.getTrophy();
                 match.stars = requestEndGame.getStars();
                 match.state = BattleConst.MATCH_ENDED;
+                match.usedArmy = requestEndGame.getArmy();
                 match.setGoldGot(requestEndGame.getGoldGot());
                 match.setElixirGot(requestEndGame.getElixirGot());
                 match.pushAction(new BattleAction(BattleConst.ACTION_END, requestEndGame.getTick()));
@@ -196,13 +204,16 @@ public class MatchHandler  {
                 return new ResponseGetMatch(ErrorConst.SUCCESS, match);
             }
         }
-        throw  new CustomException(ErrorConst.NO_MATCH_FOUND);
+        throw new CustomException(ErrorConst.NO_MATCH_FOUND);
     }
 
     public static ResponseGetHistoryAttack handleGetHistoryAttack(User user) {
         PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
         ArrayList<BattleMatch> matches = userInfo.getBattleMatches();
-        return new ResponseGetHistoryAttack(ErrorConst.SUCCESS, matches);
+
+        ArrayList<BattleMatch> copiedMatches = new ArrayList<>(matches);
+        Collections.reverse(copiedMatches);
+        return new ResponseGetHistoryAttack(ErrorConst.SUCCESS, copiedMatches);
     }
 
 }

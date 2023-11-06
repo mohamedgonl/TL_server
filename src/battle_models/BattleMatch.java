@@ -27,6 +27,7 @@ public class BattleMatch extends DataModel {
 
 
     public Map<String, Integer> army; // Lượng lính mang đi đánh
+    public Map<String, Integer> usedArmy;
 
     public int maxGold;
 
@@ -109,6 +110,7 @@ public class BattleMatch extends DataModel {
                 ", createTime=" + createTime +
                 ", startTime=" + startTime +
                 ", army=" + army +
+                ", usedArmy=" + usedArmy +
                 ", maxGold=" + maxGold +
                 ", maxElixir=" + maxElixir +
                 ", goldGot=" + goldGot +
@@ -146,7 +148,7 @@ public class BattleMatch extends DataModel {
                 posY = posY == 0 ? 0 : posY +  BattleConst.BATTLE_MAP_BORDER/2 * BattleConst.BATTLE_MAP_SCALE;
             }
             else {
-                System.out.println(building.id);
+
             }
 
             for (int i = 0; i < width * BattleConst.BATTLE_MAP_SCALE; i++) {
@@ -196,8 +198,6 @@ public class BattleMatch extends DataModel {
                 this.elixirGot += addition;
             }
         }
-
-
     }
 
     public void throwTroop(BattleTroop troop) {
@@ -244,6 +244,7 @@ public class BattleMatch extends DataModel {
 
             if (this.actionsList.get(actionIndex).tick == tick && actionIndex < this.actionsList.size()) {
                 //TODO: do action
+
 
 
                 actionIndex++;
