@@ -79,7 +79,7 @@ public class RequestEndGame extends BaseCmd {
             }
 
             this.tick = readInt(bf);
-//            this.percentage = readDouble(bf);
+            this.percentage = readDouble(bf);
 
         } catch (Exception e) {
             CommonHandle.writeErrLog(e);

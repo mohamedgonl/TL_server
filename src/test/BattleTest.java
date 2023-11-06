@@ -348,7 +348,7 @@ public class BattleTest {
     }
 
     private RequestEndGame createRequestEndGame (int stars, int trophy, int goldGot, int elixirGot, int tick, ArrayList<TrainingItem> troops) throws BZException {
-        boolean result = true;
+        boolean result = false;
 
         ByteArray byteArray = new ByteArray();
 
@@ -367,6 +367,7 @@ public class BattleTest {
         }
 
         byteArray.writeInt(tick);
+        byteArray.writeDouble(32);
 
         DataCmd dataCmd = new DataCmd(byteArray.getBytes());
         dataCmd.setId(CmdDefine.END_GAME);
