@@ -79,7 +79,16 @@ public class RequestEndGame extends BaseCmd {
             }
 
             this.tick = readInt(bf);
+
             this.percentage = readDouble(bf);
+
+//            int usedArmySize = readInt(bf);
+//            if(usedArmySize != 0) {
+//                for (int i = 0; i < usedArmySize; i++) {
+//                    this.army.put(readString(bf), readInt(bf));
+//                }
+//            }
+
 
         } catch (Exception e) {
             CommonHandle.writeErrLog(e);

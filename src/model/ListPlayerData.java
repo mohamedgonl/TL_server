@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.*;
 
 public class ListPlayerData extends DataModel {
     public Map<Integer, Boolean> userIds = new HashMap<>();
@@ -48,14 +49,18 @@ public class ListPlayerData extends DataModel {
         PlayerInfo playerInfo;
         ArrayList<Map.Entry<Integer, Boolean>> entryList = new ArrayList<>(userIds.entrySet());
         int id;
+        boolean isOnline = true;
+        int count = 0;
         try {
             do {
+                count ++;
                 Random random = new Random();
                 Map.Entry<Integer, Boolean> randomEntry = entryList.get(random.nextInt(entryList.size()));
                 id = randomEntry.getKey();
-                playerInfo = (PlayerInfo) PlayerInfo.getModel(id, PlayerInfo.class);
+                playerInfo =(PlayerInfo) PlayerInfo.getModel(id, PlayerInfo.class);
+                isOnline =  Common.checkUserOnline(playerInfo.getId());
             }
-            while (playerInfo.getRank() < min || playerInfo.getRank() > max || Common.checkUserOnline(playerInfo.getId()) || id == userId);
+            while (playerInfo.getRank() < min || playerInfo.getRank() > max ||isOnline || id == userId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

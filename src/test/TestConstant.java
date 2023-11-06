@@ -6,7 +6,7 @@ public class TestConstant {
     public static String SERVER_ADDR = "127.0.0.1";
     public static int SERVER_PORT = 1101;
     public static int DB_PORT = 11211;
-    public static int USER_ID = 7;
+    public static int USER_ID = 10;
     public static Point CHANGE_POS = new Point(2,5);
 
     public static String ERROR_MSG_DATABASE = "\nSUGGESTION:" +

@@ -66,7 +66,7 @@ public class ServerUtil {
         return sb.toString();
     }
 
-    public static String getModelKeyName(String model, int userId) {
+    public static String getModelKeyName(String model, int userId) {        //5zpportal_data_216_PlayerInfo
         StringBuilder sb = new StringBuilder();
         sb.append(DATA_VERSION);
         sb.append(ServerConstant.GAME_DATA_KEY_PREFIX);

@@ -37,7 +37,7 @@ public class ResponseGetHistoryAttack extends BaseMsg {
             bf.putInt(match.createTime);
 
             // army
-            bf.putInt(match.army.size());
+            bf.putInt(match.usedArmy.size());
             for (Map.Entry<String, Integer> entry : match.army.entrySet()) {
                 putStr(bf, entry.getKey());
                 bf.putInt(entry.getValue());
