@@ -32,4 +32,12 @@ public class BattleTroop {
         this.posY = posY;
     }
 
+    public boolean isAlive(){
+        return this.hp > 0;
+    }
+
+    public void onGainDamage(int damage){
+
+    }
+
 }
