@@ -37,18 +37,17 @@ public class BattleMatch extends DataModel {
     private int elixirGot = 0; // dầu chiếm dc
 
     public boolean isWin;
-    public float winPercentage = 0;
+    public int winPercentage = 0;
 
     public int stars;
 
     private transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
     private transient int[][] troopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
-
     private transient int[][] throwTroopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
-
-
     private transient ArrayList<BattleTroop> troops = new ArrayList<>(); // Lưu thông tin từng con lính trong trận
     public ArrayList<BattleBuilding> buildings;
+    public ArrayList<BattleBuilding> defBuildings = new ArrayList<>();
+    public ArrayList<BattleBuilding> resBuildings = new ArrayList<>();
     private ArrayList<BattleAction> actionsList = new ArrayList<>();
 
 
@@ -77,7 +76,10 @@ public class BattleMatch extends DataModel {
 
         this.initBattleMap();
         this.initThrowTroopMap();
+        this.initBattleBuildings();
 //        this.printGridMap(this.battleMap);
+        int i =0;
+        i++;
 
     }
 
@@ -140,19 +142,18 @@ public class BattleMatch extends DataModel {
         for (BattleBuilding building : this.buildings) {
             int width = building.baseBuildingStats.width + BattleConst.BATTLE_MAP_BORDER,
                     height = building.baseBuildingStats.height + BattleConst.BATTLE_MAP_BORDER,
-            posX = Math.max(building.posX - BattleConst.BATTLE_MAP_BORDER/2 * BattleConst.BATTLE_MAP_SCALE, 0), posY = Math.max(building.posY - BattleConst.BATTLE_MAP_BORDER/2 * BattleConst.BATTLE_MAP_SCALE, 0);
+                    posX = Math.max(building.posX - BattleConst.BATTLE_MAP_BORDER / 2 * BattleConst.BATTLE_MAP_SCALE, 0), posY = Math.max(building.posY - BattleConst.BATTLE_MAP_BORDER / 2 * BattleConst.BATTLE_MAP_SCALE, 0);
             if (building.type.startsWith("OBS")) {
                 width = building.baseBuildingStats.width;
                 height = building.baseBuildingStats.height;
-                posX = posX == 0 ? 0 : posX + BattleConst.BATTLE_MAP_BORDER/2 * BattleConst.BATTLE_MAP_SCALE;
-                posY = posY == 0 ? 0 : posY +  BattleConst.BATTLE_MAP_BORDER/2 * BattleConst.BATTLE_MAP_SCALE;
-            }
-            else {
+                posX = posX == 0 ? 0 : posX + BattleConst.BATTLE_MAP_BORDER / 2 * BattleConst.BATTLE_MAP_SCALE;
+                posY = posY == 0 ? 0 : posY + BattleConst.BATTLE_MAP_BORDER / 2 * BattleConst.BATTLE_MAP_SCALE;
+            } else {
 
             }
 
             for (int i = 0; i < width * BattleConst.BATTLE_MAP_SCALE; i++) {
-                for (int j = 0; j <height * BattleConst.BATTLE_MAP_SCALE; j++) {
+                for (int j = 0; j < height * BattleConst.BATTLE_MAP_SCALE; j++) {
                     this.throwTroopMap[i + posX][j + posY] = building.id;
                 }
             }
@@ -234,6 +235,17 @@ public class BattleMatch extends DataModel {
         return count;
     }
 
+    public void initBattleBuildings() {
+        for (BattleBuilding building : this.buildings) {
+            if (building.type.startsWith("RES") || building.type.startsWith("STO")|| building.type.startsWith("TOW")) {
+                this.resBuildings.add(building);
+            }
+            if (building.type.startsWith("DEF")) {
+                this.defBuildings.add(building);
+            }
+        }
+    }
+
     public void startGameLoop() {
 
         // ignore action start
@@ -244,7 +256,6 @@ public class BattleMatch extends DataModel {
 
             if (this.actionsList.get(actionIndex).tick == tick && actionIndex < this.actionsList.size()) {
                 //TODO: do action
-
 
 
                 actionIndex++;

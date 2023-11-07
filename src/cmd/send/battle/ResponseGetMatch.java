@@ -38,7 +38,7 @@ public class ResponseGetMatch extends BaseMsg {
             bf.putInt(this.match.getGoldGot());
             bf.putInt(this.match.getElixirGot());
             putBoolean(bf, this.match.isWin);
-            bf.putFloat(this.match.winPercentage);
+            bf.putInt(this.match.winPercentage);
             bf.putInt(this.match.stars);
 
             // army

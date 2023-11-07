@@ -19,11 +19,9 @@ import util.Common;
 import util.database.DataModel;
 import util.server.CustomException;
 import util.server.ServerConstant;
-import java.util.Collections;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
+
 import java.util.concurrent.*;
 
 public class MatchHandler {
@@ -81,7 +79,7 @@ public class MatchHandler {
         ArrayList<BattleBuilding> buildings = convertToBattleBuilding(enemyInfo.getListBuildings());
         boolean hasElixirSto = buildings.stream().anyMatch(building -> "STO_2".equals(building.type) || "RES_2".equals(building.type));
 
-        Map<String, Integer> army = userInfo.getListTroops();
+        Map<String, Integer> army = new HashMap<>(userInfo.getListTroops());
 
         // Tạo 1 match với các data trên
         BattleMatch newMatch = new BattleMatch(userInfo.getBattleMatches().size(), enemyInfo.getId(), enemyInfo.getName(),
@@ -115,7 +113,7 @@ public class MatchHandler {
             System.err.println("Lỗi xảy ra trong hàm.");
         } catch (TimeoutException e) {
             future.cancel(true);
-            System.out.println("Công việc bị hủy sau " + time + " ms.");
+            System.out.println("Công việc bị hủy sau " + time + " s.");
         } finally {
             executor.shutdown();
         }
@@ -167,7 +165,7 @@ public class MatchHandler {
         try {
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
             userInfo.addResources(requestEndGame.getGoldGot(), requestEndGame.getElixirGot(), 0);
-            userInfo.setRank(userInfo.getRank() + requestEndGame.getTrophy());
+            userInfo.setRank(Math.max (userInfo.getRank() + (requestEndGame.getResult() ? 1 : -1) *  requestEndGame.getTrophy(), 0));
             userInfo.removeTroop(requestEndGame.getArmy());
 
             BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
@@ -177,6 +175,7 @@ public class MatchHandler {
                 match.stars = requestEndGame.getStars();
                 match.state = BattleConst.MATCH_ENDED;
                 match.usedArmy = requestEndGame.getArmy();
+                match.winPercentage = requestEndGame.percentage;
                 match.setGoldGot(requestEndGame.getGoldGot());
                 match.setElixirGot(requestEndGame.getElixirGot());
                 match.pushAction(new BattleAction(BattleConst.ACTION_END, requestEndGame.getTick()));

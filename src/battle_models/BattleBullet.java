@@ -72,10 +72,8 @@ public class BattleBullet {
 
     public void reset(BattleTroop target) {
         this.target = target;
-
         double gridDist = Math.sqrt(Math.pow(startPoint.x - target.posX, 2) + Math.pow(startPoint.y - target.posY, 2));
         this.time = gridDist / this.gridSpeed;
-
         this.active = true;
     }
 

@@ -43,7 +43,7 @@ public class RequestEndGame extends BaseCmd {
     private int elixirGot;
     private int trophy;
 
-    public float percentage ;
+    public int percentage ;
 
     private int stars;
 
@@ -80,14 +80,8 @@ public class RequestEndGame extends BaseCmd {
 
             this.tick = readInt(bf);
 
-            this.percentage = readDouble(bf);
+            this.percentage = readInt(bf);
 
-//            int usedArmySize = readInt(bf);
-//            if(usedArmySize != 0) {
-//                for (int i = 0; i < usedArmySize; i++) {
-//                    this.army.put(readString(bf), readInt(bf));
-//                }
-//            }
 
 
         } catch (Exception e) {

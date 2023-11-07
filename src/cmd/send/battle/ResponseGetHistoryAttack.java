@@ -32,13 +32,13 @@ public class ResponseGetHistoryAttack extends BaseMsg {
             bf.putInt(match.getGoldGot());
             bf.putInt(match.getElixirGot());
             bf.putInt(match.isWin?1:0);
-            bf.putDouble(match.winPercentage);
+            bf.putInt(match.winPercentage);
             bf.putInt(match.stars);
             bf.putInt(match.createTime);
 
             // army
             bf.putInt(match.usedArmy.size());
-            for (Map.Entry<String, Integer> entry : match.army.entrySet()) {
+            for (Map.Entry<String, Integer> entry : match.usedArmy.entrySet()) {
                 putStr(bf, entry.getKey());
                 bf.putInt(entry.getValue());
             }
