@@ -11,6 +11,7 @@ import model.Building;
 import model.ListPlayerData;
 import model.Obstacle;
 import model.PlayerInfo;
+import util.BattleConst;
 import util.BuildingFactory;
 import util.Common;
 import util.GameConfig;

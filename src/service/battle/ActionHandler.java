@@ -82,7 +82,7 @@ public class ActionHandler {
 
                 // reset enemy state
                 ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
-                listUserData.updateUser(match.enemyId, false);
+// TODO               listUserData.updateUser(match.enemyId, false);
                 listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
 
             } else {

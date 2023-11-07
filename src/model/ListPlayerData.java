@@ -1,5 +1,6 @@
 package model;
 
+import util.BattleConst;
 import util.Common;
 import util.database.DataModel;
 
@@ -10,44 +11,49 @@ import java.util.Random;
 import java.util.concurrent.*;
 
 public class ListPlayerData extends DataModel {
-    public Map<Integer, Boolean> userIds = new HashMap<>();
+    public  Map<Integer,Map<Integer, Boolean> > userIds = new HashMap<>();
 
     public void updateUser(int newUID, boolean isGettingAttacked) {
-        this.userIds.putIfAbsent(newUID, isGettingAttacked);
-    }
-
-    public ArrayList<PlayerInfo> getAllPlayersOffline() {
-
-        ArrayList<PlayerInfo> listPlayers = new ArrayList<>();
-
-        if (userIds != null) {
-            for (Map.Entry<Integer, Boolean> userId : userIds.entrySet()) {
-                PlayerInfo playerInfo;
-                try {
-                    // if user is getting attackd hoặc đang online thì không match
-                    if (userId.getValue() || Common.checkUserOnline(userId.getKey())) continue;
-
-                    playerInfo = (PlayerInfo) PlayerInfo.getModel(userId.getKey(), PlayerInfo.class);
-                    if (playerInfo != null) {
-                        listPlayers.add(playerInfo);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+        PlayerInfo user = null;
+        try {
+            user = (PlayerInfo) PlayerInfo.getModel(newUID, PlayerInfo.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return listPlayers;
+        int rankPoint = user.getRank();
+
+        int rankLevel = rankPoint / BattleConst.RANK_DIST;
+        if(userIds.containsKey(rankLevel)) {
+            Map<Integer, Boolean> uIds = userIds.get(rankLevel);
+            uIds.putIfAbsent(newUID, isGettingAttacked);
+        }
+        else {
+            Map<Integer, Boolean> uId = new HashMap<>();
+            uId.put(newUID, isGettingAttacked);
+            this.userIds.put(rankLevel, uId);
+        }
     }
 
-    public void updateUserState(int userId, boolean canMatch) {
-        this.userIds.put(userId, canMatch);
+    public void updateSegmentRank (int userId, int oldRank, int newRank) {
+        int oldRankSegment = oldRank / BattleConst.RANK_DIST;
+        int newRankSegment = newRank / BattleConst.RANK_DIST;
+        if(oldRankSegment != newRankSegment) {
+            this.userIds.get(oldRankSegment).remove(userId);
+            Map<Integer, Boolean> uId = new HashMap<>();
+            uId.put(userId, false);
+            this.userIds.putIfAbsent(newRankSegment, uId);
+        }
     }
 
-//    public void setPlayerState
+//    public void updateUserState(int userId, boolean canMatch) {
+//        this.userIds.put(userId, canMatch);
+//    }
+
 
     public PlayerInfo getRandomPlayerInRangeRank(int userId, int min, int max) {
+        int userRank = (max + min) /2;
         PlayerInfo playerInfo;
-        ArrayList<Map.Entry<Integer, Boolean>> entryList = new ArrayList<>(userIds.entrySet());
+        ArrayList<Map.Entry<Integer, Boolean>> entryList = new ArrayList<>(userIds.get(userRank/BattleConst.RANK_DIST).entrySet());
         int id;
         boolean isOnline = true;
         int count = 0;

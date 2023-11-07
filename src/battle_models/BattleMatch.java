@@ -90,8 +90,6 @@ public class BattleMatch extends DataModel {
         return (int) Math.floor(39.0907 - (39.0619) / (1 + 0.993 * Math.exp(0.00595*(userRank-enemyRank))));
     }
 
-
-
     public void setGoldGot(int goldGot) {
         this.goldGot = goldGot;
     }

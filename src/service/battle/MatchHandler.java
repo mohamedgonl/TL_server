@@ -47,36 +47,9 @@ public class MatchHandler {
         }
 
         userInfo.setGold(userInfo.getGold() - BattleConst.MatchingGoldCost);
+        userInfo.saveModel(user.getId());
 
-        try {
-            userInfo.saveModel(user.getId());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        PlayerInfo enemyInfo;
-
-        enemyInfo = executeInMaxTime(() -> {
-            return getPlayerSameRank(user, 50);
-        }, 5);
-
-        if (enemyInfo == null) {
-            enemyInfo = executeInMaxTime(() -> {
-                return getPlayerSameRank(user, 100);
-            }, 10);
-        }
-
-        if (enemyInfo == null) {
-            enemyInfo = executeInMaxTime(() -> {
-                return getPlayerSameRank(user, 200);
-            }, 50);
-        }
-
-        if (enemyInfo == null) {
-            // không tìm được trận
-            System.out.println("cant found enemy");
-            throw new CustomException(ErrorConst.CANT_GET_MATCH);
-        }
+        PlayerInfo enemyInfo = findPlayer(user);
 
         ArrayList<BattleBuilding> buildings = convertToBattleBuilding(enemyInfo.getListBuildings());
         boolean hasElixirSto = buildings.stream().anyMatch(building -> "STO_2".equals(building.type) || "RES_2".equals(building.type));
@@ -132,6 +105,33 @@ public class MatchHandler {
         return battleBuildings;
     }
 
+    public static PlayerInfo findPlayer(User user) throws CustomException {
+        PlayerInfo enemyInfo;
+        enemyInfo = executeInMaxTime(() -> {
+            return getPlayerSameRank(user, 50);
+        }, 5);
+
+        if (enemyInfo == null) {
+            enemyInfo = executeInMaxTime(() -> {
+                return getPlayerSameRank(user, 100);
+            }, 10);
+        }
+
+        if (enemyInfo == null) {
+            enemyInfo = executeInMaxTime(() -> {
+                return getPlayerSameRank(user, 200);
+            }, 50);
+        }
+
+        if (enemyInfo == null) {
+            // không tìm được trận
+            System.out.println("cant found enemy");
+            throw new CustomException(ErrorConst.CANT_GET_MATCH);
+        }
+
+        return enemyInfo;
+    }
+
     public static PlayerInfo getPlayerSameRank(User user, int range) {
         try {
 
@@ -185,17 +185,26 @@ public class MatchHandler {
 
                 ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
                 listUserData.updateUser(match.enemyId, false);
-                listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
-            }
-            userInfo.pushNewMatch(match);
-            userInfo.saveModel(user.getId());
-            match.saveModel(match.id);
 
-            // update enemy rank and resource
-            PlayerInfo enemyInfo = (PlayerInfo) PlayerInfo.getModel(match.enemyId, PlayerInfo.class);
-            enemyInfo.setRank(enemyInfo.getRank() + (match.isWin ? - match.trophy : match.trophy));
-            enemyInfo.useResources(match.getGoldGot(), match.getElixirGot(), 0);
-            enemyInfo.saveModel(enemyInfo.getId());
+                userInfo.pushNewMatch(match);
+                userInfo.saveModel(user.getId());
+                match.saveModel(match.id);
+
+                // update enemy rank and resource
+                PlayerInfo enemyInfo = (PlayerInfo) PlayerInfo.getModel(match.enemyId, PlayerInfo.class);
+                int oldEnemyRank = enemyInfo.getRank();
+                int newEnemyRank = enemyInfo.getRank() + (match.isWin ? - match.trophy : match.trophy);
+                enemyInfo.setRank(newEnemyRank);
+                enemyInfo.useResources(match.getGoldGot(), match.getElixirGot(), 0);
+
+                listUserData.updateSegmentRank(match.enemyId, oldEnemyRank, newEnemyRank);
+                listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
+
+                enemyInfo.saveModel(enemyInfo.getId());
+            }
+            else {
+                throw new  CustomException(ErrorConst.NO_MATCH_FOUND);
+            }
 
         } catch (Exception e) {
             throw new RuntimeException(e);
