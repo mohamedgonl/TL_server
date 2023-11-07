@@ -51,7 +51,7 @@ public class BattleMatch extends DataModel {
     private ArrayList<BattleAction> actionsList = new ArrayList<>();
 
 
-    public BattleMatch(int id, int enemyId, String enemyName, ArrayList<BattleBuilding> buildings, Map<String, Integer> army, int maxGold, int maxElixir) {
+    public BattleMatch(int id, int enemyId, String enemyName, ArrayList<BattleBuilding> buildings, Map<String, Integer> army, int maxGold, int maxElixir, int enemyRank, int userRank) {
         this.id = id;
         this.enemyId = enemyId;
         this.enemyName = enemyName;
@@ -59,20 +59,19 @@ public class BattleMatch extends DataModel {
         this.maxElixir = maxElixir;
         this.army = army;
         this.buildings = buildings;
-        this.initData();
+        this.initData(enemyRank, userRank);
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public void initData() {
+    public void initData( int enemyRank, int userRank) {
         this.state = BattleConst.MATCH_NEW;
         this.createTime = Common.currentTimeInSecond();
 
-        Random random = new Random();
-        this.winTrophy = random.nextInt(BattleConst.MAX_POINT - BattleConst.MIN_POINT + 1) + BattleConst.MIN_POINT;
-        this.loseTrophy = random.nextInt(BattleConst.MAX_POINT - BattleConst.MIN_POINT + 1) + BattleConst.MIN_POINT;
+        this.winTrophy = this.getWinTrophy(enemyRank,userRank);
+        this.loseTrophy = this.getLoseTrophy(enemyRank,userRank);
 
         this.initBattleMap();
         this.initThrowTroopMap();
@@ -82,6 +81,16 @@ public class BattleMatch extends DataModel {
         i++;
 
     }
+
+    public int getWinTrophy (int userRank, int enemyRank) {
+         return (int) Math.floor(-0.63599+(59.43467+0.63599)/(1+0.991798 * Math.exp(0.00576*(userRank-enemyRank))));
+    }
+
+    public int getLoseTrophy (int userRank, int enemyRank) {
+        return (int) Math.floor(39.0907 - (39.0619) / (1 + 0.993 * Math.exp(0.00595*(userRank-enemyRank))));
+    }
+
+
 
     public void setGoldGot(int goldGot) {
         this.goldGot = goldGot;

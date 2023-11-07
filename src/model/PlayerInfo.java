@@ -105,7 +105,7 @@ public class PlayerInfo extends DataModel {
     }
 
     public void setRank(int rank) {
-        this.rank = rank;
+        this.rank = Math.max(rank, 0);
     }
 
     public int getGold() {

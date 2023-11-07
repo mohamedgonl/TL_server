@@ -4,6 +4,7 @@ import battle_models.BattleAction;
 import battle_models.BattleBuilding;
 import battle_models.BattleMatch;
 import bitzero.server.entities.User;
+import bitzero.util.socialcontroller.bean.UserInfo;
 import cmd.ErrorConst;
 import cmd.receive.battle.RequestEndGame;
 import cmd.receive.battle.RequestGetMatch;
@@ -70,6 +71,7 @@ public class MatchHandler {
                 return getPlayerSameRank(user, 200);
             }, 50);
         }
+
         if (enemyInfo == null) {
             // không tìm được trận
             System.out.println("cant found enemy");
@@ -86,7 +88,9 @@ public class MatchHandler {
                 buildings,
                 army,
                 (int) (enemyInfo.getGold() * BattleConst.RESOURCE_RATE),
-                hasElixirSto ? (int) (enemyInfo.getElixir() * BattleConst.RESOURCE_RATE) : 0);
+                hasElixirSto ? (int) (enemyInfo.getElixir() * BattleConst.RESOURCE_RATE) : 0,
+                enemyInfo.getRank(),
+                userInfo.getRank());
 
         // update enemy state
         ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
@@ -156,7 +160,6 @@ public class MatchHandler {
         }
 
         user.setProperty(ServerConstant.MATCH, match);
-        System.out.println("check match state ::: " + match.state);
         return match.state == BattleConst.MATCH_HAPPENING;
     }
 
@@ -187,6 +190,12 @@ public class MatchHandler {
             userInfo.pushNewMatch(match);
             userInfo.saveModel(user.getId());
             match.saveModel(match.id);
+
+            // update enemy rank and resource
+            PlayerInfo enemyInfo = (PlayerInfo) PlayerInfo.getModel(match.enemyId, PlayerInfo.class);
+            enemyInfo.setRank(enemyInfo.getRank() + (match.isWin ? - match.trophy : match.trophy));
+            enemyInfo.useResources(match.getGoldGot(), match.getElixirGot(), 0);
+            enemyInfo.saveModel(enemyInfo.getId());
 
         } catch (Exception e) {
             throw new RuntimeException(e);
