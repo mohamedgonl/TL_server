@@ -50,5 +50,13 @@ public class RequestTrainingCreate extends BaseCmd {
         }
     }
 
-
+    @Override
+    public String toString() {
+        return "RequestTrainingCreate{" +
+                "troopCfgId='" + troopCfgId + '\'' +
+                ", troopCount=" + troopCount +
+                ", barrackId=" + barrackId +
+                ", valid=" + valid +
+                '}';
+    }
 }

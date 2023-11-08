@@ -33,4 +33,12 @@ public class RequestCancleTrain extends BaseCmd {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public String toString() {
+        return "RequestCancleTrain{" +
+                "barrackId=" + barrackId +
+                ", troopCfgId='" + troopCfgId + '\'' +
+                '}';
+    }
 }

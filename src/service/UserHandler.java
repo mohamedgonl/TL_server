@@ -14,14 +14,19 @@ import cmd.send.user.*;
 import event.eventType.DemoEventParam;
 import event.eventType.DemoEventType;
 import extension.FresherExtension;
+import model.Barrack;
+import model.Building;
 import model.PlayerInfo;
+import model.TrainingItem;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.Common;
 import util.server.ServerConstant;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserHandler extends BaseClientRequestHandler {
     public static short USER_MULTI_IDS = 1000;
@@ -124,10 +129,33 @@ public class UserHandler extends BaseClientRequestHandler {
                 return;
             }
 
+            ArrayList<Barrack> barracks = this.getBarracksList(userInfo.getListBuildings());
+
+                barracks.parallelStream().forEach(barrack -> {
+                   barrack.updateTrainingList(userInfo.getId());
+                });
+
+
+            userInfo.saveModel(user.getId());
+
+
             send(new ResponseGetArmyInfo(ErrorConst.SUCCESS, userInfo.getListTroops()), user);
         } catch (Exception e) {
             send(new ResponseGetArmyInfo(ErrorConst.UNKNOWN), user);
         }
+    }
+
+    private ArrayList<Barrack> getBarracksList(ArrayList<Building> buildings) {
+        ArrayList<Barrack> barrackList = new ArrayList<>();
+        for (int i = 0; i < buildings.size(); i++) {
+            Building building = buildings.get(i);
+            if (building.getType().startsWith("BAR")) {
+                Barrack barrack = (Barrack) building;
+                barrackList.add(barrack);
+            }
+        }
+
+        return barrackList;
     }
 
     private void getTimeServer(User user) {

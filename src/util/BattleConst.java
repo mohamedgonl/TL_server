@@ -45,4 +45,6 @@ public class BattleConst {
 
     public static int INIT_RANK = 0;
 
+    public static int[][] TIME_GET_MATCH = {{2, 50}, {5, 100}, {10, 200}};
+
 }

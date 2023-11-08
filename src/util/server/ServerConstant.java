@@ -12,6 +12,7 @@ public class ServerConstant {
     public static final String MACHINE_TRANSIENT = "machine_transient";
 
     public static final int CREATE_FAKE_ACCOUNTS = 987654321;
+    public static final int TRAIN_TIME_RATE = 10;
 
     public static final boolean IS_CHEAT = (ConfigHandle.instance().getLong("isCheat") == 1);
     //public static final boolean IS_USE_SECOND_DATACONTROLLER = (ConfigHandle.instance().getLong("useSecondDataController") == 1);

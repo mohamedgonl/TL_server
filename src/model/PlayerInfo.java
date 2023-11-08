@@ -292,7 +292,7 @@ public class PlayerInfo extends DataModel {
         return max;
     }
 
-    public int getCurrentSpace(){
+    public int getCurrentTroopSpace(){
         int total =  0;
         for (Map.Entry<String, Integer> entry : listTroops.entrySet()) {
             total += entry.getValue();

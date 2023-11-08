@@ -43,4 +43,13 @@ public class RequestTrainingSuccess extends BaseCmd {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public String toString() {
+        return "RequestTrainingSuccess{" +
+                "isDoneNow=" + isDoneNow +
+                ", barrackId=" + barrackId +
+                ", valid=" + valid +
+                '}';
+    }
 }

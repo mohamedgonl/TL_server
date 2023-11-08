@@ -36,7 +36,6 @@ import util.config.TroopConfig;
 import util.server.ServerConstant;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TroopHandler extends BaseClientRequestHandler {
     public static short TROOP_MULTI_IDS = 5000;
@@ -84,7 +83,7 @@ public class TroopHandler extends BaseClientRequestHandler {
     }
 
     private void trainTroopCreate(User user, RequestTrainingCreate reqInfo) {
-        System.out.println("HANDLE CREATE TROOP with type : " + reqInfo.getTroopCfgId());
+        System.out.println("HANDLE CREATE TROOP : " + reqInfo.toString());
         try {
             int troopLevel = 1; // sau đổi thành lấy từ building LAB
             //get user from cache
@@ -112,7 +111,7 @@ public class TroopHandler extends BaseClientRequestHandler {
             // check tài nguyên
               // chỉ kiểm tra elixir, ko kiểm tra dark - elixir
             if(userInfo.getElixir() < troopConfig.trainingElixir) {
-                send(new ResponseTrainingCreate(ErrorConst.RESOURCE_NOT_ENOUGH), user);
+                send(new ResponseTrainingCreate(ErrorConst.RESOURCE_NOT_ENOUGH, currentBarrack.getId()), user);
                 return;
             }
 
@@ -130,7 +129,7 @@ public class TroopHandler extends BaseClientRequestHandler {
     }
 
     private void trainTroopSuccess(User user, RequestTrainingSuccess reqInfo) {
-        System.out.println("HANDLE TRAIN SUCCESS WITH BARRACK ID : " + reqInfo.getBarrackId());
+        System.out.println("HANDLE TRAIN SUCCESS : " + reqInfo.toString());
         Barrack currentBarrack;
         PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
         ArrayList<Building> userBuilding = userInfo.getListBuildings();
@@ -155,7 +154,7 @@ public class TroopHandler extends BaseClientRequestHandler {
                     //get all troop in barrack and mark as done
                     ArrayList<TrainingItem> troopItems = currentBarrack.getTrainingItemList();
 
-                    if (userInfo.getCurrentSpace() + currentBarrack.getCurrentSpace() > userInfo.getMaxArmySpace()) {
+                    if (userInfo.getCurrentTroopSpace() + currentBarrack.getCurrentSpace() > userInfo.getMaxArmySpace()) {
                         send(new ResponseTrainingSuccess(ErrorConst.ARMY_MAX_SPACE, currentBarrack.getId()), user);
                         return;
                     }
@@ -178,13 +177,13 @@ public class TroopHandler extends BaseClientRequestHandler {
                 }
 
                 String firstTroopCfgId = currentBarrack.getTrainingItemList().get(0).cfgId;
-                int trainingTime = (int) Math.ceil((double) GameConfig.getInstance().troopBaseConfig.get(firstTroopCfgId).trainingTime / 10);
+                int trainingTime = (int) Math.ceil((double) GameConfig.getInstance().troopBaseConfig.get(firstTroopCfgId).trainingTime / ServerConstant.TRAIN_TIME_RATE);
                 if (Common.currentTimeInSecond() - currentBarrack.getLastTrainingTime() >= trainingTime) {
 
                     // check nếu vượt quá tổng space
                     TrainingItem firstTroop = currentBarrack.getFirstTrainingItem();
                     TroopBaseConfig troopBaseConfig = GameConfig.getInstance().troopBaseConfig.get(firstTroop.cfgId);
-                    if(userInfo.getCurrentSpace() + troopBaseConfig.housingSpace > userInfo.getMaxArmySpace()) {
+                    if(userInfo.getCurrentTroopSpace() + troopBaseConfig.housingSpace > userInfo.getMaxArmySpace()) {
                         send(new ResponseTrainingSuccess(ErrorConst.ARMY_MAX_SPACE, currentBarrack.getId()),user);
                         return;
                     }
@@ -243,7 +242,7 @@ public class TroopHandler extends BaseClientRequestHandler {
     }
 
     private void handleCancleTrainTroop(User  user, RequestCancleTrain reqInfo){
-        System.out.println("HANDLE CANCLE TRAINTROOP "+ reqInfo.getBarrackId() + "   " + reqInfo.getTroopCfgId());
+        System.out.println("HANDLE CANCLE TRAINTROOP "+ reqInfo.toString());
         try {
             // hiện để level = 1 do chưa có lab
             int troopLevel = 1;

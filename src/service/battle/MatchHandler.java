@@ -4,7 +4,6 @@ import battle_models.BattleAction;
 import battle_models.BattleBuilding;
 import battle_models.BattleMatch;
 import bitzero.server.entities.User;
-import bitzero.util.socialcontroller.bean.UserInfo;
 import cmd.ErrorConst;
 import cmd.receive.battle.RequestEndGame;
 import cmd.receive.battle.RequestGetMatch;
@@ -17,7 +16,6 @@ import model.ListPlayerData;
 import model.PlayerInfo;
 import util.BattleConst;
 import util.Common;
-import util.database.DataModel;
 import util.server.CustomException;
 import util.server.ServerConstant;
 
@@ -36,7 +34,7 @@ public class MatchHandler {
         }
 
         // không có lính
-        if (userInfo.getCurrentSpace() == 0) {
+        if (userInfo.getCurrentTroopSpace() == 0) {
             System.out.println("troop empty");
             throw new CustomException(ErrorConst.TROOP_LIST_EMPTY);
         }
@@ -106,25 +104,19 @@ public class MatchHandler {
     }
 
     public static PlayerInfo findPlayer(User user) throws CustomException {
-        PlayerInfo enemyInfo;
-        enemyInfo = executeInMaxTime(() -> {
-            return getPlayerSameRank(user, 50);
-        }, 5);
+        PlayerInfo enemyInfo = null;
 
-        if (enemyInfo == null) {
-            enemyInfo = executeInMaxTime(() -> {
-                return getPlayerSameRank(user, 100);
-            }, 10);
+        for (int i = 0; i < BattleConst.TIME_GET_MATCH.length; i++) {
+            int finalI = i;
+            enemyInfo = executeInMaxTime(() -> getPlayerSameRank(user,
+                    BattleConst.TIME_GET_MATCH[finalI][1]), BattleConst.TIME_GET_MATCH[i][0]);
+            if (enemyInfo != null) {
+                break;
+            }
         }
 
         if (enemyInfo == null) {
-            enemyInfo = executeInMaxTime(() -> {
-                return getPlayerSameRank(user, 200);
-            }, 50);
-        }
-
-        if (enemyInfo == null) {
-            // không tìm được trận
+            // không tìm thấy trận
             System.out.println("cant found enemy");
             throw new CustomException(ErrorConst.CANT_GET_MATCH);
         }
@@ -169,7 +161,6 @@ public class MatchHandler {
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
             userInfo.addResources(requestEndGame.getGoldGot(), requestEndGame.getElixirGot(), 0);
             userInfo.setRank(Math.max (userInfo.getRank() + (requestEndGame.getResult() ? 1 : -1) *  requestEndGame.getTrophy(), 0));
-            userInfo.removeTroop(requestEndGame.getArmy());
 
             BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
             if (match != null) {
@@ -182,6 +173,7 @@ public class MatchHandler {
                 match.setGoldGot(requestEndGame.getGoldGot());
                 match.setElixirGot(requestEndGame.getElixirGot());
                 match.pushAction(new BattleAction(BattleConst.ACTION_END, requestEndGame.getTick()));
+                userInfo.removeTroop(match.usedArmy);
 
                 ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
                 listUserData.updateUser(match.enemyId, false);
