@@ -21,6 +21,12 @@ public class Barrack extends Building {
         this.lastTrainingTime = Common.currentTimeInSecond();
     }
 
+    public Barrack(int id, String type, int level, Point position, int lastTrainingTime, ArrayList<TrainingItem> trainingItemList){
+        super(id, type, level, position);
+        this.lastTrainingTime = lastTrainingTime;
+        this.trainingItemList = trainingItemList;
+    }
+
     public int getLastTrainingTime() {
         return this.lastTrainingTime;
     }
@@ -119,41 +125,40 @@ public class Barrack extends Building {
         return cost;
     }
 
-    public ArrayList<TrainingItem> updateTrainingList(PlayerInfo userInfo) {
 
+    public ArrayList<TrainingItem> updateTrainingList(int currentSpace, int maxSpace) {
         ArrayList<TrainingItem> doneList = new ArrayList<>();
-        int doneSpace = 0;
-        if (!this.trainingItemList.isEmpty()) {
-            int timeLeft = Common.currentTimeInSecond() - lastTrainingTime;
-            while (timeLeft > 0 && !this.trainingItemList.isEmpty()) {
+        int curSpace = currentSpace;
+        int timeLeft = Common.currentTimeInSecond() - lastTrainingTime;
 
-                TrainingItem firstTroop = this.getFirstTrainingItem();
-                TroopBaseConfig troopBaseConfig = GameConfig.getInstance().troopBaseConfig.get(firstTroop.cfgId);
-                doneSpace += troopBaseConfig.housingSpace;
+        for (TrainingItem trainingItem : this.trainingItemList) {
 
-                // nếu con lính tiếp theo vượt max space
-                if (doneSpace + userInfo.getCurrentTroopSpace() > userInfo.getMaxArmySpace()) {
-                    break;
-                }
-                String troopCfgId = this.removeFirstTroop();
-                boolean isExisted = false;
-                for (TrainingItem trainItem : doneList) {
-                    if (trainItem.cfgId.equals(troopCfgId)) {
-                        trainItem.count++;
-                        isExisted = true;
-                    }
-                }
-                if (!isExisted) {
-                    doneList.add(new TrainingItem(troopCfgId, 1));
-                }
-                timeLeft -= (int) Math.ceil((double) GameConfig.getInstance().troopBaseConfig.get(troopCfgId).trainingTime
-                        / ServerConstant.TRAIN_TIME_RATE);
+            TroopBaseConfig troopBaseConfig = GameConfig.getInstance().troopBaseConfig.get(trainingItem.cfgId);
+            int housingSpace = troopBaseConfig.housingSpace;
+            int trainingTime = (int) Math.ceil((double) GameConfig.getInstance().troopBaseConfig.get(trainingItem.cfgId).trainingTime
+                    / ServerConstant.TRAIN_TIME_RATE);
 
+            // nếu không đủ space hoặc time cho 1 con lính tiếp thì ngừng ngay
+            if (maxSpace - curSpace < housingSpace || timeLeft < trainingTime) {
+                break;
+            } else {
+                int maxAvailByTime = (int) (double) (timeLeft / trainingTime);
+                int maxAvailByCount = trainingItem.count;
+                int maxAvailBySpace = (maxSpace - curSpace) / housingSpace;
 
+                int trainCount = Math.min(Math.min(maxAvailByTime, maxAvailByCount), maxAvailBySpace);
+
+                trainingItem.count = Math.max(0, trainingItem.count -trainCount);
+                curSpace += trainCount * housingSpace;
+                timeLeft -= trainCount * trainingTime;
+
+                doneList.add(new TrainingItem(trainingItem.cfgId, trainCount));
+
+                if(trainingItem.count >0) break;
             }
-            this.lastTrainingTime = Common.currentTimeInSecond();
         }
-        return doneList;
+        this.lastTrainingTime = Common.currentTimeInSecond();
+        return  doneList;
     }
 
 
@@ -166,7 +171,7 @@ public class Barrack extends Building {
                 int timeLeft = Common.currentTimeInSecond() - lastTrainingTime;
                 while (timeLeft > 0 && !this.trainingItemList.isEmpty()) {
                     User user = ExtensionUtility.globalUserManager.getUserById(uId);
-                     userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+                    userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
                     TrainingItem firstTroop = this.getFirstTrainingItem();
                     TroopBaseConfig troopBaseConfig = GameConfig.getInstance().troopBaseConfig.get(firstTroop.cfgId);
 
@@ -194,6 +199,4 @@ public class Barrack extends Building {
         }
 
     }
-
-
 }
