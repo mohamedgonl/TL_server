@@ -29,6 +29,7 @@ import cmd.send.battle.*;
 import event.handler.LoginSuccessHandler;
 import extension.FresherExtension;
 import javafx.beans.binding.ObjectBinding;
+import model.Barrack;
 import model.PlayerInfo;
 import model.TrainingItem;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -44,6 +45,8 @@ import service.battle.ActionHandler;
 import service.battle.BattleHandler;
 import service.battle.MatchHandler;
 import util.BattleConst;
+import util.Common;
+import util.GameConfig;
 import util.server.ServerConstant;
 
 import java.awt.*;
@@ -147,8 +150,8 @@ public class BattleTest {
         }
     }
 
-    @Test
-    @Order(4)
+//    @Test
+//    @Order(4)
     void createUsersForTest(){
         try {
             for (int i = 1; i <= 1000; i++) {
@@ -266,6 +269,30 @@ public class BattleTest {
 
     }
 
+    @Test
+    @Order(11)
+    void testNewTrainTroop () {
+        try {
+            GameConfig.getInstance().init();
+
+            int lastTime = Common.currentTimeInSecond() - 20;
+            ArrayList<TrainingItem> trainingItems = new ArrayList<>();
+            trainingItems.add(new TrainingItem("ARM_2", 7));
+            trainingItems.add(new TrainingItem("ARM_1", 10));
+            trainingItems.add(new TrainingItem("ARM_3", 8));
+
+            Barrack barrack = new Barrack(1,"BAR_1", 1, new Point(1,2), lastTime, trainingItems);
+
+            ArrayList<TrainingItem> done =  barrack.updateTrainingList(0,20);
+            System.out.println(done);
+            int i = 0;
+            i ++;
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
 
     @Test
     @Order(10)

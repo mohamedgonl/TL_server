@@ -224,7 +224,7 @@ public class TroopHandler extends BaseClientRequestHandler {
                 return;
             }
             // cập nhập lai danh sách luyện
-            ArrayList<TrainingItem> doneList = currentBarrack.updateTrainingList(userInfo);
+            ArrayList<TrainingItem> doneList = currentBarrack.updateTrainingList(userInfo.getCurrentTroopSpace(), userInfo.getMaxArmySpace());
             ArrayList<TrainingItem>trainingList = currentBarrack.getTrainingItemList();
             // lính dc train lưu vào player info;
             userInfo.pushToListTroop(doneList);

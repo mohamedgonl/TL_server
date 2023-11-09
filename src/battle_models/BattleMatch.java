@@ -4,10 +4,7 @@ import util.BattleConst;
 import util.Common;
 import util.database.DataModel;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class BattleMatch extends DataModel {
     public static int idGenerate = 1;
@@ -40,15 +37,20 @@ public class BattleMatch extends DataModel {
     public int winPercentage = 0;
 
     public int stars;
+    private ArrayList<BattleAction> actionsList = new ArrayList<>();
+    public ArrayList<BattleBuilding> buildings;
 
     private transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
     private transient int[][] troopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
     private transient int[][] throwTroopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
     private transient ArrayList<BattleTroop> troops = new ArrayList<>(); // Lưu thông tin từng con lính trong trận
-    public ArrayList<BattleBuilding> buildings;
-    public ArrayList<BattleBuilding> defBuildings = new ArrayList<>();
-    public ArrayList<BattleBuilding> resBuildings = new ArrayList<>();
-    private ArrayList<BattleAction> actionsList = new ArrayList<>();
+    public transient ArrayList<BattleDefence> defBuildings = new ArrayList<>();
+    public transient ArrayList<BattleBuilding> resBuildings = new ArrayList<>();
+    public transient ArrayList<BattleBullet> bullets = new ArrayList<>();
+    private transient int buildingDestroyedPoint = 0;
+    private transient int totalBuildingPoint = 0;
+
+    private transient boolean isDestroyedHalf = false;
 
 
     public BattleMatch(int id, int enemyId, String enemyName, ArrayList<BattleBuilding> buildings, Map<String, Integer> army, int maxGold, int maxElixir, int enemyRank, int userRank) {
@@ -59,35 +61,35 @@ public class BattleMatch extends DataModel {
         this.maxElixir = maxElixir;
         this.army = army;
         this.buildings = buildings;
-        this.initData(enemyRank, userRank);
+        this.state = BattleConst.MATCH_NEW;
+        this.createTime = Common.currentTimeInSecond();
+
+        this.winTrophy = this.getWinTrophy(enemyRank, userRank);
+        this.loseTrophy = this.getLoseTrophy(enemyRank, userRank);
+
+//        this.initData();
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public void initData( int enemyRank, int userRank) {
-        this.state = BattleConst.MATCH_NEW;
-        this.createTime = Common.currentTimeInSecond();
 
-        this.winTrophy = this.getWinTrophy(enemyRank,userRank);
-        this.loseTrophy = this.getLoseTrophy(enemyRank,userRank);
+    // must be call when sync
+    public void initData() {
 
         this.initBattleMap();
         this.initThrowTroopMap();
         this.initBattleBuildings();
-//        this.printGridMap(this.battleMap);
-        int i =0;
-        i++;
 
     }
 
-    public int getWinTrophy (int userRank, int enemyRank) {
-         return (int) Math.floor(-0.63599+(59.43467+0.63599)/(1+0.991798 * Math.exp(0.00576*(userRank-enemyRank))));
+    public int getWinTrophy(int userRank, int enemyRank) {
+        return (int) Math.floor(-0.63599 + (59.43467 + 0.63599) / (1 + 0.991798 * Math.exp(0.00576 * (userRank - enemyRank))));
     }
 
-    public int getLoseTrophy (int userRank, int enemyRank) {
-        return (int) Math.floor(39.0907 - (39.0619) / (1 + 0.993 * Math.exp(0.00595*(userRank-enemyRank))));
+    public int getLoseTrophy(int userRank, int enemyRank) {
+        return (int) Math.floor(39.0907 - (39.0619) / (1 + 0.993 * Math.exp(0.00595 * (userRank - enemyRank))));
     }
 
     public void setGoldGot(int goldGot) {
@@ -140,6 +142,9 @@ public class BattleMatch extends DataModel {
             for (int i = 0; i < building.baseBuildingStats.width * BattleConst.BATTLE_MAP_SCALE; i++) {
                 for (int j = 0; j < building.baseBuildingStats.height * BattleConst.BATTLE_MAP_SCALE; j++) {
                     this.battleMap[i + building.posX][j + building.posY] = building.id;
+                    if (!building.type.startsWith("OBS") && !building.type.startsWith("WAL")) {
+                        this.totalBuildingPoint += building.baseBuildingStats.hitpoints;
+                    }
                 }
             }
         }
@@ -193,6 +198,60 @@ public class BattleMatch extends DataModel {
         return false;
     }
 
+    public void onDestroyBuilding(int id) {
+        BattleBuilding building = this.getBattleBuildingById(id);
+        this.buildingDestroyedPoint += building.baseBuildingStats.hitpoints;
+
+
+        if (!this.isDestroyedHalf && this.buildingDestroyedPoint * 2 >= this.totalBuildingPoint) {
+            this.isDestroyedHalf = true;
+            this.stars++;
+        }
+
+        if (building.type.startsWith("TOW")) {
+            this.stars++;
+        }
+
+        if (this.buildingDestroyedPoint >= this.totalBuildingPoint) {
+            this.stars++;
+            return;
+        }
+
+        // remove from building count
+//        this.buildingAmount[building._type] = Math.max(this.buildingAmount[building._type] - 1, 0);
+
+        // Update troopMap
+        for (int column = building.posX; column < building.posX + building.baseBuildingStats.width; column++) {
+            for (int row = building.posY; row < building.posY + building.baseBuildingStats.height; row++) {
+                this.troopMap[column][row] = 0;
+            }
+        }
+
+// Update findPathGrid
+        if (building.type.startsWith("WAL")) {
+            for (int column = building.posX; column < building.posX + building.baseBuildingStats.width; column++) {
+                for (int row = building.posY; row < building.posY + building.baseBuildingStats.height; row++) {
+                    // this.findPathGrid[column][row] = 0;
+// TODO:                   this.battleGraph.changeNodeWeight(column, row, 0);
+                }
+            }
+        } else {
+            for (int column = building.posX + 1; column < building.posX + building.baseBuildingStats.width - 1; column++) {
+                for (int row = building.posY + 1; row < building.posY + building.baseBuildingStats.height - 1; row++) {
+                    // this.findPathGrid[column][row] = 0;
+// TODO:                   this.battleGraph.changeNodeWeight(column, row, 0);
+                }
+            }
+        }
+
+        //update battle graph
+//TODO:        this._battleGraph = new BattleGraph(this.findPathGrid);
+
+       System.out.println("get battle graph");
+
+
+    }
+
     public void updateResourceGot(int addition, BattleConst.ResourceType type) {
 
         if (type == BattleConst.ResourceType.GOLD) {
@@ -244,33 +303,63 @@ public class BattleMatch extends DataModel {
 
     public void initBattleBuildings() {
         for (BattleBuilding building : this.buildings) {
-            if (building.type.startsWith("RES") || building.type.startsWith("STO")|| building.type.startsWith("TOW")) {
+            if (building.type.startsWith("RES") || building.type.startsWith("STO") || building.type.startsWith("TOW")) {
                 this.resBuildings.add(building);
             }
             if (building.type.startsWith("DEF")) {
-                this.defBuildings.add(building);
+                this.defBuildings.add(new BattleDefence(building.id, building.type, building.level, building.posX, building.posY));
             }
         }
+    }
+
+    public void removeTroop(int id) {
+        for (int i = 0; i < this.troops.size(); i++) {
+            if (this.troops.get(i).id == id) {
+                this.troops.remove(i);
+            }
+        }
+    }
+
+    public ArrayList<BattleDefence> getDefBuildings() {
+        return defBuildings;
+    }
+
+    public ArrayList<BattleBuilding> getResBuildings() {
+        return resBuildings;
+    }
+
+    public ArrayList<BattleBuilding> getBuildings() {
+        return buildings;
     }
 
     public void startGameLoop() {
 
         // ignore action start
         int actionIndex = 1;
-
         int tick = 0;
+
         while (tick < BattleConst.MAX_TICK_PER_GAME || this.actionsList.get(actionIndex).type != BattleConst.ACTION_END) {
 
             if (this.actionsList.get(actionIndex).tick == tick && actionIndex < this.actionsList.size()) {
                 //TODO: do action
 
-
                 actionIndex++;
+            }
+            //TODO: update state
+
+            // defence buildings
+            for (BattleDefence defence : this.defBuildings) {
+                defence.gameLoop(0);
+            }
+
+            for (BattleBullet bullet : this.bullets) {
+                bullet.gameLoop(0);
             }
 
 
-            //TODO: update state
-
+            for (BattleTroop troop: this.troops) {
+                troop.gameLoop(0);
+            }
 
             tick++;
         }

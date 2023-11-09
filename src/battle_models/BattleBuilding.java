@@ -32,4 +32,23 @@ public class BattleBuilding {
                 (building.getPosition().y +BattleConst.BATTLE_MAP_BORDER)* BattleConst.BATTLE_MAP_SCALE );
     }
 
+    public boolean isDestroy(){
+        return this.hp <= 0;
+    }
+
+    public void onGainDamage(int damage) {
+        if (damage <= 0 || this.hp <= 0) {
+            return;
+        }
+        this.hp = Math.max(this.hp - damage, 0);
+
+        if (this.hp == 0) {
+            this.onDestroy();
+        }
+    }
+
+    public void onDestroy() {
+
+    }
+
 }
