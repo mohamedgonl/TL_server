@@ -48,4 +48,13 @@ public class ResponseGetTrainTroopList extends BaseMsg {
         return packBuffer(bf);
     }
 
+    @Override
+    public String toString() {
+        return "ResponseGetTrainTroopList{" +
+                "barrackId=" + barrackId +
+                ", trainingItems=" + trainingItems +
+                ", doneList=" + doneList +
+                ", lastTrainingTime=" + lastTrainingTime +
+                '}';
+    }
 }

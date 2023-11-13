@@ -295,7 +295,7 @@ public class PlayerInfo extends DataModel {
     public int getCurrentTroopSpace(){
         int total =  0;
         for (Map.Entry<String, Integer> entry : listTroops.entrySet()) {
-            total += entry.getValue();
+            total += entry.getValue() * GameConfig.getInstance().troopBaseConfig.get(entry.getKey()).housingSpace;
         }
         return total;
     }

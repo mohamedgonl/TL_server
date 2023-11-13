@@ -231,8 +231,8 @@ public class TroopHandler extends BaseClientRequestHandler {
 
             // lưu thông tin
             userInfo.saveModel(user.getId());
-
-            send(new ResponseGetTrainTroopList(ErrorConst.SUCCESS, currentBarrack.getId(), trainingList, doneList, currentBarrack.getLastTrainingTime()), user);
+            ResponseGetTrainTroopList res = new ResponseGetTrainTroopList(ErrorConst.SUCCESS, currentBarrack.getId(), trainingList, doneList, currentBarrack.getLastTrainingTime());
+            send(res, user);
             return;
         }
         catch (Exception e) {
