@@ -14,18 +14,26 @@ public class BattleBuilding {
     public int level;
     private int capacity;
     private int resourceLeft;
-    public BaseBuildingConfig baseBuildingStats;
+
+    public int width;
+    public int height;
+
+    public int maxHp;
 
     public BattleMatch match;
 
     public BattleBuilding(int id, String type, int level, int posX, int posY){
-        this.baseBuildingStats = GameConfig.getInstance().getBuildingConfig(type, level);
+        BaseBuildingConfig baseBuildingStats = GameConfig.getInstance().getBuildingConfig(type, level);
         this.posX = posX;
         this.posY = posY;
         this.type = type;
         this.level = level;
         this.id = id;
-        this.hp = this.baseBuildingStats.hitpoints;
+        this.width = baseBuildingStats.width * BattleConst.BATTLE_MAP_SCALE;
+        this.height = baseBuildingStats.height * BattleConst.BATTLE_MAP_SCALE;
+        this.hp = baseBuildingStats.hitpoints;
+        this.maxHp = baseBuildingStats.hitpoints;
+
     }
 
     public void setCapacity(int capacity) {
@@ -53,7 +61,7 @@ public class BattleBuilding {
         this.hp = Math.max(this.hp - damage, 0);
 
         if(this.type.startsWith("RES") || this.type.startsWith("STO")) {
-            int resource = (int) Math.ceil((double) (damage * this.capacity) / this.baseBuildingStats.hitpoints);
+            int resource = (int) Math.ceil((double) (damage * this.capacity) / this.maxHp);
             if (resource <= this.resourceLeft) {
                 this.reduceResource(
                         resource,

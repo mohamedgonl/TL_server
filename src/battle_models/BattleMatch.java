@@ -139,11 +139,11 @@ public class BattleMatch extends DataModel {
 
     public void initBattleMap() {
         for (BattleBuilding building : this.buildings) {
-            for (int i = 0; i < building.baseBuildingStats.width * BattleConst.BATTLE_MAP_SCALE; i++) {
-                for (int j = 0; j < building.baseBuildingStats.height * BattleConst.BATTLE_MAP_SCALE; j++) {
+            for (int i = 0; i < building.width * BattleConst.BATTLE_MAP_SCALE; i++) {
+                for (int j = 0; j < building.height * BattleConst.BATTLE_MAP_SCALE; j++) {
                     this.battleMap[i + building.posX][j + building.posY] = building.id;
                     if (!building.type.startsWith("OBS") && !building.type.startsWith("WAL")) {
-                        this.totalBuildingPoint += building.baseBuildingStats.hitpoints;
+                        this.totalBuildingPoint += building.maxHp;
                     }
                 }
             }
@@ -152,12 +152,12 @@ public class BattleMatch extends DataModel {
 
     public void initThrowTroopMap() {
         for (BattleBuilding building : this.buildings) {
-            int width = building.baseBuildingStats.width + BattleConst.BATTLE_MAP_BORDER,
-                    height = building.baseBuildingStats.height + BattleConst.BATTLE_MAP_BORDER,
+            int width = building.width + BattleConst.BATTLE_MAP_BORDER,
+                    height = building.height + BattleConst.BATTLE_MAP_BORDER,
                     posX = Math.max(building.posX - BattleConst.BATTLE_MAP_BORDER / 2 * BattleConst.BATTLE_MAP_SCALE, 0), posY = Math.max(building.posY - BattleConst.BATTLE_MAP_BORDER / 2 * BattleConst.BATTLE_MAP_SCALE, 0);
             if (building.type.startsWith("OBS")) {
-                width = building.baseBuildingStats.width;
-                height = building.baseBuildingStats.height;
+                width = building.width;
+                height = building.height;
                 posX = posX == 0 ? 0 : posX + BattleConst.BATTLE_MAP_BORDER / 2 * BattleConst.BATTLE_MAP_SCALE;
                 posY = posY == 0 ? 0 : posY + BattleConst.BATTLE_MAP_BORDER / 2 * BattleConst.BATTLE_MAP_SCALE;
             } else {
@@ -200,7 +200,7 @@ public class BattleMatch extends DataModel {
 
     public void onDestroyBuilding(int id) {
         BattleBuilding building = this.getBattleBuildingById(id);
-        this.buildingDestroyedPoint += building.baseBuildingStats.hitpoints;
+        this.buildingDestroyedPoint += building.maxHp;
 
 
         if (!this.isDestroyedHalf && this.buildingDestroyedPoint * 2 >= this.totalBuildingPoint) {
@@ -221,23 +221,23 @@ public class BattleMatch extends DataModel {
 //        this.buildingAmount[building._type] = Math.max(this.buildingAmount[building._type] - 1, 0);
 
         // Update troopMap
-        for (int column = building.posX; column < building.posX + building.baseBuildingStats.width; column++) {
-            for (int row = building.posY; row < building.posY + building.baseBuildingStats.height; row++) {
+        for (int column = building.posX; column < building.posX + building.width; column++) {
+            for (int row = building.posY; row < building.posY + building.height; row++) {
                 this.troopMap[column][row] = 0;
             }
         }
 
 // Update findPathGrid
         if (building.type.startsWith("WAL")) {
-            for (int column = building.posX; column < building.posX + building.baseBuildingStats.width; column++) {
-                for (int row = building.posY; row < building.posY + building.baseBuildingStats.height; row++) {
+            for (int column = building.posX; column < building.posX + building.width; column++) {
+                for (int row = building.posY; row < building.posY + building.height; row++) {
                     // this.findPathGrid[column][row] = 0;
 // TODO:                   this.battleGraph.changeNodeWeight(column, row, 0);
                 }
             }
         } else {
-            for (int column = building.posX + 1; column < building.posX + building.baseBuildingStats.width - 1; column++) {
-                for (int row = building.posY + 1; row < building.posY + building.baseBuildingStats.height - 1; row++) {
+            for (int column = building.posX + 1; column < building.posX + building.width - 1; column++) {
+                for (int row = building.posY + 1; row < building.posY + building.height - 1; row++) {
                     // this.findPathGrid[column][row] = 0;
 // TODO:                   this.battleGraph.changeNodeWeight(column, row, 0);
                 }
