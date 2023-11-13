@@ -4,49 +4,40 @@ import util.BattleConst;
 import util.Common;
 import util.database.DataModel;
 
-import java.util.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 
 public class BattleMatch extends DataModel {
     public static int idGenerate = 1;
+    private final ArrayList<BattleAction> actionsList = new ArrayList<>();
+    private final transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
+    private final transient int[][] troopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
+    private final transient int[][] throwTroopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
+    private final transient ArrayList<BattleTroop> troops = new ArrayList<>(); // Lưu thông tin từng con lính trong trận
     public int id;
     public int enemyId;
-
     public String enemyName;
-
     public int state;
     public int trophy;
-
     public int winTrophy;
     public int loseTrophy;
-
     public int createTime; // thời điểm tạo trận
     public int startTime;
-
-
     public Map<String, Integer> army; // Lượng lính mang đi đánh
     public Map<String, Integer> usedArmy;
-
     public int maxGold;
-
     public int maxElixir;
-
-    private int goldGot = 0; // vàng chiếm dc
-    private int elixirGot = 0; // dầu chiếm dc
-
     public boolean isWin;
     public int winPercentage = 0;
-
     public int stars;
-    private ArrayList<BattleAction> actionsList = new ArrayList<>();
     public ArrayList<BattleBuilding> buildings;
-
-    private transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
-    private transient int[][] troopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
-    private transient int[][] throwTroopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
-    private transient ArrayList<BattleTroop> troops = new ArrayList<>(); // Lưu thông tin từng con lính trong trận
     public transient ArrayList<BattleDefence> defBuildings = new ArrayList<>();
     public transient ArrayList<BattleBuilding> resBuildings = new ArrayList<>();
     public transient ArrayList<BattleBullet> bullets = new ArrayList<>();
+    private int goldGot = 0; // vàng chiếm dc
+    private int elixirGot = 0; // dầu chiếm dc
     private transient int buildingDestroyedPoint = 0;
     private transient int totalBuildingPoint = 0;
 
@@ -92,20 +83,20 @@ public class BattleMatch extends DataModel {
         return (int) Math.floor(39.0907 - (39.0619) / (1 + 0.993 * Math.exp(0.00595 * (userRank - enemyRank))));
     }
 
-    public void setGoldGot(int goldGot) {
-        this.goldGot = goldGot;
-    }
-
-    public void setElixirGot(int elixirGot) {
-        this.elixirGot = elixirGot;
-    }
-
     public int getGoldGot() {
         return this.goldGot;
     }
 
+    public void setGoldGot(int goldGot) {
+        this.goldGot = goldGot;
+    }
+
     public int getElixirGot() {
         return this.elixirGot;
+    }
+
+    public void setElixirGot(int elixirGot) {
+        this.elixirGot = elixirGot;
     }
 
     @Override
@@ -247,7 +238,7 @@ public class BattleMatch extends DataModel {
         //update battle graph
 //TODO:        this._battleGraph = new BattleGraph(this.findPathGrid);
 
-       System.out.println("get battle graph");
+        System.out.println("get battle graph");
 
 
     }
@@ -320,6 +311,31 @@ public class BattleMatch extends DataModel {
         }
     }
 
+    //get list troops in a circle
+    public ArrayList<BattleTroop> getListTroopsInRange(Point centerPoint, double range) {
+        //todo: change troops to listCurrentTroops
+        ArrayList<BattleTroop> listTroopsInRange = new ArrayList<>();
+        for (BattleTroop troop : troops) {
+            if (!troop.isAlive())
+                continue;
+            if (Math.sqrt(Math.pow(centerPoint.x - troop.posX, 2) + Math.pow(centerPoint.y - troop.posY, 2)) <= range)
+                listTroopsInRange.add(troop);
+        }
+        return listTroopsInRange;
+    }
+
+    public BattleBullet getOrCreateBullet(String type, Point startPoint, BattleTroop target, int damagePerShot, double attackRadius) {
+        for (BattleBullet bullet : bullets)
+            if (!bullet.isActive() && bullet.getType().equals(type)) {
+                bullet.init(startPoint, target);
+                return bullet;
+            }
+
+        BattleBullet newBullet = new BattleBullet(type, startPoint, target, damagePerShot, attackRadius);
+        bullets.add(newBullet);
+        return newBullet;
+    }
+
     public ArrayList<BattleDefence> getDefBuildings() {
         return defBuildings;
     }
@@ -331,7 +347,6 @@ public class BattleMatch extends DataModel {
     public ArrayList<BattleBuilding> getBuildings() {
         return buildings;
     }
-
 
 
     public void sync() {
@@ -358,7 +373,7 @@ public class BattleMatch extends DataModel {
                 bullet.gameLoop(0);
             }
 
-            for (BattleTroop troop: this.troops) {
+            for (BattleTroop troop : this.troops) {
                 troop.gameLoop(0);
             }
 

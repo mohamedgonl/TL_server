@@ -1,25 +1,32 @@
 package battle_models;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class BattleBullet {
     private final String type;
-    private final Point startPoint;
+    private final double attackRadius; // cell
+    public BattleMatch match;
+    private Point startPoint;
     private boolean active;
     private BattleTroop target;
-    private double time; // time logic to reach destination
-    private double gridSpeed; // time logic to reach destination
+    private Point destination;
+    private double time; // time left to reach destination
+    private double totalTime; //total time logic to reach destination
+    private double gridSpeed; // cell/s
     private int damagePerShot; // time logic to reach destination
+    private double minimumTime = 0; // minimum time to reach destination
 
-    public BattleBullet(Point startPoint, BattleTroop target, int damagePerShot, String type, double gridSpeed) {
-        this.active = true;
+    public BattleBullet(String type, Point startPoint, BattleTroop target, int damagePerShot, double attackRadius) {
+        this.type = type;
         this.startPoint = startPoint;
         this.damagePerShot = damagePerShot;
-        this.type = type;
-        this.gridSpeed = gridSpeed;
+        this.attackRadius = attackRadius;
 
-        double gridDist = Math.sqrt(Math.pow(startPoint.x - target.posX, 2) + Math.pow(startPoint.y - target.posY, 2));
-        this.time = gridDist / this.gridSpeed;
+        if (type.equals("DEF_2")) {
+            minimumTime = 15 / this.gridSpeed;
+        }
+        init(startPoint, target);
     }
 
     public String getType() {
@@ -70,15 +77,19 @@ public class BattleBullet {
         this.damagePerShot = damagePerShot;
     }
 
-    public void reset(BattleTroop target) {
+    public void init(Point startPoint, BattleTroop target) {
+        this.startPoint = startPoint;
         this.target = target;
+        this.destination = new Point(target.posX, target.posY);
+
         double gridDist = Math.sqrt(Math.pow(startPoint.x - target.posX, 2) + Math.pow(startPoint.y - target.posY, 2));
-        this.time = gridDist / this.gridSpeed;
+        this.time = Math.max(gridDist / this.gridSpeed, this.minimumTime);
+        this.totalTime = this.time;
+
         this.active = true;
     }
 
     public void gameLoop(double dt) {
-        // cc.log(JSON.stringify({active: this.active, destination: this.destination, x: this.x, y: this.y}))
         if (!this.active || this.target == null)
             return;
         this.time -= dt;
@@ -88,7 +99,18 @@ public class BattleBullet {
     }
 
     public void onReachDestination() {
-
+        if (attackRadius > 0) {
+            ArrayList<BattleTroop> listTargets = match.getListTroopsInRange(destination, attackRadius);
+            for (BattleTroop target : listTargets) {
+                if (target != null && target.isAlive())
+                    target.onGainDamage(this.damagePerShot);
+            }
+        } else {
+            if (target != null && target.isAlive()) {
+                target.onGainDamage(getDamagePerShot());
+            }
+        }
+        destroyBullet();
     }
 
     public void destroyBullet() {

@@ -1,25 +1,35 @@
 package battle_models;
 
+import util.BattleConst;
 import util.GameConfig;
 import util.config.DefenceBaseConfig;
 import util.config.DefenceConfig;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 public class BattleDefence extends BattleBuilding {
+    public BattleMatch match;
     public DefenceBaseConfig defBaseStats;
     public DefenceConfig defStats;
-    public ArrayList<BattleTroop> targetQueue;
+    public BattleTroop target;
     public double attackCd = 0;
-    public double attackSpeed = 0;
+    public double attackSpeed;
     public Point centerPoint;
+    public double minRange;
+    public double maxRange;
+    public double attackRadius;
 
     public BattleDefence(int id, String type, int level, int posX, int posY) {
         super(id, type, level, posX, posY);
         this.defStats = (DefenceConfig) GameConfig.getInstance().getBuildingConfig(type, level);
         this.defBaseStats = (DefenceBaseConfig) GameConfig.getInstance().defenceBaseConfig;
-        this.centerPoint = new Point(posX + (int) Math.floor(defStats.width / 2), posY + (int) Math.floor(defStats.height / 2));
+
+        minRange = this.defBaseStats.minRange * BattleConst.GRID_BATTLE_RATIO;
+        maxRange = this.defBaseStats.maxRange * BattleConst.GRID_BATTLE_RATIO;
+        attackRadius = this.defBaseStats.attackRadius * BattleConst.GRID_BATTLE_RATIO;
+        attackSpeed = this.defBaseStats.attackSpeed;
+
+        centerPoint = new Point(posX + (int) Math.floor(width / 2), posY + (int) Math.floor(height / 2));
     }
 
     public void gameLoop(double dt) {
@@ -27,23 +37,50 @@ public class BattleDefence extends BattleBuilding {
             this.attackCd -= dt;
             return;
         }
-        if (this.targetQueue.size() == 0)
+        if (!this.hasTarget())
             return;
 
-        BattleTroop target = targetQueue.get(0);
         this.attackCd = this.attackSpeed;
         this.attack(target);
     }
 
-    public boolean checkTargetInRange(BattleTroop target) {
+    public BattleTroop getTarget() {
+        return target;
+    }
+
+    public void setTarget(BattleTroop target) {
+        this.target = target;
+    }
+
+    //check if troop can be added as new target
+    public boolean checkTarget(BattleTroop target) {
+        //todo: check target type
+
+        return isTargetInRange(target);
+    }
+
+    public boolean hasTarget() {
+        return this.target != null && this.target.isAlive();
+    }
+
+    //check if current target is still valid or not
+    //set current target to null if not valid
+    public void validateCurrentTarget() {
+        if (!this.hasTarget()) {
+            this.target = null;
+            return;
+        }
+        if (!this.isTargetInRange(this.target)) {
+            this.target = null;
+        }
+    }
+
+    public boolean isTargetInRange(BattleTroop target) {
         double dist = Math.sqrt(Math.pow(centerPoint.x - target.posX, 2) + Math.pow(centerPoint.y - target.posY, 2));
-        return dist > defBaseStats.minRange && dist < defBaseStats.maxRange;
+        return dist > minRange && dist < maxRange;
     }
 
     public void attack(BattleTroop troop) {
-        if (type.equals("DEF_1")){// Cannon
-            BattleBullet bullet = new BattleCannonBullet(new Point(posX, posY), troop, defStats.damagePerShot, type);
-            //todo: add bullet to list bullets
-        }
+        BattleBullet bullet = match.getOrCreateBullet(type, centerPoint, troop, defStats.damagePerShot, attackRadius);
     }
 }
