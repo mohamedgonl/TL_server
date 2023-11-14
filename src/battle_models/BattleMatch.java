@@ -13,6 +13,7 @@ public class BattleMatch extends DataModel {
     public static int idGenerate = 1;
     private final ArrayList<BattleAction> actionsList = new ArrayList<>();
     private final transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
+    private final transient double secPerTick = 1.0 / BattleConst.TICK_PER_SECOND;
     private final transient int[][] troopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
     private final transient int[][] throwTroopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
     private final transient ArrayList<BattleTroop> troops = new ArrayList<>(); // Lưu thông tin từng con lính trong trận
@@ -363,15 +364,32 @@ public class BattleMatch extends DataModel {
                 actionIndex++;
             }
             //TODO: update state
-
-            // defence buildings
+            //check defences targets
             for (BattleDefence defence : this.defBuildings) {
-                defence.gameLoop(0);
+                if (defence.isDestroy()) {
+                    continue;
+                }
+                defence.validateCurrentTarget();
+                if (defence.hasTarget())
+                    continue;
+                for (BattleTroop troop : this.troops) {//loop list current troops
+                    if (!troop.isAlive()) continue;
+                    if (defence.checkTarget(troop)) {
+                        defence.setTarget(troop);
+                        break;
+                    }
+                }
             }
 
-            for (BattleBullet bullet : this.bullets) {
-                bullet.gameLoop(0);
-            }
+            for (BattleDefence defence : this.defBuildings)
+                if (!defence.isDestroy()) {
+                    defence.gameLoop(secPerTick);
+                }
+
+            for (BattleBullet bullet : this.bullets)
+                if (bullet.isActive()) {
+                    bullet.gameLoop(secPerTick);
+                }
 
             for (BattleTroop troop : this.troops) {
                 troop.gameLoop(0);
