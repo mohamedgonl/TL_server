@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Map;
 
 public class BattleMatch extends DataModel {
-    public static int idGenerate = 1;
     private final ArrayList<BattleAction> actionsList = new ArrayList<>();
     private final transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
     private final transient double secPerTick = 1.0 / BattleConst.TICK_PER_SECOND;
@@ -61,11 +60,6 @@ public class BattleMatch extends DataModel {
 
 //        this.initData();
     }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
 
     // must be call when sync
     public void initData() {
@@ -373,6 +367,8 @@ public class BattleMatch extends DataModel {
 
 
     public void sync() {
+
+        this.initData();
 
         // ignore action start
         int actionIndex = 1;
