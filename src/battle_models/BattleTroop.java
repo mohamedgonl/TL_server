@@ -101,13 +101,13 @@ public class BattleTroop {
         switch (this.baseStats.favoriteTarget) {
             case "DEF":
                 ArrayList<BattleBuilding> buildings = new ArrayList<>();
-                for (BattleDefence battleDefence : this.match.getDefBuildings()) {
+                for (BattleDefence battleDefence : this.match.getListDefences()) {
                     buildings.add((BattleBuilding) battleDefence);
                 }
                 listTarget = buildings;
                 break;
             case "RES":
-                listTarget = this.match.getResBuildings();
+                listTarget = this.match.getListResources();
                 break;
             case "NONE":
 

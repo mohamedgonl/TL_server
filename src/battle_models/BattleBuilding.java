@@ -9,20 +9,15 @@ public class BattleBuilding {
     public int id;
     public int posX;
     public int posY;
-    public int hp; // hp hien tai
+    public transient int hp; // hp hien tai
     public String type; // config id
     public int level;
-    private int capacity;
-    private int resourceLeft;
-
     public int width;
     public int height;
-
     public int maxHp;
+    public transient BattleMatch match;
 
-    public BattleMatch match;
-
-    public BattleBuilding(int id, String type, int level, int posX, int posY){
+    public BattleBuilding(int id, String type, int level, int posX, int posY) {
         BaseBuildingConfig baseBuildingStats = GameConfig.getInstance().getBuildingConfig(type, level);
         this.posX = posX;
         this.posY = posY;
@@ -36,21 +31,26 @@ public class BattleBuilding {
 
     }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
-    public void setResourceLeft(int resourceLeft) {
-        this.resourceLeft = resourceLeft;
-    }
-
     public static BattleBuilding convertFromCityBuilding(Building building) {
-        return new BattleBuilding(building.getId(), building.getType(), building.getLevel(),
-                (building.getPosition().x+ BattleConst.BATTLE_MAP_BORDER) * BattleConst.BATTLE_MAP_SCALE,
-                (building.getPosition().y +BattleConst.BATTLE_MAP_BORDER)* BattleConst.BATTLE_MAP_SCALE );
+        int id = building.getId();
+        String type = building.getType();
+        int level = building.getLevel();
+        int posX = (building.getPosition().x + BattleConst.BATTLE_MAP_BORDER) * BattleConst.BATTLE_MAP_SCALE;
+        int posY = (building.getPosition().y + BattleConst.BATTLE_MAP_BORDER) * BattleConst.BATTLE_MAP_SCALE;
+
+        if (type.startsWith("DEF"))
+            return new BattleDefence(id, type, level, posX, posY);
+
+        if (type.equals("RES_1") || type.equals("STO_1"))
+            return new BattleStorage(id, type, level, posX, posY, BattleConst.ResourceType.GOLD);
+
+        if (type.equals("RES_2") || type.equals("STO_2"))
+            return new BattleStorage(id, type, level, posX, posY, BattleConst.ResourceType.ELIXIR);
+
+        return new BattleBuilding(id, type, level, posX, posY);
     }
 
-    public boolean isDestroy(){
+    public boolean isDestroy() {
         return this.hp <= 0;
     }
 
@@ -59,26 +59,9 @@ public class BattleBuilding {
             return;
         }
         this.hp = Math.max(this.hp - damage, 0);
-
-        if(this.type.startsWith("RES") || this.type.startsWith("STO")) {
-            int resource = (int) Math.ceil((double) (damage * this.capacity) / this.maxHp);
-            if (resource <= this.resourceLeft) {
-                this.reduceResource(
-                        resource,
-                        this.type.substring(4).equals("1") ? BattleConst.ResourceType.GOLD
-                                : BattleConst.ResourceType.ELIXIR);
-            }
-        }
-
-        if (this.hp == 0) {
+        if (this.hp <= 0) {
             this.onDestroy();
         }
-    }
-
-    public void reduceResource(int resource, BattleConst.ResourceType type) {
-        this.resourceLeft -= resource;
-        this.match.updateResourceGot(resource, type);
-
     }
 
     public void onDestroy() {

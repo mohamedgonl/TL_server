@@ -34,8 +34,8 @@ public class BattleMatch extends DataModel {
     public int winPercentage = 0;
     public int stars;
     public ArrayList<BattleBuilding> buildings;
-    public transient ArrayList<BattleDefence> defBuildings = new ArrayList<>();
-    public transient ArrayList<BattleBuilding> resBuildings = new ArrayList<>();
+    public transient ArrayList<BattleDefence> listDefences = new ArrayList<>();
+    public transient ArrayList<BattleBuilding> listResources = new ArrayList<>();
     public transient ArrayList<BattleBullet> bullets = new ArrayList<>();
     private int goldGot = 0; // vàng chiếm dc
     private int elixirGot = 0; // dầu chiếm dc
@@ -73,7 +73,7 @@ public class BattleMatch extends DataModel {
         this.initBattleMap();
         this.initThrowTroopMap();
         this.initBattleBuildings();
-
+        this.setResourceToBuilding();
     }
 
     public int getWinTrophy(int userRank, int enemyRank) {
@@ -295,13 +295,35 @@ public class BattleMatch extends DataModel {
 
     public void initBattleBuildings() {
         for (BattleBuilding building : this.buildings) {
-            if (building.type.startsWith("RES") || building.type.startsWith("STO") || building.type.startsWith("TOW")) {
-                this.resBuildings.add(building);
+            if (building.type.startsWith("RES") || building.type.startsWith("STO")) {
+//            if (building.type.startsWith("RES") || building.type.startsWith("STO") || building.type.startsWith("TOW")) {
+                this.listResources.add(building);
             }
             if (building.type.startsWith("DEF")) {
-                this.defBuildings.add(new BattleDefence(building.id, building.type, building.level, building.posX, building.posY));
+                this.listDefences.add((BattleDefence) building);
             }
         }
+    }
+
+    public void setResourceToBuilding() {
+        if (this.listResources.size() == 0)
+            return;
+        int goldCapacity = (int) Math.floor(this.maxGold / this.listResources.size());
+        int elixirCapacity = (int) Math.floor(this.maxElixir / this.listResources.size());
+
+        for (BattleBuilding building : this.listResources) {
+            BattleStorage storage = (BattleStorage) building;
+            if (storage.getResourceType() == BattleConst.ResourceType.GOLD) {
+                storage.setCapacity(goldCapacity);
+            } else if (storage.getResourceType() == BattleConst.ResourceType.ELIXIR)
+                storage.setCapacity(elixirCapacity);
+        }
+
+        BattleStorage lastBuilding = (BattleStorage) this.listResources.get(this.listResources.size() - 1);
+        if (lastBuilding.getResourceType() == BattleConst.ResourceType.GOLD)
+            lastBuilding.setCapacity(this.maxGold - goldCapacity * (this.listResources.size() - 1));
+        else if (lastBuilding.getResourceType() == BattleConst.ResourceType.ELIXIR)
+            lastBuilding.setCapacity(this.maxElixir - elixirCapacity * (this.listResources.size() - 1));
     }
 
     public void removeTroop(int id) {
@@ -337,12 +359,12 @@ public class BattleMatch extends DataModel {
         return newBullet;
     }
 
-    public ArrayList<BattleDefence> getDefBuildings() {
-        return defBuildings;
+    public ArrayList<BattleDefence> getListDefences() {
+        return listDefences;
     }
 
-    public ArrayList<BattleBuilding> getResBuildings() {
-        return resBuildings;
+    public ArrayList<BattleBuilding> getListResources() {
+        return listResources;
     }
 
     public ArrayList<BattleBuilding> getBuildings() {
@@ -365,7 +387,7 @@ public class BattleMatch extends DataModel {
             }
             //TODO: update state
             //check defences targets
-            for (BattleDefence defence : this.defBuildings) {
+            for (BattleDefence defence : this.listDefences) {
                 if (defence.isDestroy()) {
                     continue;
                 }
@@ -381,7 +403,7 @@ public class BattleMatch extends DataModel {
                 }
             }
 
-            for (BattleDefence defence : this.defBuildings)
+            for (BattleDefence defence : this.listDefences)
                 if (!defence.isDestroy()) {
                     defence.gameLoop(secPerTick);
                 }
