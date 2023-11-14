@@ -19,6 +19,10 @@ public class BattleConst {
         DEAD,
     }
 
+    public static int DEF_ATTACK_AREA_GROUND = 1;
+    public static int DEF_ATTACK_AREA_OVERHEAD = 2;
+    public static int DEF_ATTACK_AREA_BOTH = 3;
+
     public static int GRID_BATTLE_RATIO = 3;
 
     public static int MATCH_NEW = 0;

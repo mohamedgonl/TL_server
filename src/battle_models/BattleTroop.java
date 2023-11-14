@@ -34,53 +34,58 @@ public class BattleTroop {
 
     private float _attackCd;
 
+    private boolean isOverhead;
+
     private int _currentIndexLeft = 0;
 
-
-
-    public void attack(BattleBuilding building) {
-
-    }
-
-    public void move(){
-
-    }
-
-
-
-    public BattleTroop(String type, int level, int posX, int posY){
-        this.stats = GameConfig.getInstance().troopConfig.get(type).get(level) ;
-        this.baseStats  = GameConfig.getInstance().troopBaseConfig.get(type);
+    public BattleTroop(String type, int level, int posX, int posY) {
+        this.stats = GameConfig.getInstance().troopConfig.get(type).get(level);
+        this.baseStats = GameConfig.getInstance().troopBaseConfig.get(type);
         this.hp = this.stats.hitpoints;
         this.level = level;
         this.posX = posX;
         this.posY = posY;
         this._attackCd = this.baseStats.attackSpeed;
+        this.isOverhead = type.equals("ARM_6");
     }
 
-    public void gameLoop (int dt){
-        if(this.state == BattleConst.TROOP_STATE.FIND_PATH)
-        {
+    public void attack(BattleBuilding building) {
+
+    }
+
+    public void move() {
+
+    }
+
+    public boolean isOverhead() {
+        return isOverhead;
+    }
+
+    public void setOverhead(boolean overhead) {
+        isOverhead = overhead;
+    }
+
+    public void gameLoop(int dt) {
+        if (this.state == BattleConst.TROOP_STATE.FIND_PATH) {
             this.findTargetandPath();
             return;
         }
-        if(this.state == BattleConst.TROOP_STATE.MOVE)
-        {
+        if (this.state == BattleConst.TROOP_STATE.MOVE) {
             this.moveToTarget(dt);
             return;
         }
 
-        if(this.state == BattleConst.TROOP_STATE.ATTACK)
-        {
+        if (this.state == BattleConst.TROOP_STATE.ATTACK) {
             this.attackTarget(dt);
             return;
         }
     }
 
 
-    private void attackTarget() {}
+    private void attackTarget() {
+    }
 
-    private ArrayList<Point>getPathToBuilding(BattleBuilding building) {
+    private ArrayList<Point> getPathToBuilding(BattleBuilding building) {
         // TODO:
 //        let graph = BattleManager.getInstance().getBattleGraph();
 //        let start = new  BattleGridNode(this._posX,this._posY,graph.getNode(this._posX,this._posY).weight);
@@ -94,6 +99,7 @@ public class BattleTroop {
 //        return BattleAStar.search(graph,start,end);
         return new ArrayList<>();
     }
+
     private void findTargetandPath() {
 
         listTarget = new ArrayList<>();
@@ -102,7 +108,7 @@ public class BattleTroop {
             case "DEF":
                 ArrayList<BattleBuilding> buildings = new ArrayList<>();
                 for (BattleDefence battleDefence : this.match.getListDefences()) {
-                    buildings.add((BattleBuilding) battleDefence);
+                    buildings.add(battleDefence);
                 }
                 listTarget = buildings;
                 break;
@@ -162,6 +168,7 @@ public class BattleTroop {
             }
         }
     }
+
     public void moveToTarget(float dt) {
         // If target is destroyed, find a new target
         if (this._target.isDestroy()) {
@@ -224,38 +231,39 @@ public class BattleTroop {
 //        int directY = this.path.get(this.currentIndex).getY() - this.path.get(this.currentIndex - 1).getY();
 //        this.setRunDirection(directX, directY);
     }
-    private void attackTarget (int dt){
-        if(this._target.isDestroy()) {
+
+    private void attackTarget(int dt) {
+        if (this._target.isDestroy()) {
             System.out.println("target destroy");
             this.state = BattleConst.TROOP_STATE.FIND_PATH;
             return;
         }
         //perform attack
-        if(this._firstAttack && this._attackCd >= this.baseStats.attackSpeed/2) {
+        if (this._firstAttack && this._attackCd >= this.baseStats.attackSpeed / 2) {
             this._firstAttack = false;
         }
-        if(this._attackCd==0)
-        {
+        if (this._attackCd == 0) {
             this._attackCd = this.baseStats.attackSpeed;
             this._target.onGainDamage(this.stats.damagePerAttack);
-        }
-        else
-        {
+        } else {
             this._attackCd -= dt;
-            if(this._attackCd < 0)
+            if (this._attackCd < 0)
                 this._attackCd = 0;
         }
     }
-    public void onGainDamage(int damage){
+
+    public void onGainDamage(int damage) {
         this.hp -= damage;
-        if(this.hp <= 0) {
+        if (this.hp <= 0) {
             this.hp = 0;
             this.dead();
         }
     }
-    public boolean isAlive(){
+
+    public boolean isAlive() {
         return this.hp > 0;
     }
+
     public void dead() {
         this.match.removeTroop(this.id);
     }

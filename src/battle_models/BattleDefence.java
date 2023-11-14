@@ -18,6 +18,7 @@ public class BattleDefence extends BattleBuilding {
     public double minRange;
     public double maxRange;
     public double attackRadius;
+    public int attackArea;
 
     public BattleDefence(int id, String type, int level, int posX, int posY) {
         super(id, type, level, posX, posY);
@@ -54,8 +55,14 @@ public class BattleDefence extends BattleBuilding {
 
     //check if troop can be added as new target
     public boolean checkTarget(BattleTroop target) {
-        //todo: check target type
-
+        // target in air
+        if (target.isOverhead() && this.attackArea == BattleConst.DEF_ATTACK_AREA_GROUND) {
+            return false;
+        }
+        // target on ground
+        if (!target.isOverhead() && this.attackArea == BattleConst.DEF_ATTACK_AREA_OVERHEAD) {
+            return false;
+        }
         return isTargetInRange(target);
     }
 
