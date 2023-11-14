@@ -129,4 +129,11 @@ public class GameConfig {
             return null;
         }
     }
+    public DefenceBaseConfig getDefBaseConfig(String type) {
+        try {
+            return instance.defenceBaseConfig.get(type);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
