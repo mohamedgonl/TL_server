@@ -56,4 +56,6 @@ public class BattleConst {
 
     public static int[][] TIME_GET_MATCH = {{2, 50}, {5, 100}, {10, 200}};
 
+    public static String LOG_URL = "logs/sync/";
+
 }

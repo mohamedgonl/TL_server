@@ -3,6 +3,7 @@ package battle_models;
 import util.BattleConst;
 import util.Common;
 import util.database.DataModel;
+import util.log.BattleLogUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -373,6 +374,7 @@ public class BattleMatch extends DataModel {
         // ignore action start
         int actionIndex = 1;
         int tick = 0;
+        BattleLogUtils.setTick(tick);
 
         while (tick < BattleConst.MAX_TICK_PER_GAME || this.actionsList.get(actionIndex).type != BattleConst.ACTION_END) {
 
@@ -414,6 +416,8 @@ public class BattleMatch extends DataModel {
             }
 
             tick++;
+            BattleLogUtils.setTick(tick);
+            BattleLogUtils.writeLog("\n");
         }
 
     }
