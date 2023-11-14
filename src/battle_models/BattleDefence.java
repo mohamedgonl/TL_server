@@ -22,7 +22,7 @@ public class BattleDefence extends BattleBuilding {
     public BattleDefence(int id, String type, int level, int posX, int posY) {
         super(id, type, level, posX, posY);
         this.defStats = (DefenceConfig) GameConfig.getInstance().getBuildingConfig(type, level);
-        this.defBaseStats = (DefenceBaseConfig) GameConfig.getInstance().defenceBaseConfig;
+        this.defBaseStats = GameConfig.getInstance().getDefBaseConfig(type);
 
         minRange = this.defBaseStats.minRange * BattleConst.GRID_BATTLE_RATIO;
         maxRange = this.defBaseStats.maxRange * BattleConst.GRID_BATTLE_RATIO;
