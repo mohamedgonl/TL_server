@@ -12,19 +12,30 @@ import java.time.format.DateTimeFormatter;
 public class BattleLogUtils {
 
     private static int tick = 0;
+    private static String fileName = "";
 
     public static void setTick(int tick) {
         tick = tick;
     }
 
+    public static void reset() {
+        tick = 0;
+        fileName = "";
+    }
+
     public static String generateFileName() {
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ss-mm-HH-dd-MM-yyyy");
-        String formattedDateTime = now.format(formatter);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm-dd-MM-yyyy");
+        String formattedDateTime = "sync.log." + now.format(formatter);
         return formattedDateTime + ".txt";
     }
+
     public static void writeLog(String message) {
-        File logFile = new File(BattleConst.LOG_URL+generateFileName());
+        File logFile;
+        if (fileName.isEmpty()) {
+            fileName = generateFileName();
+        }
+        logFile = new File(BattleConst.LOG_URL + fileName);
 
         if (!logFile.exists()) {
             try {
@@ -46,8 +57,8 @@ public class BattleLogUtils {
     }
 
     public static void main(String[] args) {
-        writeLog( "HELLO ANH EM");
-        writeLog( "HELLO ANH EM 2");
-        writeLog( "HELLO ANH EM 3");
+        writeLog("HELLO ANH EM");
+        writeLog("HELLO ANH EM 2");
+        writeLog("HELLO ANH EM 3");
     }
 }

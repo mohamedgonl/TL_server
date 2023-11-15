@@ -374,7 +374,7 @@ public class BattleMatch extends DataModel {
         // ignore action start
         int actionIndex = 1;
         int tick = 0;
-        BattleLogUtils.setTick(tick);
+        BattleLogUtils.reset();
 
         while (tick < BattleConst.MAX_TICK_PER_GAME || this.actionsList.get(actionIndex).type != BattleConst.ACTION_END) {
 
