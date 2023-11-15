@@ -59,7 +59,7 @@ public class ActionHandler {
                 }
                 // vị trí ko hợp lệ
                 else if (!match.checkValidThrowTroopPos(requestSendAction.getAction().posX, requestSendAction.getAction().posY)) {
-                    throw  new CustomException(ErrorConst.INVALID_THROW_TROOP_POSITION);
+                    throw new CustomException(ErrorConst.INVALID_THROW_TROOP_POSITION);
                 }
 
                 // nếu đã thả hết lính => không lưu action
@@ -88,10 +88,13 @@ public class ActionHandler {
             } else {
                 throw new CustomException(ErrorConst.BATTLE_ACTION_INVALID);
             }
+            match.pushAction(requestSendAction.getAction());
+            match.sync();
+            user.setProperty(ServerConstant.MATCH, match);
+            return new ResponseSendAction(ErrorConst.SUCCESS);
         }
 
         match.pushAction(requestSendAction.getAction());
-//        match.startGameLoop();
 
         user.setProperty(ServerConstant.MATCH, match);
         return new ResponseSendAction(ErrorConst.SUCCESS);

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class BattleLogUtils {
+public class LogUtils {
 
     private static int tick = 0;
     private static String fileName = "";

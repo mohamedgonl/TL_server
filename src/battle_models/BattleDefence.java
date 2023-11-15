@@ -4,6 +4,7 @@ import util.BattleConst;
 import util.GameConfig;
 import util.config.DefenceBaseConfig;
 import util.config.DefenceConfig;
+import util.log.LogUtils;
 
 import java.awt.*;
 
@@ -51,6 +52,9 @@ public class BattleDefence extends BattleBuilding {
 
     public void setTarget(BattleTroop target) {
         this.target = target;
+
+        LogUtils.writeLog("def " + this.id + " set new target " + target.type);
+
     }
 
     //check if troop can be added as new target
@@ -89,5 +93,8 @@ public class BattleDefence extends BattleBuilding {
 
     public void attack(BattleTroop troop) {
         BattleBullet bullet = match.getOrCreateBullet(type, centerPoint, troop, defStats.damagePerShot, attackRadius);
+
+        LogUtils.writeLog("def " + this.id + " fire to " + target.posX + " " + target.posY);
+
     }
 }

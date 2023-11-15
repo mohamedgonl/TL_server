@@ -4,6 +4,7 @@ import model.Building;
 import util.BattleConst;
 import util.GameConfig;
 import util.config.BaseBuildingConfig;
+import util.log.LogUtils;
 
 public class BattleBuilding {
     public int id;
@@ -29,6 +30,14 @@ public class BattleBuilding {
         this.hp = baseBuildingStats.hitpoints;
         this.maxHp = baseBuildingStats.hitpoints;
 
+    }
+
+    public BattleMatch getMatch() {
+        return match;
+    }
+
+    public void setMatch(BattleMatch match) {
+        this.match = match;
     }
 
     public static BattleBuilding convertFromCityBuilding(Building building) {
@@ -62,10 +71,14 @@ public class BattleBuilding {
         if (this.hp <= 0) {
             this.onDestroy();
         }
+
+        LogUtils.writeLog("building " + this.id + " gain " + damage + " ~ " + this.hp);
     }
 
     public void onDestroy() {
         this.match.onDestroyBuilding(this.id);
+
+        LogUtils.writeLog("building " + this.id + " destroyed");
     }
 
 }

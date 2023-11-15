@@ -4,6 +4,7 @@ import util.BattleConst;
 import util.GameConfig;
 import util.config.TroopBaseConfig;
 import util.config.TroopConfig;
+import util.log.LogUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -258,6 +259,9 @@ public class BattleTroop {
             this.hp = 0;
             this.dead();
         }
+
+        LogUtils.writeLog("troop " + this.type + " gain " + damage + " ~ " + this.hp);
+
     }
 
     public boolean isAlive() {
@@ -266,6 +270,9 @@ public class BattleTroop {
 
     public void dead() {
         this.match.removeTroop(this.id);
+
+        LogUtils.writeLog("troop " + this.type + " dead");
+
     }
 
 }

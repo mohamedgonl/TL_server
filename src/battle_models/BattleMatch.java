@@ -3,7 +3,7 @@ package battle_models;
 import util.BattleConst;
 import util.Common;
 import util.database.DataModel;
-import util.log.BattleLogUtils;
+import util.log.LogUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -126,8 +126,8 @@ public class BattleMatch extends DataModel {
 
     public void initBattleMap() {
         for (BattleBuilding building : this.buildings) {
-            for (int i = 0; i < building.width * BattleConst.BATTLE_MAP_SCALE; i++) {
-                for (int j = 0; j < building.height * BattleConst.BATTLE_MAP_SCALE; j++) {
+            for (int i = 0; i < building.width; i++) {
+                for (int j = 0; j < building.height; j++) {
                     this.battleMap[i + building.posX][j + building.posY] = building.id;
                     if (!building.type.startsWith("OBS") && !building.type.startsWith("WAL")) {
                         this.totalBuildingPoint += building.maxHp;
@@ -151,8 +151,8 @@ public class BattleMatch extends DataModel {
 
             }
 
-            for (int i = 0; i < width * BattleConst.BATTLE_MAP_SCALE; i++) {
-                for (int j = 0; j < height * BattleConst.BATTLE_MAP_SCALE; j++) {
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
                     this.throwTroopMap[i + posX][j + posY] = building.id;
                 }
             }
@@ -281,7 +281,7 @@ public class BattleMatch extends DataModel {
     public int getTroopCount(String type) {
         int count = 0;
         for (int i = 0; i < this.actionsList.size(); i++) {
-            if (actionsList.get(i).troopType.equals(type)) {
+            if (actionsList.get(i).type == BattleConst.ACTION_THROW_TROOP && actionsList.get(i).troopType.equals(type)) {
                 count++;
             }
         }
@@ -290,6 +290,7 @@ public class BattleMatch extends DataModel {
 
     public void initBattleBuildings() {
         for (BattleBuilding building : this.buildings) {
+            building.setMatch(this);
             if (building.type.startsWith("RES") || building.type.startsWith("STO")) {
 //            if (building.type.startsWith("RES") || building.type.startsWith("STO") || building.type.startsWith("TOW")) {
                 this.listResources.add(building);
@@ -368,19 +369,24 @@ public class BattleMatch extends DataModel {
 
 
     public void sync() {
-
         this.initData();
 
         // ignore action start
         int actionIndex = 1;
         int tick = 0;
-        BattleLogUtils.reset();
+        LogUtils.reset();
 
         while (tick < BattleConst.MAX_TICK_PER_GAME || this.actionsList.get(actionIndex).type != BattleConst.ACTION_END) {
 
             if (this.actionsList.get(actionIndex).tick == tick && actionIndex < this.actionsList.size()) {
                 //TODO: do action
 
+                if (this.actionsList.get(actionIndex).type == BattleConst.ACTION_THROW_TROOP) {
+                    BattleTroop troop = new BattleTroop(this.actionsList.get(actionIndex).troopType, 1, this.actionsList.get(actionIndex).posX, this.actionsList.get(actionIndex).posY);
+                    troops.add(troop);
+
+                    LogUtils.writeLog("create troop : " + troop.type + " " + troop.posX + " " + troop.posY);
+                }
                 actionIndex++;
             }
             //TODO: update state
@@ -411,13 +417,13 @@ public class BattleMatch extends DataModel {
                     bullet.gameLoop(secPerTick);
                 }
 
-            for (BattleTroop troop : this.troops) {
-                troop.gameLoop(0);
-            }
+//            for (BattleTroop troop : this.troops) {
+//                troop.gameLoop(0);
+//            }
 
             tick++;
-            BattleLogUtils.setTick(tick);
-            BattleLogUtils.writeLog("\n");
+            LogUtils.setTick(tick);
+            LogUtils.writeLog("\n");
         }
 
     }

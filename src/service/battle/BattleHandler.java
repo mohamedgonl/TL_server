@@ -101,7 +101,7 @@ public class BattleHandler extends BaseClientRequestHandler {
 
 
     public void handleReceiveAction(User user, RequestSendAction requestSendAction) {
-        System.out.println("HANDLE SEND ACTION START");
+        System.out.println("HANDLE SEND ACTION ");
         System.out.println(requestSendAction.toString());
         try {
             ResponseSendAction responseSendAction = ActionHandler.handleReceiveAction(user, requestSendAction);
