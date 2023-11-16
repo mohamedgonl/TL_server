@@ -34,9 +34,12 @@ public class BattleMatch extends DataModel {
     public boolean isWin;
     public int winPercentage = 0;
     public int stars;
+    public ArrayList<BattleGameObject> listGameObjects;
+    public ArrayList<BattleObstacle> listObstacles;
     public ArrayList<BattleBuilding> buildings;
     public transient ArrayList<BattleDefence> listDefences = new ArrayList<>();
     public transient ArrayList<BattleBuilding> listResources = new ArrayList<>();
+    public transient ArrayList<BattleBuilding> listWalls = new ArrayList<>();
     public transient ArrayList<BattleBullet> bullets = new ArrayList<>();
     private int goldGot = 0; // vàng chiếm dc
     private int elixirGot = 0; // dầu chiếm dc
@@ -46,14 +49,14 @@ public class BattleMatch extends DataModel {
     private transient boolean isDestroyedHalf = false;
 
 
-    public BattleMatch(int id, int enemyId, String enemyName, ArrayList<BattleBuilding> buildings, Map<String, Integer> army, int maxGold, int maxElixir, int enemyRank, int userRank) {
+    public BattleMatch(int id, int enemyId, String enemyName, ArrayList<BattleGameObject> gameObjects, Map<String, Integer> army, int maxGold, int maxElixir, int enemyRank, int userRank) {
         this.id = id;
         this.enemyId = enemyId;
         this.enemyName = enemyName;
         this.maxGold = maxGold;
         this.maxElixir = maxElixir;
         this.army = army;
-        this.buildings = buildings;
+        this.listGameObjects = gameObjects;
         this.state = BattleConst.MATCH_NEW;
         this.createTime = Common.currentTimeInSecond();
 
@@ -65,11 +68,10 @@ public class BattleMatch extends DataModel {
 
     // must be call when sync
     public void initData() {
-
-        this.initBattleMap();
-        this.initThrowTroopMap();
         this.initBattleBuildings();
         this.setResourceToBuilding();
+        this.initBattleMap();
+        this.initThrowTroopMap();
     }
 
     public int getWinTrophy(int userRank, int enemyRank) {
@@ -290,14 +292,17 @@ public class BattleMatch extends DataModel {
     }
 
     public void initBattleBuildings() {
-        for (BattleBuilding building : this.buildings) {
-            building.setMatch(this);
-            if (building.type.startsWith("RES") || building.type.startsWith("STO")) {
-//            if (building.type.startsWith("RES") || building.type.startsWith("STO") || building.type.startsWith("TOW")) {
-                this.listResources.add(building);
-            }
-            if (building.type.startsWith("DEF")) {
-                this.listDefences.add((BattleDefence) building);
+        for (BattleGameObject gameObject : this.listGameObjects) {
+            gameObject.setMatch(this);
+            if (gameObject.type.startsWith("OBS")) {
+                this.listObstacles.add((BattleObstacle) gameObject);
+            } else if (gameObject.type.startsWith("RES") || gameObject.type.startsWith("STO")) {
+//            if (gameObject.type.startsWith("RES") || gameObject.type.startsWith("STO") || gameObject.type.startsWith("TOW")) {
+                this.listResources.add((BattleBuilding) gameObject);
+            } else if (gameObject.type.startsWith("WAL")) {
+                this.listWalls.add((BattleBuilding) gameObject);
+            } else if (gameObject.type.startsWith("DEF")) {
+                this.listDefences.add((BattleDefence) gameObject);
             }
         }
     }

@@ -1,7 +1,7 @@
 package service.battle;
 
 import battle_models.BattleAction;
-import battle_models.BattleBuilding;
+import battle_models.BattleGameObject;
 import battle_models.BattleMatch;
 import bitzero.server.entities.User;
 import cmd.ErrorConst;
@@ -19,8 +19,10 @@ import util.Common;
 import util.server.CustomException;
 import util.server.ServerConstant;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.*;
 
 public class MatchHandler {
@@ -49,7 +51,7 @@ public class MatchHandler {
 
         PlayerInfo enemyInfo = findPlayer(user);
 
-        ArrayList<BattleBuilding> buildings = convertToBattleBuilding(enemyInfo.getListBuildings());
+        ArrayList<BattleGameObject> buildings = convertToBattleBuilding(enemyInfo.getListBuildings());
         boolean hasElixirSto = buildings.stream().anyMatch(building -> "STO_2".equals(building.type) || "RES_2".equals(building.type));
 
         Map<String, Integer> army = new HashMap<>(userInfo.getListTroops());
@@ -95,10 +97,10 @@ public class MatchHandler {
         return null;
     }
 
-    public static ArrayList<BattleBuilding> convertToBattleBuilding(ArrayList<Building> buildings) {
-        ArrayList<BattleBuilding> battleBuildings = new ArrayList<>();
+    public static ArrayList<BattleGameObject> convertToBattleBuilding(ArrayList<Building> buildings) {
+        ArrayList<BattleGameObject> battleBuildings = new ArrayList<>();
         for (Building building : buildings) {
-            battleBuildings.add(BattleBuilding.convertFromCityBuilding(building));
+            battleBuildings.add(BattleGameObject.convertFromCityBuilding(building));
         }
         return battleBuildings;
     }
@@ -160,7 +162,7 @@ public class MatchHandler {
         try {
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
             userInfo.addResources(requestEndGame.getGoldGot(), requestEndGame.getElixirGot(), 0);
-            userInfo.setRank(Math.max (userInfo.getRank() + (requestEndGame.getResult() ? 1 : -1) *  requestEndGame.getTrophy(), 0));
+            userInfo.setRank(Math.max(userInfo.getRank() + (requestEndGame.getResult() ? 1 : -1) * requestEndGame.getTrophy(), 0));
 
             BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
             if (match != null) {
@@ -185,7 +187,7 @@ public class MatchHandler {
                 // update enemy rank and resource
                 PlayerInfo enemyInfo = (PlayerInfo) PlayerInfo.getModel(match.enemyId, PlayerInfo.class);
                 int oldEnemyRank = enemyInfo.getRank();
-                int newEnemyRank = enemyInfo.getRank() + (match.isWin ? - match.trophy : match.trophy);
+                int newEnemyRank = enemyInfo.getRank() + (match.isWin ? -match.trophy : match.trophy);
                 enemyInfo.setRank(newEnemyRank);
                 enemyInfo.useResources(match.getGoldGot(), match.getElixirGot(), 0);
 
@@ -193,9 +195,8 @@ public class MatchHandler {
                 listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
 
                 enemyInfo.saveModel(enemyInfo.getId());
-            }
-            else {
-                throw new  CustomException(ErrorConst.NO_MATCH_FOUND);
+            } else {
+                throw new CustomException(ErrorConst.NO_MATCH_FOUND);
             }
 
         } catch (Exception e) {

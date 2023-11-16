@@ -1,16 +1,8 @@
 package battle_models;
 
-import util.GameConfig;
-import util.config.ObstacleConfig;
+public class BattleObstacle extends BattleGameObject {
 
-public class BattleObstacle {
-    public int posX;
-    public int posY;
-    public String type;
-
-
-
-    public BattleObstacle(String type){
-
+    public BattleObstacle(int id, String type, int level, int posX, int posY) {
+        super(id, type, 1, posX, posY);
     }
 }
