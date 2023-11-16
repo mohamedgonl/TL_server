@@ -1,5 +1,6 @@
 package battle_models;
 
+import org.apache.commons.logging.Log;
 import util.BattleConst;
 import util.Common;
 import util.database.DataModel;
@@ -13,7 +14,7 @@ import java.util.Map;
 public class BattleMatch extends DataModel {
     private final ArrayList<BattleAction> actionsList = new ArrayList<>();
     private final transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
-    private final transient double secPerTick = 1.0 / BattleConst.TICK_PER_SECOND;
+    private final transient double secPerTick = Math.round(1.0 / BattleConst.TICK_PER_SECOND * 1e6) / 1e6;
     private final transient int[][] troopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
     private final transient int[][] throwTroopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
     private final transient ArrayList<BattleTroop> troops = new ArrayList<>(); // Lưu thông tin từng con lính trong trận
@@ -322,12 +323,13 @@ public class BattleMatch extends DataModel {
             lastBuilding.setCapacity(this.maxElixir - elixirCapacity * (this.listResources.size() - 1));
     }
 
-    public void removeTroop(int id) {
-        for (int i = 0; i < this.troops.size(); i++) {
-            if (this.troops.get(i).id == id) {
-                this.troops.remove(i);
-            }
-        }
+    public void removeTroop(BattleTroop troop) {
+//        for (int i = 0; i < this.troops.size(); i++) {
+//            if (this.troops.get(i).id == id) {
+//                this.troops.remove(i);
+//            }
+//        }
+        this.troops.remove(troop);
     }
 
     //get list troops in a circle
@@ -351,6 +353,7 @@ public class BattleMatch extends DataModel {
             }
 
         BattleBullet newBullet = new BattleBullet(type, startPoint, target, damagePerShot, attackRadius);
+        newBullet.setMatch(this);
         bullets.add(newBullet);
         return newBullet;
     }
@@ -376,18 +379,24 @@ public class BattleMatch extends DataModel {
         int tick = 0;
         LogUtils.reset();
 
-        while (tick < BattleConst.MAX_TICK_PER_GAME || this.actionsList.get(actionIndex).type != BattleConst.ACTION_END) {
+        while (tick < BattleConst.MAX_TICK_PER_GAME) {
 
-            if (this.actionsList.get(actionIndex).tick == tick && actionIndex < this.actionsList.size()) {
-                //TODO: do action
+            if (actionIndex < this.actionsList.size()) {
+                if (this.actionsList.get(actionIndex).tick == tick) {
+                    //TODO: do action
+                    if (this.actionsList.get(actionIndex).type == BattleConst.ACTION_THROW_TROOP) {
+                        BattleTroop troop = new BattleTroop(this.actionsList.get(actionIndex).troopType, 1, this.actionsList.get(actionIndex).posX, this.actionsList.get(actionIndex).posY);
+                        troop.setMatch(this);
+                        troops.add(troop);
+                        LogUtils.writeLog("create troop : " + troop.type + " " + troop.posX + " " + troop.posY);
+                    }
+                    if (this.actionsList.get(actionIndex).type == BattleConst.ACTION_END) {
+                        this.printEndLog();
+                        return;
+                    }
 
-                if (this.actionsList.get(actionIndex).type == BattleConst.ACTION_THROW_TROOP) {
-                    BattleTroop troop = new BattleTroop(this.actionsList.get(actionIndex).troopType, 1, this.actionsList.get(actionIndex).posX, this.actionsList.get(actionIndex).posY);
-                    troops.add(troop);
-
-                    LogUtils.writeLog("create troop : " + troop.type + " " + troop.posX + " " + troop.posY);
+                    actionIndex++;
                 }
-                actionIndex++;
             }
             //TODO: update state
             //check defences targets
@@ -401,6 +410,7 @@ public class BattleMatch extends DataModel {
                 for (BattleTroop troop : this.troops) {//loop list current troops
                     if (!troop.isAlive()) continue;
                     if (defence.checkTarget(troop)) {
+                        LogUtils.writeLog("check target :" + tick);
                         defence.setTarget(troop);
                         break;
                     }
@@ -422,8 +432,26 @@ public class BattleMatch extends DataModel {
 //            }
 
             tick++;
-            LogUtils.setTick(tick);
-            LogUtils.writeLog("\n");
+            LogUtils.tick = tick;
+        }
+
+    }
+
+    private void printEndLog() {
+        LogUtils.writeLog("------------------------------------------ BATTLE ENDED ------------------------------------------");
+        LogUtils.writeLog("LIST BUILDING");
+        for (BattleBuilding building :
+                this.buildings) {
+            LogUtils.writeLog(building.toString());
+        }
+        LogUtils.writeLog("LIST TROOP");
+        for (BattleTroop e : this.troops) {
+                LogUtils.writeLog(e.toString());
+        }
+        LogUtils.writeLog("LIST BULLET");
+        for (BattleBullet e :
+                this.bullets) {
+                LogUtils.writeLog(e.toString());
         }
 
     }

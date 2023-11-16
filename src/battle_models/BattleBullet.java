@@ -7,6 +7,11 @@ public class BattleBullet {
     private final String type;
     private final double attackRadius; // cell
     public BattleMatch match;
+
+    public void setMatch(BattleMatch match) {
+        this.match = match;
+    }
+
     private Point startPoint;
     private boolean active;
     private BattleTroop target;
@@ -23,8 +28,13 @@ public class BattleBullet {
         this.damagePerShot = damagePerShot;
         this.attackRadius = attackRadius;
 
-        if (type.equals("DEF_2")) {
+        if (type.equals("DEF_1")) {
+            this.gridSpeed = 40;
+        } else if (type.equals("DEF_2")) {
+            this.gridSpeed = 50;
             minimumTime = 15 / this.gridSpeed;
+        } else if (type.equals("DEF_3")) {
+            this.gridSpeed = 13;
         }
         init(startPoint, target);
     }
@@ -115,5 +125,14 @@ public class BattleBullet {
 
     public void destroyBullet() {
         this.active = false;
+    }
+
+    @Override
+    public String toString() {
+        return "BattleBullet{" +
+                "active=" + active +
+                ", target=" + target +
+                ", destination=" + destination.x +" " + destination.y+
+                '}';
     }
 }

@@ -11,12 +11,10 @@ import java.time.format.DateTimeFormatter;
 
 public class LogUtils {
 
-    private static int tick = 0;
+    public static int tick = 0;
     private static String fileName = "";
 
-    public static void setTick(int tick) {
-        tick = tick;
-    }
+
 
     public static void reset() {
         tick = 0;
