@@ -442,7 +442,7 @@ public class BattleMatch extends DataModel {
         LogUtils.writeLog("LIST BUILDING");
         for (BattleBuilding building :
                 this.buildings) {
-            LogUtils.writeLog(building.toString());
+            if(!building.type.startsWith("OBS"))  LogUtils.writeLog(building.toString());
         }
         LogUtils.writeLog("LIST TROOP");
         for (BattleTroop e : this.troops) {

@@ -288,11 +288,11 @@ public class BattleTroop {
                 ", hp=" + hp +
                 ", level=" + level +
                 ", currentIndex=" + currentIndex +
-                ", state=" + state +
+//                ", state=" + state +
                 ", _firstAttack=" + _firstAttack +
                 ", _attackCd=" + _attackCd +
                 ", isOverhead=" + isOverhead +
-                ", _currentIndexLeft=" + _currentIndexLeft +
+//                ", _currentIndexLeft=" + _currentIndexLeft +
                 '}';
     }
 }
