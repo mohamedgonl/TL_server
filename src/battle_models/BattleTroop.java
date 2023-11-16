@@ -48,6 +48,7 @@ public class BattleTroop {
         this.posY = posY;
         this._attackCd = this.baseStats.attackSpeed;
         this.isOverhead = type.equals("ARM_6");
+        this.type = type;
     }
 
     public void attack(BattleBuilding building) {
@@ -82,6 +83,9 @@ public class BattleTroop {
         }
     }
 
+    public void setMatch(BattleMatch match) {
+        this.match = match;
+    }
 
     private void attackTarget() {
     }
@@ -269,10 +273,26 @@ public class BattleTroop {
     }
 
     public void dead() {
-        this.match.removeTroop(this.id);
+        this.match.removeTroop(this);
 
         LogUtils.writeLog("troop " + this.type + " dead");
 
     }
 
+    @Override
+    public String toString() {
+        return "BattleTroop{" +
+                ", type='" + type + '\'' +
+                ", posX=" + posX +
+                ", posY=" + posY +
+                ", hp=" + hp +
+                ", level=" + level +
+                ", currentIndex=" + currentIndex +
+                ", state=" + state +
+                ", _firstAttack=" + _firstAttack +
+                ", _attackCd=" + _attackCd +
+                ", isOverhead=" + isOverhead +
+                ", _currentIndexLeft=" + _currentIndexLeft +
+                '}';
+    }
 }

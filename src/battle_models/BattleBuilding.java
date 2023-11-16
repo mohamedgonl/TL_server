@@ -81,4 +81,18 @@ public class BattleBuilding {
         LogUtils.writeLog("building " + this.id + " destroyed");
     }
 
+    @Override
+    public String toString() {
+        return "BattleBuilding{" +
+                "id=" + id +
+                ", posX=" + posX +
+                ", posY=" + posY +
+                ", hp=" + hp +
+                ", type='" + type + '\'' +
+                ", level=" + level +
+                ", width=" + width +
+                ", height=" + height +
+                ", maxHp=" + maxHp +
+                '}';
+    }
 }

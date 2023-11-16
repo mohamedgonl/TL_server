@@ -9,7 +9,6 @@ import util.log.LogUtils;
 import java.awt.*;
 
 public class BattleDefence extends BattleBuilding {
-    public BattleMatch match;
     public DefenceBaseConfig defBaseStats;
     public DefenceConfig defStats;
     public BattleTroop target;
@@ -95,6 +94,5 @@ public class BattleDefence extends BattleBuilding {
         BattleBullet bullet = match.getOrCreateBullet(type, centerPoint, troop, defStats.damagePerShot, attackRadius);
 
         LogUtils.writeLog("def " + this.id + " fire to " + target.posX + " " + target.posY);
-
     }
 }
