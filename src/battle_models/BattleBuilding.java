@@ -9,7 +9,7 @@ public class BattleBuilding extends BattleGameObject {
     public int maxHp;
 
     public BattleBuilding(int id, String type, int level, int posX, int posY) {
-        super(id, type, posX, level, posY);
+        super(id, type, level, posX, posY);
         BaseBuildingConfig baseBuildingStats = GameConfig.getInstance().getBuildingConfig(type, level);
 
         this.hp = baseBuildingStats.hitpoints;

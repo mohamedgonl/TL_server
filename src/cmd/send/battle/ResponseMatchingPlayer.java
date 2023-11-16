@@ -1,9 +1,9 @@
 package cmd.send.battle;
 
-import battle_models.BattleBuilding;
+import battle_models.BattleGameObject;
+import battle_models.BattleMatch;
 import bitzero.server.extensions.data.BaseMsg;
 import cmd.CmdDefine;
-import battle_models.BattleMatch;
 import model.PlayerInfo;
 
 import java.nio.ByteBuffer;
@@ -27,51 +27,50 @@ public class ResponseMatchingPlayer extends BaseMsg {
     @Override
     public byte[] createData() {
         ByteBuffer bf = makeBuffer();
-        if(this.match != null) {
-        bf.putInt(this.match.id);
-        // thông tin đối thủ
-        bf.putInt(this.match.enemyId);
-        putStr(bf,this.match.enemyName);
-        bf.putInt(this.match.maxGold);
-        bf.putInt(this.match.maxElixir);
+        if (this.match != null) {
+            bf.putInt(this.match.id);
+            // thông tin đối thủ
+            bf.putInt(this.match.enemyId);
+            putStr(bf, this.match.enemyName);
+            bf.putInt(this.match.maxGold);
+            bf.putInt(this.match.maxElixir);
 
 
-
-        // list building
-        ArrayList<BattleBuilding> battleBuildings = this.match.buildings;
-        bf.putInt(battleBuildings.size());
-        for (BattleBuilding building : battleBuildings) {
-            bf.putInt(building.id);
-            putStr(bf, building.type);
-            bf.putInt(building.level);
-            bf.putInt(building.posX);
-            bf.putInt(building.posY);
-        }
-
-        // list troop
-        Map<String, Integer> army = this.match.army;
-
-        if (army != null) {
-            bf.putInt(army.size());
-            for (Map.Entry<String, Integer> set : army.entrySet()) {
-                putStr(bf, set.getKey());
-                bf.putInt(set.getValue());
+            // list building
+            ArrayList<BattleGameObject> battleBuildings = this.match.listGameObjects;
+            bf.putInt(battleBuildings.size());
+            for (BattleGameObject building : battleBuildings) {
+                bf.putInt(building.id);
+                putStr(bf, building.type);
+                bf.putInt(building.level);
+                bf.putInt(building.posX);
+                bf.putInt(building.posY);
             }
-        }
 
-        // điểm danh vọng
-        bf.putInt(this.match.winTrophy);
-        bf.putInt(this.match.loseTrophy);
+            // list troop
+            Map<String, Integer> army = this.match.army;
 
-        // tài nguyên người chơi
+            if (army != null) {
+                bf.putInt(army.size());
+                for (Map.Entry<String, Integer> set : army.entrySet()) {
+                    putStr(bf, set.getKey());
+                    bf.putInt(set.getValue());
+                }
+            }
 
-        bf.putInt(this.playerInfo.getGold());
-        bf.putInt(this.playerInfo.getGoldCapacity());
+            // điểm danh vọng
+            bf.putInt(this.match.winTrophy);
+            bf.putInt(this.match.loseTrophy);
 
-        bf.putInt(this.playerInfo.getElixir());
-        bf.putInt(this.playerInfo.getElixirCapacity());
+            // tài nguyên người chơi
 
-        bf.putInt(this.playerInfo.getGem());
+            bf.putInt(this.playerInfo.getGold());
+            bf.putInt(this.playerInfo.getGoldCapacity());
+
+            bf.putInt(this.playerInfo.getElixir());
+            bf.putInt(this.playerInfo.getElixirCapacity());
+
+            bf.putInt(this.playerInfo.getGem());
 
         }
         return packBuffer(bf);
