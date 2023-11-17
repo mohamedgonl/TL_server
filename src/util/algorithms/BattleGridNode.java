@@ -8,8 +8,8 @@ public class BattleGridNode
 
     public Integer buildingId;
 
-    public int f;
-    public int g;
+    public double f;
+    public double g;
     public double h;
     public boolean visited;
     public boolean closed;

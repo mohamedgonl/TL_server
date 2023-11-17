@@ -6,9 +6,9 @@ import java.util.function.Function;
 public class BinaryHeap<T>
 {
     public ArrayList<T> content;
-    public Function<T, Integer> scoreFunction;
+    public Function<T, Double> scoreFunction;
 
-    public BinaryHeap(Function<T, Integer> scoreFunction)
+    public BinaryHeap(Function<T, Double> scoreFunction)
     {
         this.content = new ArrayList<>();
         this.scoreFunction = scoreFunction;
@@ -104,7 +104,7 @@ public class BinaryHeap<T>
         // Look up the target element and its score.
         int length = this.content.size();
         T element = this.content.get(n);
-        int elemScore = this.scoreFunction.apply(element);
+        Double elemScore = this.scoreFunction.apply(element);
 
         while (true)
         {
@@ -113,7 +113,7 @@ public class BinaryHeap<T>
             int child1N = child2N - 1;
             // This is used to store the new position of the element, if any.
             int swap = -1;//init null
-            int child1Score = 0;
+            Double child1Score = (double) 0;
             // If the first child exists (is inside the array)...
             if (child1N < length)
             {
@@ -132,7 +132,7 @@ public class BinaryHeap<T>
             if (child2N < length)
             {
                 T child2 = this.content.get(child2N);
-                int child2Score = this.scoreFunction.apply(child2);
+                double child2Score = this.scoreFunction.apply(child2);
                 if (child2Score < (swap == -1 ? elemScore : child1Score))
                 {
                     swap = child2N;

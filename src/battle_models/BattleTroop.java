@@ -1,6 +1,7 @@
 package battle_models;
 
 import util.BattleConst;
+import util.Common;
 import util.GameConfig;
 import util.algorithms.BattleAStar;
 import util.algorithms.BattleGraph;
@@ -19,7 +20,6 @@ public class BattleTroop {
     //Battle Manager
     public BattleMatch match;
 
-    public int id;
     public String type;
     public int posX;
     public int posY;
@@ -53,21 +53,22 @@ public class BattleTroop {
     private int nextIndex;
 
     private double nextIndexDistanceLeft = 0;
+    private double dtCount;
 
 
     public BattleTroop(String type, int level, int posX, int posY) {
 
         this.stats = GameConfig.getInstance().troopConfig.get(type).get(level);
         this.baseStats = GameConfig.getInstance().troopBaseConfig.get(type);
-
+        this.type = type;
         this.posX = posX;
         this.posY = posY;
         this.favoriteTarget = this.baseStats.favoriteTarget;
-        this.moveSpeed = this.baseStats.moveSpeed;
+        this.moveSpeed = this.baseStats.moveSpeed*3;
         this.attackSpeed = this.baseStats.attackSpeed;
         this.damage = this.stats.damagePerAttack;
         this.hitpoints = this.stats.hitpoints;
-        this.attackRange = this.baseStats.attackRange;
+        this.attackRange = this.baseStats.attackRange*3;
         this.damageScale = this.baseStats.dmgScale;
         this.isOverhead = type.equals("ARM_6");
         this.currentHitpoints = this.hitpoints;
@@ -76,6 +77,7 @@ public class BattleTroop {
         this.path = new ArrayList<>();
         this.attackCd = this.attackSpeed;
         this.firstAttack = true;
+        this.dtCount = 0;
     }
 
     public void setMatch(BattleMatch match) {
@@ -83,6 +85,8 @@ public class BattleTroop {
     }
 
     public void gameLoop(double dt) {
+        this.dtCount+=dt;
+
         if (this.state == TROOP_STATE.FIND) {
             this.findTarget();
             this.findPath();
@@ -113,10 +117,16 @@ public class BattleTroop {
                 this.state = TROOP_STATE.MOVE;
                 this.isFirstMove = true;
             }
+
+            LogUtils.writeLog("troop " + this.type + " find target " + this.target.type);
+            for(Point point : this.path){
+                LogUtils.writeLog("path: " + point.x + " " + point.y);
+            }
             return;
         }
 
         if (this.state == TROOP_STATE.MOVE) {
+
             this.moveLoop(dt);
             return;
         }
@@ -137,11 +147,13 @@ public class BattleTroop {
         BattleGridNode start = new BattleGridNode(this.posX, this.posY, graph.getNode(this.posX, this.posY).weight, null);
 
         //get center of building
-        int targetCenterX = building.posX + (building.width / 2);
-        int targetCenterY = building.posY + (building.height / 2);
+        int targetCenterX = (int) (building.posX + Math.floor(building.width / 2));
+        int targetCenterY = (int) (building.posY + Math.floor(building.height / 2));
+        LogUtils.writeLog("target center: " + targetCenterX + " " + targetCenterY);
 
         BattleGridNode end = new BattleGridNode(targetCenterX, targetCenterY, graph.getNode(targetCenterX, targetCenterY).weight, building.id);
         ArrayList<BattleGridNode> path = BattleAStar.search(graph, start, end);
+//        ArrayList<BattleGridNode> path = BattleAStar.searchSimple(graph, start, end);
 
         //change to Point
         ArrayList<Point> ret = new ArrayList<>();
@@ -307,7 +319,8 @@ public class BattleTroop {
             this.nextIndex = 0;
 
             //current index distance left = 1 if not cross, 1.414 if cross
-            if (this.path.get(this.nextIndex).x != this.posX && this.path.get(this.nextIndex).y != this.posY) {
+            if (this.path.get(this.nextIndex).x != this.posX &&
+                    this.path.get(this.nextIndex).y != this.posY) {
                 this.nextIndexDistanceLeft = 1.414;
             } else {
                 this.nextIndexDistanceLeft = 1;
@@ -317,11 +330,12 @@ public class BattleTroop {
 
 
         //distance moved each dt
-        double distance = dt * this.moveSpeed * TROOP_SPEED_RATIO;
+        double distance = Common.roundFloat(dt * this.moveSpeed * TROOP_SPEED_RATIO,4);
 
         //if move in this grid, not ++ currentIndex
         if (this.nextIndexDistanceLeft > distance) {
             this.nextIndexDistanceLeft -= distance;
+            LogUtils.writeLog("nextIndexDistanceLeft: " + this.nextIndexDistanceLeft + " distance: " + distance + " moveSpeed: " + this.moveSpeed + "dt: " + dt);
         }
 
         //if move to next index of path
@@ -353,6 +367,7 @@ public class BattleTroop {
             // set posX, y is currentPos
             this.posX = this.path.get(this.nextIndex - 1).x;
             this.posY = this.path.get(this.nextIndex - 1).y;
+            LogUtils.writeLog("troop " + this.type + " move to next index" + this.posX + " " + this.posY + " dt:" + this.dtCount);
         }
 
     }
@@ -423,6 +438,16 @@ public class BattleTroop {
         LogUtils.writeLog("troop " + this.type + " dead");
     }
 
+    @Override
+    public String toString() {
+        return "BattleTroop{" +
+                "type='" + type + '\'' +
+                ", posX=" + posX +
+                ", posY=" + posY +
+                ", favoriteTarget='" + favoriteTarget + '\'' +
+                ", currentHitpoints=" + currentHitpoints +
+                '}';
+    }
 }
 
 

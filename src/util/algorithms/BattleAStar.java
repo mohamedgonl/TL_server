@@ -1,4 +1,8 @@
 package util.algorithms;
+import battle_models.BattleBuilding;
+import util.Common;
+import util.log.LogUtils;
+
 import java.util.ArrayList;
 
 //@FunctionalInterface
@@ -11,28 +15,40 @@ public class BattleAStar {
     /**
      * Perform an A* Search on a graph given a start and end node.
      **/
-    public static void main(String[] args) {
-        //grid 1, 132x132 value 0
-        //grid 2, 132x132 value 1
 
-        int [][] grid1,grid2;
-        grid1 = new int[132][132];
-        grid2 = new int[132][132];
-        for(int i=0;i<132;i++)
-        {
-            for(int j=0;j<132;j++)
-            {
-                grid1[i][j] = 0;
-                grid2[i][j] = 1;
+
+//    //đi từ dọc theo trục x, sau đó đi dọc theo trục y đên đích
+    public static ArrayList<BattleGridNode> searchSimple(BattleGraph graph, BattleGridNode start, BattleGridNode end) {
+        ArrayList<BattleGridNode> path = new ArrayList<>();
+        if(start.x != end.x) {
+            //go to end x
+            int x = start.x;
+            int y = start.y;
+            while (x != end.x) {
+                if (x < end.x) {
+                    x++;
+                } else {
+                    x--;
+                }
+                path.add(graph.grid[x][y]);
             }
         }
-
-        BattleGraph graph = new BattleGraph(grid1, grid2);
-        BattleGridNode start = graph.getNode(0, 0);
-        BattleGridNode end = graph.getNode(9, 9);
-        ArrayList<BattleGridNode> path = search(graph, start, end);
-        System.out.println(path);
+        if(start.y != end.y) {
+            //go to end y
+            int x = start.x;
+            int y = start.y;
+            while (y != end.y) {
+                if (y < end.y) {
+                    y++;
+                } else {
+                    y--;
+                }
+                path.add(graph.grid[x][y]);
+            }
+        }
+        return path;
     }
+
     public static ArrayList<BattleGridNode> search(BattleGraph graph, BattleGridNode start, BattleGridNode end) {
 
         graph.cleanDirty();
@@ -48,6 +64,7 @@ public class BattleAStar {
         while (openHeap.size() > 0) {
             // Grab the lowest f(x) to process next.  Heap keeps this sorted for us.
             BattleGridNode currentNode = openHeap.pop();
+            LogUtils.writeLog("currentNode: "+currentNode.x+" "+currentNode.y);
 
             // End case -- result has been found, return the traced path.
             if(currentNode.x == end.x && currentNode.y == end.y) {
@@ -61,9 +78,12 @@ public class BattleAStar {
             // Find all neighbors for the current node.
             ArrayList<BattleGridNode> neighbors = graph.neighbors(currentNode);
 
-            for (int i = 0, il = neighbors.size(); i < il; ++i) {
-                BattleGridNode neighbor = neighbors.get(i);
+            for(BattleGridNode neighbor: neighbors)
+            {
+                LogUtils.writeLog("neighbor: "+neighbor.x+" "+neighbor.y);
+            }
 
+            for (BattleGridNode neighbor : neighbors) {
                 if (neighbor.closed) {
                     // Not a valid node to process, skip to next neighbor.
                     continue;
@@ -72,15 +92,12 @@ public class BattleAStar {
                 // The g score is the shortest distance from start to current node.
                 // We need to check if the path we have arrived at this neighbor is the shortest one we have seen yet.
                 double gScore;
-                if(neighbor.buildingId.equals(end.buildingId))
-                {
-                    gScore = currentNode.g + neighbor.getCost(currentNode);
+                if (neighbor.buildingId.equals(end.buildingId)) {
+                    gScore = Common.roundFloat(currentNode.g + neighbor.getCost(currentNode), 4);
+                } else {
+                    gScore = Common.roundFloat(currentNode.g + neighbor.getCost(currentNode) + neighbor.weight, 4);
                 }
-                else
-                {
-                    gScore = currentNode.g + neighbor.getCost(currentNode)+neighbor.weight;
-                }
-
+                LogUtils.writeLog("gScore: " + gScore);
                 boolean beenVisited = neighbor.visited;
 
                 if (!beenVisited || gScore < neighbor.g) {
@@ -89,9 +106,8 @@ public class BattleAStar {
                     neighbor.visited = true;
                     neighbor.parent = currentNode;
                     neighbor.h = Heuristics.diagonal(neighbor, end);
-                    neighbor.g = (int) gScore;
-
-                    neighbor.f = (int) (neighbor.g + neighbor.h);
+                    neighbor.g = gScore;
+                    neighbor.f = neighbor.g + neighbor.h;
                     graph.markDirty(neighbor);
 
                     if (!beenVisited) {
@@ -148,4 +164,5 @@ public class BattleAStar {
             return (D * (d1 + d2)) + ((D2 - (2 * D)) * Math.min(d1, d2));
         }
     }
+
 }

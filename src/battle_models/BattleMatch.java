@@ -451,7 +451,7 @@ public class BattleMatch extends DataModel
 //                this.troops.remove(i);
 //            }
 //        }
-        this.troops.remove(troop);
+//        this.troops.remove(troop);
     }
 
     //get list troops in a circle
