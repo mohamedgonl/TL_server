@@ -72,5 +72,11 @@ public class Common {
         return user != null && user.isConnected();
     }
 
-
+    public static double roundFloat(double val, int n){
+        int tmp = 1;
+        for (int i = 0; i < n; i++) {
+            tmp *= 10;
+        }
+        return ((double) Math.round(val * tmp)) / tmp;
+    }
 }

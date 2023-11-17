@@ -1,6 +1,7 @@
 package battle_models;
 
 import util.BattleConst;
+import util.Common;
 import util.GameConfig;
 import util.config.DefenceBaseConfig;
 import util.config.DefenceConfig;
@@ -29,6 +30,7 @@ public class BattleDefence extends BattleBuilding {
         maxRange = this.defBaseStats.maxRange * BattleConst.GRID_BATTLE_RATIO;
         attackRadius = this.defBaseStats.attackRadius * BattleConst.GRID_BATTLE_RATIO;
         attackSpeed = this.defBaseStats.attackSpeed;
+        this.attackArea = this.defBaseStats.attackArea;
 
         centerPoint = new Point(posX + (int) Math.floor(width / 2), posY + (int) Math.floor(height / 2));
     }
@@ -53,7 +55,6 @@ public class BattleDefence extends BattleBuilding {
         this.target = target;
 
         LogUtils.writeLog("def " + this.id + " set new target " + target.type);
-
     }
 
     //check if troop can be added as new target
@@ -87,6 +88,7 @@ public class BattleDefence extends BattleBuilding {
 
     public boolean isTargetInRange(BattleTroop target) {
         double dist = Math.sqrt(Math.pow(centerPoint.x - target.posX, 2) + Math.pow(centerPoint.y - target.posY, 2));
+        dist = Common.roundFloat(dist, 2);
         return dist > minRange && dist < maxRange;
     }
 

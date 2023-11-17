@@ -381,8 +381,12 @@ public class BattleMatch extends DataModel {
     public void sync() {
         this.initData();
 
+        int actionIndex = 0;
         // ignore action start
-        int actionIndex = 1;
+        if (this.actionsList.get(actionIndex).type == BattleConst.ACTION_START) {
+            actionIndex = 1;
+        }
+
         int tick = 0;
         LogUtils.reset();
 
