@@ -97,8 +97,7 @@ public class BattleBullet {
         gridDist = Common.roundFloat(gridDist, 2);
         this.time = Math.max(Common.roundFloat(gridDist / this.gridSpeed, 2), this.minimumTime);
         this.totalTime = this.time;
-        if (type.equals("DEF_2"))
-            LogUtils.writeLog(gridDist + " time to reach dest " + this.time + ' ' + this.minimumTime);
+
         this.active = true;
     }
 
