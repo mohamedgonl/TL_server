@@ -58,4 +58,6 @@ public class BattleConst {
 
     public static String LOG_URL = "logs/sync/";
 
+    public static double TROOP_SPEED_RATIO = 0.1;
+
 }
