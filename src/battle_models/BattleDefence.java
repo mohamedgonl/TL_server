@@ -1,6 +1,7 @@
 package battle_models;
 
 import util.BattleConst;
+import util.Common;
 import util.GameConfig;
 import util.config.DefenceBaseConfig;
 import util.config.DefenceConfig;
@@ -87,6 +88,8 @@ public class BattleDefence extends BattleBuilding {
 
     public boolean isTargetInRange(BattleTroop target) {
         double dist = Math.sqrt(Math.pow(centerPoint.x - target.posX, 2) + Math.pow(centerPoint.y - target.posY, 2));
+        dist = Common.roundFloat(dist, 2);
+        LogUtils.writeLog("dist from def " + type + " to target "+target.posX +" " + target.posY + " is "+ dist);
         return dist > minRange && dist < maxRange;
     }
 

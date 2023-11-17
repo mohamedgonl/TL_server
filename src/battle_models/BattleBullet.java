@@ -1,5 +1,8 @@
 package battle_models;
 
+import util.Common;
+import util.log.LogUtils;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -7,11 +10,6 @@ public class BattleBullet {
     private final String type;
     private final double attackRadius; // cell
     public BattleMatch match;
-
-    public void setMatch(BattleMatch match) {
-        this.match = match;
-    }
-
     private Point startPoint;
     private boolean active;
     private BattleTroop target;
@@ -21,7 +19,6 @@ public class BattleBullet {
     private double gridSpeed; // cell/s
     private int damagePerShot; // time logic to reach destination
     private double minimumTime = 0; // minimum time to reach destination
-
     public BattleBullet(String type, Point startPoint, BattleTroop target, int damagePerShot, double attackRadius) {
         this.type = type;
         this.startPoint = startPoint;
@@ -32,11 +29,15 @@ public class BattleBullet {
             this.gridSpeed = 40;
         } else if (type.equals("DEF_2")) {
             this.gridSpeed = 50;
-            minimumTime = 15 / this.gridSpeed;
+            this.minimumTime = Common.roundFloat(15.0 / this.gridSpeed, 2);
         } else if (type.equals("DEF_3")) {
             this.gridSpeed = 13;
         }
         init(startPoint, target);
+    }
+
+    public void setMatch(BattleMatch match) {
+        this.match = match;
     }
 
     public String getType() {
@@ -93,9 +94,11 @@ public class BattleBullet {
         this.destination = new Point(target.posX, target.posY);
 
         double gridDist = Math.sqrt(Math.pow(startPoint.x - target.posX, 2) + Math.pow(startPoint.y - target.posY, 2));
-        this.time = Math.max(gridDist / this.gridSpeed, this.minimumTime);
+        gridDist = Common.roundFloat(gridDist, 2);
+        this.time = Math.max(Common.roundFloat(gridDist / this.gridSpeed, 2), this.minimumTime);
         this.totalTime = this.time;
-
+        if (type.equals("DEF_2"))
+            LogUtils.writeLog(gridDist + " time to reach dest " + this.time + ' ' + this.minimumTime);
         this.active = true;
     }
 
@@ -132,7 +135,7 @@ public class BattleBullet {
         return "BattleBullet{" +
                 "active=" + active +
                 ", target=" + target +
-                ", destination=" + destination.x +" " + destination.y+
+                ", destination=" + destination.x + " " + destination.y +
                 '}';
     }
 }
