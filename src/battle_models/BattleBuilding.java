@@ -4,9 +4,13 @@ import util.GameConfig;
 import util.config.BaseBuildingConfig;
 import util.log.LogUtils;
 
+import java.awt.*;
+import java.util.ArrayList;
+
 public class BattleBuilding extends BattleGameObject {
     public transient int hp; // hp hien tai
     public int maxHp;
+
 
     public BattleBuilding(int id, String type, int level, int posX, int posY) {
         super(id, type, level, posX, posY);
@@ -35,7 +39,35 @@ public class BattleBuilding extends BattleGameObject {
     public void onDestroy() {
         this.match.onDestroyBuilding(this.id);
 
+        //if WAL
+        if (this.type.startsWith("WAL")) {
+            //get list troop from battle manager
+
+            ArrayList<BattleTroop> listTroop = this.match.getTroops();
+
+            //for in list troop, if troop attack type wall, remove from list troop attack
+            for (BattleTroop battleTroop : listTroop) {
+                if (!battleTroop.isAlive()) continue;
+                if (battleTroop.target.type.startsWith("WAL")) {
+                    battleTroop.refindTarget();
+                }
+            }
+        }
+
         LogUtils.writeLog("building " + this.id + " destroyed");
+    }
+
+    public ArrayList<Point> getCorners(){
+        ArrayList<Point> corners = new ArrayList<>();
+        corners.add(new Point(posX, posY));
+        corners.add(new Point(posX + width, posY));
+        corners.add(new Point(posX, posY + height));
+        corners.add(new Point(posX + width, posY + height));
+        return corners;
+    }
+
+    public Point getGridPosition(){
+        return new Point(posX, posY);
     }
 
     @Override

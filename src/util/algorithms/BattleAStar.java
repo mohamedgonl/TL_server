@@ -1,5 +1,4 @@
 package util.algorithms;
-
 import java.util.ArrayList;
 
 //@FunctionalInterface
@@ -12,6 +11,28 @@ public class BattleAStar {
     /**
      * Perform an A* Search on a graph given a start and end node.
      **/
+    public static void main(String[] args) {
+        //grid 1, 132x132 value 0
+        //grid 2, 132x132 value 1
+
+        int [][] grid1,grid2;
+        grid1 = new int[132][132];
+        grid2 = new int[132][132];
+        for(int i=0;i<132;i++)
+        {
+            for(int j=0;j<132;j++)
+            {
+                grid1[i][j] = 0;
+                grid2[i][j] = 1;
+            }
+        }
+
+        BattleGraph graph = new BattleGraph(grid1, grid2);
+        BattleGridNode start = graph.getNode(0, 0);
+        BattleGridNode end = graph.getNode(9, 9);
+        ArrayList<BattleGridNode> path = search(graph, start, end);
+        System.out.println(path);
+    }
     public static ArrayList<BattleGridNode> search(BattleGraph graph, BattleGridNode start, BattleGridNode end) {
 
         graph.cleanDirty();

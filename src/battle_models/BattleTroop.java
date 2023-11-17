@@ -11,6 +11,7 @@ import util.log.LogUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static util.BattleConst.TROOP_SPEED_RATIO;
 
@@ -81,7 +82,7 @@ public class BattleTroop {
         this.match = match;
     }
 
-    public void gameLoop(int dt) {
+    public void gameLoop(double dt) {
         if (this.state == TROOP_STATE.FIND) {
             this.findTarget();
             this.findPath();
@@ -89,7 +90,6 @@ public class BattleTroop {
 
 
             //change weight of grid in path +1 for various path each troop
-            //TODO : battle manager get battle graph
             BattleGraph graph = this.match.getBattleGraph();
             for (Point point : this.path) {
                 int x = (int) point.getX();
@@ -145,6 +145,7 @@ public class BattleTroop {
 
         //change to Point
         ArrayList<Point> ret = new ArrayList<>();
+        assert path != null;
         for (BattleGridNode node : path) {
             ret.add(new Point(node.x, node.y));
         }
@@ -203,13 +204,15 @@ public class BattleTroop {
         ArrayList<BattleBuilding> listTarget = new ArrayList<>();
         switch (this.favoriteTarget) {
             case "DEF":
-                listTarget = this.match.getListDefences();
+                ArrayList<BattleDefence> list = this.match.getListDefences();
+                //change to BattleBuilding
+                listTarget.addAll(list);
                 break;
             case "RES":
                 listTarget = this.match.getListResources();
                 break;
             case "NONE":
-                ArrayList<BattleBuilding> mapListBuilding = this.match.getAllBuilding();
+                ArrayList<BattleBuilding> mapListBuilding = this.match.getBuildings();
                 for (BattleBuilding building : mapListBuilding) {
                     if (building.isDestroy()) continue;
                     if (building.type.startsWith("WAL")) continue;
@@ -229,9 +232,7 @@ public class BattleTroop {
         //get min distance target
         Double minDistance = null;
         this.target = null;
-        for (int i = 0; i < listTarget.size(); i++) {
-
-            BattleBuilding target = listTarget.get(i);
+        for (BattleBuilding target : listTarget) {
 
             //if destroy, continue
             if (target.isDestroy()) continue;
@@ -245,7 +246,7 @@ public class BattleTroop {
 
         if (this.target == null) {
             //if no building left, change to idle
-            if (this.favoriteTarget == "NONE") {
+            if (Objects.equals(this.favoriteTarget, "NONE")) {
                 this.state = TROOP_STATE.IDLE;
                 return;
             }
@@ -300,7 +301,6 @@ public class BattleTroop {
         }
 
         //perform run animation by direction
-        boolean isCross = false;
         if (this.isFirstMove) {
             this.nextIndex = 0;
 
@@ -308,7 +308,6 @@ public class BattleTroop {
             if (this.path.get(this.nextIndex).x != this.posX && this.path.get(this.nextIndex).y != this.posY) {
                 this.nextIndexDistanceLeft = 1.414;
             } else {
-                isCross = true;
                 this.nextIndexDistanceLeft = 1;
             }
             this.isFirstMove = false;
@@ -343,10 +342,9 @@ public class BattleTroop {
 
             //nếu chéo, = 1.414, else this.nextIndexDistanceLeft = 1
             if (nextPos.x != this.posX && nextPos.y != this.posY) {
-                isCross = false;
                 this.nextIndexDistanceLeft = 1.414 - (distance - this.nextIndexDistanceLeft);
             } else {
-                isCross = true;
+
                 this.nextIndexDistanceLeft = 1 - (distance - this.nextIndexDistanceLeft);
             }
 
@@ -365,9 +363,6 @@ public class BattleTroop {
         }
 
         if (this.firstAttack) {
-            if (this.target.type.startsWith("WAL")) {
-                this.target.addTroopAttack(this);
-            }
             this.firstAttack = false;
         }
         if (this.attackCd == 0) {
@@ -382,6 +377,12 @@ public class BattleTroop {
     }
 
     private void attack() {
+        if(Objects.equals(this.type, "ARM_1"))
+        {
+            TroopBullet.createBullet(this.match,"ARM_2",this.target, new Point(this.posX, this.posY), this.damage);
+
+            return;
+        }
         int damage = this.damage;
 
         //if target is favorite target, damage *= damageScale
@@ -392,7 +393,7 @@ public class BattleTroop {
     }
 
     //call when troop gain damage, update hp bar, if hp = 0, call dead
-    private void onGainDamage(int damage) {
+    public void onGainDamage(int damage) {
         this.currentHitpoints -= damage;
         if (this.currentHitpoints <= 0) {
             this.dead();

@@ -52,6 +52,8 @@ public class BattleMatch extends DataModel
 
     public int[][] findPathGrid;
 
+    public ArrayList<TroopBullet> listTroopBullet = new ArrayList<>();
+
     public BattleGraph battleGraph;
 
 
@@ -414,6 +416,9 @@ public class BattleMatch extends DataModel
             }
         }
     }
+    public void addTroopBullet(TroopBullet bullet){
+        this.listTroopBullet.add(bullet);
+    }
 
     public void setResourceToBuilding()
     {
@@ -494,6 +499,11 @@ public class BattleMatch extends DataModel
         return buildings;
     }
 
+    public ArrayList<BattleTroop> getTroops()
+    {
+        return troops;
+    }
+
 
     public void sync()
     {
@@ -563,9 +573,13 @@ public class BattleMatch extends DataModel
                     bullet.gameLoop(secPerTick);
                 }
 
-//            for (BattleTroop troop : this.troops) {
-//                troop.gameLoop(0);
-//            }
+            for (BattleTroop troop : this.troops) {
+                troop.gameLoop(secPerTick);
+            }
+
+            for(TroopBullet bullet : this.listTroopBullet){
+                bullet.gameLoop(secPerTick);
+            }
 
             tick++;
             LogUtils.tick = tick;
