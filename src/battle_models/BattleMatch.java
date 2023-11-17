@@ -1,6 +1,5 @@
 package battle_models;
 
-import org.apache.commons.logging.Log;
 import util.BattleConst;
 import util.Common;
 import util.database.DataModel;
@@ -295,15 +294,17 @@ public class BattleMatch extends DataModel {
             gameObject.setMatch(this);
             if (gameObject.type.startsWith("OBS")) {
                 this.listObstacles.add((BattleObstacle) gameObject);
-            } else if (gameObject.type.startsWith("RES") || gameObject.type.startsWith("STO")) {
-//            if (gameObject.type.startsWith("RES") || gameObject.type.startsWith("STO") || gameObject.type.startsWith("TOW")) {
-                this.listResources.add((BattleBuilding) gameObject);
-            } else if (gameObject.type.startsWith("WAL")) {
-                this.listWalls.add((BattleBuilding) gameObject);
-            } else if (gameObject.type.startsWith("DEF")) {
-                this.listDefences.add((BattleDefence) gameObject);
             } else {
                 this.buildings.add((BattleBuilding) gameObject);
+
+                if (gameObject.type.startsWith("RES") || gameObject.type.startsWith("STO")) {
+//            if (gameObject.type.startsWith("RES") || gameObject.type.startsWith("STO") || gameObject.type.startsWith("TOW")) {
+                    this.listResources.add((BattleBuilding) gameObject);
+                } else if (gameObject.type.startsWith("WAL")) {
+                    this.listWalls.add((BattleBuilding) gameObject);
+                } else if (gameObject.type.startsWith("DEF")) {
+                    this.listDefences.add((BattleDefence) gameObject);
+                }
             }
         }
     }
@@ -448,16 +449,16 @@ public class BattleMatch extends DataModel {
         LogUtils.writeLog("LIST BUILDING");
         for (BattleBuilding building :
                 this.buildings) {
-            if(!building.type.startsWith("OBS"))  LogUtils.writeLog(building.toString());
+            if (!building.type.startsWith("OBS")) LogUtils.writeLog(building.toString());
         }
         LogUtils.writeLog("LIST TROOP");
         for (BattleTroop e : this.troops) {
-                LogUtils.writeLog(e.toString());
+            LogUtils.writeLog(e.toString());
         }
         LogUtils.writeLog("LIST BULLET");
         for (BattleBullet e :
                 this.bullets) {
-                LogUtils.writeLog(e.toString());
+            LogUtils.writeLog(e.toString());
         }
 
     }
