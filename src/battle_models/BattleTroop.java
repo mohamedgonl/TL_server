@@ -164,8 +164,10 @@ public class BattleTroop {
         int yStart = corners.get(0).y;
         int yEnd = corners.get(2).y;
 
-        int x = tempX;
-        int y = tempY;
+
+        int x = tempX == null ? this.posX : tempX;
+        int y = tempY == null ? this.posY : tempY;
+
 
         //if X and Y in range of building
         if (x >= xStart && x <= xEnd && y >= yStart && y <= yEnd) {
@@ -377,9 +379,8 @@ public class BattleTroop {
     }
 
     private void attack() {
-        if(Objects.equals(this.type, "ARM_1"))
-        {
-            TroopBullet.createBullet(this.match,"ARM_2",this.target, new Point(this.posX, this.posY), this.damage);
+        if (Objects.equals(this.type, "ARM_1")) {
+            TroopBullet.createBullet(this.match, "ARM_2", this.target, new Point(this.posX, this.posY), this.damage);
 
             return;
         }
@@ -406,10 +407,12 @@ public class BattleTroop {
     public boolean isAlive() {
         return this.currentHitpoints > 0;
     }
+
     //create sprite of troop with shadow, body, hp bar
     public void refindTarget() {
         this.state = TROOP_STATE.FIND;
     }
+
     public boolean isOverhead() {
         return isOverhead;
     }
