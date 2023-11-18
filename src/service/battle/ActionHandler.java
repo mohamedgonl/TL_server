@@ -91,6 +91,7 @@ public class ActionHandler {
                 }
                 match.pushAction(requestSendAction.getAction());
                 match.sync();
+                MatchHandler.handleGameEndSync(user);
                 user.setProperty(ServerConstant.MATCH, match);
                 return new ResponseSendAction(ErrorConst.SUCCESS);
             }

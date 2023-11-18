@@ -1,6 +1,9 @@
 package service.battle;
 
 import battle_models.BattleBuilding;
+import bitzero.server.core.BZEventParam;
+import bitzero.server.core.BZEventType;
+import bitzero.server.core.IBZEvent;
 import bitzero.server.entities.User;
 import bitzero.server.extensions.BaseClientRequestHandler;
 import bitzero.server.extensions.data.DataCmd;
@@ -12,6 +15,9 @@ import cmd.receive.battle.RequestSendAction;
 import cmd.send.battle.*;
 
 import cmd.send.user.ResponseGetMapInfo;
+import event.eventType.DemoEventParam;
+import event.eventType.DemoEventType;
+import extension.FresherExtension;
 import model.Building;
 import model.ListPlayerData;
 import battle_models.BattleMatch;
@@ -31,7 +37,6 @@ import java.util.function.Function;
 
 public class BattleHandler extends BaseClientRequestHandler {
     public static short BATTLE_MULTI_IDS = 6000;
-    public static BattleHandler instance;
     private static final String logPrefix = "-----------------------";
     private final Logger logger = LoggerFactory.getLogger("UserHandler");
 
@@ -40,7 +45,17 @@ public class BattleHandler extends BaseClientRequestHandler {
     }
 
     public void init() {
-        instance = this;
+        getExtension().addEventListener(BZEventType.USER_DISCONNECT, this);
+        getExtension().addEventListener(BZEventType.USER_RECONNECTION_SUCCESS, this);
+    }
+
+    private FresherExtension getExtension() {
+        return (FresherExtension) getParentExtension();
+    }
+
+    public void handleServerEvent(IBZEvent ibzevent) {
+        if (ibzevent.getType() == BZEventType.USER_DISCONNECT)
+            this.userDisconnect((User) ibzevent.getParameter(BZEventParam.USER));
     }
 
     public void handleClientRequest(User user, DataCmd dataCmd) {
@@ -171,6 +186,14 @@ public class BattleHandler extends BaseClientRequestHandler {
             System.out.println(logPrefix + "HANDLE GET HISTORY ATTACK END" + logPrefix);
         }
     }
+
+    private void userDisconnect(User user) {
+        // log user disconnect
+        System.out.println("USER DISCONNECTED " + user.getId());
+
+    }
+
+
 
 
 

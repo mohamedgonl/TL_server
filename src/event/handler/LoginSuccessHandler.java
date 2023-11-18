@@ -1,12 +1,15 @@
 package event.handler;
 
 import bitzero.server.core.BZEventParam;
+import bitzero.server.core.BZEventType;
 import bitzero.server.core.IBZEvent;
 import bitzero.server.entities.User;
 import bitzero.server.extensions.BaseServerEventHandler;
 import bitzero.server.extensions.ExtensionLogLevel;
 import bitzero.util.ExtensionUtility;
 import event.eventType.DemoEventParam;
+import event.eventType.DemoEventType;
+import extension.FresherExtension;
 import model.Building;
 import model.ListPlayerData;
 import model.Obstacle;
@@ -68,7 +71,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
             }
 
             // create fake accounts
-            if(user.getId() == ServerConstant.CREATE_FAKE_ACCOUNTS ) {
+            if (user.getId() == ServerConstant.CREATE_FAKE_ACCOUNTS) {
                 for (int i = ServerConstant.CREATE_FAKE_ACCOUNTS; i > ServerConstant.CREATE_FAKE_ACCOUNTS - 1000; i--) {
                     PlayerInfo pInfoFake = new PlayerInfo(i, "username_" + i);
                     createRandomPlayerInfo(pInfoFake);
@@ -100,8 +103,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
             evtParams.put(DemoEventParam.USER, user);
             evtParams.put(DemoEventParam.NAME, user.getName());
 //        ExtensionUtility.dispatchEvent(new BZEvent(DemoEventType.LOGIN_SUCCESS, evtParams));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             trace("LOGIN HANDLE ERROR ::: " + e.getMessage());
         }
     }
@@ -223,7 +225,6 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
     }
 
 
-
     private void createRandomPlayerInfo(PlayerInfo playerInfo) throws Exception {
         GameConfig gameConfig = GameConfig.getInstance();
         System.out.println("init new player info: " + playerInfo.getId());
@@ -240,7 +241,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         for (Map.Entry<String, InitGameConfig.MapElement> entry : initGameConfig.map.entrySet()) {
             Random random = new Random();
             boolean isCreate = random.nextBoolean();
-            if(isCreate || entry.getKey().startsWith("TOW")) {
+            if (isCreate || entry.getKey().startsWith("TOW")) {
                 String type = entry.getKey();
                 InitGameConfig.MapElement data = entry.getValue();
                 Building building = BuildingFactory.getBuilding(id, type, 1, new Point(data.posX - 1, data.posY - 1));
@@ -252,7 +253,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         for (Map.Entry<Integer, InitGameConfig.ObsElement> entry : initGameConfig.obs.entrySet()) {
             Random random = new Random();
             boolean isCreate = random.nextBoolean();
-            if(isCreate) {
+            if (isCreate) {
                 InitGameConfig.ObsElement data = entry.getValue();
                 Building building = BuildingFactory.getBuilding(id, data.type, 1, new Point(data.posX - 1, data.posY - 1));
                 buildings.add(building);

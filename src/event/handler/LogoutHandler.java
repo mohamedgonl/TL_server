@@ -25,7 +25,6 @@ public class LogoutHandler extends BaseServerEventHandler {
     private void onLogOut(User user) {
 //        BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
 
-
     }
 
 

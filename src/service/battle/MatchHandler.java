@@ -205,6 +205,49 @@ public class MatchHandler {
         return new ResponseEndGame(ErrorConst.SUCCESS);
     }
 
+    public static void handleGameEndSync(User user) {
+        try {
+            PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
+            BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
+
+
+            if (match != null) {
+                BattleAction lastAction = match.getActionsList().get(match.getActionsList().size() - 1);
+                if (lastAction.type != BattleConst.ACTION_END) {
+                    match.getActionsList().add(new BattleAction(BattleConst.ACTION_END, lastAction.tick + 1));
+                }
+                userInfo.addResources(match.getGoldGot(), match.getElixirGot(), 0);
+                match.state = BattleConst.MATCH_ENDED;
+                userInfo.removeTroop(match.usedArmy);
+
+                ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
+                listUserData.updateUser(match.enemyId, false);
+
+                // update enemy rank and resource
+                PlayerInfo enemyInfo = (PlayerInfo) PlayerInfo.getModel(match.enemyId, PlayerInfo.class);
+                int oldEnemyRank = enemyInfo.getRank();
+                int newEnemyRank = enemyInfo.getRank() + match.trophy;
+                enemyInfo.setRank(newEnemyRank);
+                enemyInfo.useResources(match.getGoldGot(), match.getElixirGot(), 0);
+
+                listUserData.updateSegmentRank(userInfo.getId(), userInfo.getRank(), userInfo.getRank() + match.trophy);
+                userInfo.setRank(Math.max(userInfo.getRank() + match.trophy, 0));
+                listUserData.updateSegmentRank(match.enemyId, oldEnemyRank, newEnemyRank);
+                listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
+
+                userInfo.pushNewMatch(match);
+                userInfo.saveModel(user.getId());
+                match.saveModel(match.id);
+                enemyInfo.saveModel(enemyInfo.getId());
+            } else {
+                throw new CustomException(ErrorConst.NO_MATCH_FOUND);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static ResponseGetMatch handleGetMatch(User user, RequestGetMatch requestGetMatch) throws Exception {
         PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
         ArrayList<BattleMatch> matches = userInfo.getBattleMatches();
@@ -224,6 +267,10 @@ public class MatchHandler {
         ArrayList<BattleMatch> copiedMatches = new ArrayList<>(matches);
         Collections.reverse(copiedMatches);
         return new ResponseGetHistoryAttack(ErrorConst.SUCCESS, copiedMatches);
+    }
+
+    public static void handleDisconnect(User user) {
+
     }
 
 }

@@ -17,6 +17,7 @@ import bitzero.util.socialcontroller.bean.UserInfo;
 
 import cmd.receive.authen.RequestLogin;
 
+import event.handler.DisconnectHandler;
 import event.handler.LoginSuccessHandler;
 import event.handler.LogoutHandler;
 
@@ -71,7 +72,7 @@ public class FresherExtension extends BZExtension {
         trace(" Event Handler ");
         addEventHandler(BZEventType.USER_LOGIN, LoginSuccessHandler.class);
         addEventHandler(BZEventType.USER_LOGOUT, LogoutHandler.class);
-        addEventHandler(BZEventType.USER_DISCONNECT, LogoutHandler.class);
+        addEventHandler(BZEventType.USER_DISCONNECT, DisconnectHandler.class);
         //init data
         GameConfig.getInstance().init();
 
