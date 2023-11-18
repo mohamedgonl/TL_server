@@ -580,7 +580,9 @@ public class BattleMatch extends DataModel {
 //    }
 
     private void updateData() {
+        System.out.println("DESTROYED : " + this.buildingDestroyedPoint + " TOTAL : " + this.totalBuildingPoint);
         this.winPercentage = this.buildingDestroyedPoint * 100 / this.totalBuildingPoint;
+        System.out.println(this.winPercentage);
         if(this.townHall.hp == 0) {
             this.stars ++;
         }

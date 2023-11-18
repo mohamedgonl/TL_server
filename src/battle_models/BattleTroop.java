@@ -252,7 +252,7 @@ public class BattleTroop {
             //get min distance
             double distance = Math.sqrt(Math.pow(this.posX - target.posX, 2) + Math.pow(this.posY - target.posY, 2));
             distance = Common.roundFloat(distance,4);
-            LogUtils.writeLog("troop " + this.type + " distance to " + target.type + " " + distance);
+            LogUtils.writeLog("troop " + this.type + " distance to " + target.type + " " +(int) distance);
             if (minDistance == null || distance < minDistance) {
                 minDistance = distance;
                 this.target = target;
