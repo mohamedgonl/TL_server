@@ -73,7 +73,7 @@ public class DataModel {
         String key = ServerUtil.getModelKeyName(this.getClass().getSimpleName(), uId);
         String sobj = gson.toJson(this);
         DataHandler.set(key, sobj);
-        //DataHandler.set(key, this);
+//        DataHandler.set(key, this);
     }
 
     public void saveModel(long uId) throws Exception {

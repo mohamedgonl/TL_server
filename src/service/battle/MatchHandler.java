@@ -210,7 +210,6 @@ public class MatchHandler {
             PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
             BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
 
-
             if (match != null) {
                 BattleAction lastAction = match.getActionsList().get(match.getActionsList().size() - 1);
                 if (lastAction.type != BattleConst.ACTION_END) {
@@ -235,10 +234,10 @@ public class MatchHandler {
                 listUserData.updateSegmentRank(match.enemyId, oldEnemyRank, newEnemyRank);
                 listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
 
-                userInfo.pushNewMatch(match);
-                userInfo.saveModel(user.getId());
-                match.saveModel(match.id);
+//                userInfo.pushNewMatch(match);
+//                match.saveModel(match.id);
                 enemyInfo.saveModel(enemyInfo.getId());
+                userInfo.saveModel(user.getId());
             } else {
                 throw new CustomException(ErrorConst.NO_MATCH_FOUND);
             }

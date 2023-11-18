@@ -1,5 +1,6 @@
 package battle_models;
 
+import com.google.gson.annotations.Expose;
 import util.BattleConst;
 import util.Common;
 import util.database.DataModel;
@@ -38,8 +39,8 @@ public class BattleMatch extends DataModel {
     public int winPercentage = 0;
     public int stars;
     public ArrayList<BattleGameObject> listGameObjects;
-    public ArrayList<BattleObstacle> listObstacles = new ArrayList<>();
-    public ArrayList<BattleBuilding> buildings = new ArrayList<>();
+    public transient ArrayList<BattleObstacle> listObstacles = new ArrayList<>();
+    public transient ArrayList<BattleBuilding> buildings = new ArrayList<>();
     public transient ArrayList<BattleDefence> listDefences = new ArrayList<>();
     public transient ArrayList<BattleBuilding> listResources = new ArrayList<>();
     public transient ArrayList<BattleBuilding> listWalls = new ArrayList<>();
@@ -51,11 +52,11 @@ public class BattleMatch extends DataModel {
 
     private transient boolean isDestroyedHalf = false;
 
-    public int[][] findPathGrid;
+    public transient int[][] findPathGrid;
 
-    public ArrayList<TroopBullet> listTroopBullet = new ArrayList<>();
+    public transient ArrayList<TroopBullet> listTroopBullet = new ArrayList<>();
 
-    public BattleGraph battleGraph;
+    public transient BattleGraph battleGraph;
 
 
     public BattleMatch(int id, int enemyId, String enemyName, ArrayList<BattleGameObject> gameObjects, Map<String, Integer> army, int maxGold, int maxElixir, int enemyRank, int userRank) {
@@ -344,8 +345,7 @@ public class BattleMatch extends DataModel {
                     this.listWalls.add((BattleBuilding) gameObject);
                 } else if (gameObject.type.startsWith("DEF")) {
                     this.listDefences.add((BattleDefence) gameObject);
-                }
-                else if (gameObject.type.startsWith("TOW")) {
+                } else if (gameObject.type.startsWith("TOW")) {
                     this.townHall = (BattleBuilding) gameObject;
                 }
             }
@@ -583,19 +583,19 @@ public class BattleMatch extends DataModel {
         System.out.println("DESTROYED : " + this.buildingDestroyedPoint + " TOTAL : " + this.totalBuildingPoint);
         this.winPercentage = this.buildingDestroyedPoint * 100 / this.totalBuildingPoint;
         System.out.println(this.winPercentage);
-        if(this.townHall.hp == 0) {
-            this.stars ++;
+        if (this.townHall.hp == 0) {
+            this.stars++;
         }
 
-        if(this.winPercentage >= 50) {
-            this.stars ++;
-            if(this.winPercentage == 100) {
-                this.stars ++;
+        if (this.winPercentage >= 50) {
+            this.stars++;
+            if (this.winPercentage == 100) {
+                this.stars++;
             }
         }
         this.isWin = this.stars > 0;
 
-        this.trophy = this.winPercentage * (this.isWin ? this.winTrophy : - this.loseTrophy) / 100;
+        this.trophy = this.winPercentage * (this.isWin ? this.winTrophy : -this.loseTrophy) / 100;
 
         for (BattleAction action : this.actionsList) {
             if (action.type == BattleConst.ACTION_THROW_TROOP) {
