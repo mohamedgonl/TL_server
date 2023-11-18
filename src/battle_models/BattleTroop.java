@@ -1,6 +1,5 @@
 package battle_models;
 
-import util.BattleConst;
 import util.Common;
 import util.GameConfig;
 import util.algorithms.BattleAStar;
@@ -25,11 +24,11 @@ public class BattleTroop {
     public int posY;
     public String favoriteTarget;
     public int moveSpeed;
-    public float attackSpeed;
+    public double attackSpeed;
     public int damage;
     public int hitpoints;
     public double attackRange;
-    public double damageScale;
+    public int damageScale;
     public boolean isOverhead;
     public int currentHitpoints;
     public BattleBuilding target;
@@ -42,7 +41,7 @@ public class BattleTroop {
     public TROOP_STATE state;
     public ArrayList<Point> path;
 
-    public float attackCd;
+    public double attackCd;
     public boolean firstAttack;
 
     public TroopConfig stats;
@@ -69,7 +68,7 @@ public class BattleTroop {
         this.damage = this.stats.damagePerAttack;
         this.hitpoints = this.stats.hitpoints;
         this.attackRange = this.baseStats.attackRange*3;
-        this.damageScale = this.baseStats.dmgScale;
+        this.damageScale = (int) this.baseStats.dmgScale;
         this.isOverhead = type.equals("ARM_6");
         this.currentHitpoints = this.hitpoints;
         this.target = null;
@@ -230,7 +229,7 @@ public class BattleTroop {
                 for (BattleBuilding building : mapListBuilding) {
                     if (building.isDestroy()) continue;
                     if (building.type.startsWith("WAL")) continue;
-                    if (building.type.startsWith("RES")) continue;
+                    if (building.type.startsWith("OBS")) continue;
                     listTarget.add(building);
                 }
                 break;
@@ -252,6 +251,8 @@ public class BattleTroop {
             if (target.isDestroy()) continue;
             //get min distance
             double distance = Math.sqrt(Math.pow(this.posX - target.posX, 2) + Math.pow(this.posY - target.posY, 2));
+            distance = Common.roundFloat(distance,4);
+            LogUtils.writeLog("troop " + this.type + " distance to " + target.type + " " + distance);
             if (minDistance == null || distance < minDistance) {
                 minDistance = distance;
                 this.target = target;
@@ -334,7 +335,7 @@ public class BattleTroop {
 
         //if move in this grid, not ++ currentIndex
         if (this.nextIndexDistanceLeft > distance) {
-            this.nextIndexDistanceLeft -= distance;
+            this.nextIndexDistanceLeft = Common.roundFloat(this.nextIndexDistanceLeft - distance,4);
             LogUtils.writeLog("nextIndexDistanceLeft: " + this.nextIndexDistanceLeft + " distance: " + distance + " moveSpeed: " + this.moveSpeed + "dt: " + dt);
         }
 
@@ -363,6 +364,7 @@ public class BattleTroop {
 
                 this.nextIndexDistanceLeft = 1 - (distance - this.nextIndexDistanceLeft);
             }
+            this.nextIndexDistanceLeft = Common.roundFloat(this.nextIndexDistanceLeft,4);
 
             // set posX, y is currentPos
             this.posX = this.path.get(this.nextIndex - 1).x;
@@ -384,26 +386,29 @@ public class BattleTroop {
         }
         if (this.attackCd == 0) {
             this.attackCd = this.attackSpeed;
+            this.attackCd = Common.roundFloat(this.attackCd,4);
+            LogUtils.writeLog("troop" + this.type + " attack" + this.target.type + " dtCount" + this.dtCount);
             this.attack();
+            LogUtils.writeLog("troop" + this.type + " attacked" + this.target.type + " dtCount" + this.dtCount);
         } else {
-            this.attackCd -= (float) dt;
+            this.attackCd -= dt;
+            this.attackCd = Common.roundFloat(this.attackCd,4);
             if (this.attackCd < 0) {
                 this.attackCd = 0;
             }
         }
     }
 
-    private void attack() {
-        if (Objects.equals(this.type, "ARM_1")) {
+    public void attack() {
+        if (Objects.equals(this.type, "ARM_2")) {
             TroopBullet.createBullet(this.match, "ARM_2", this.target, new Point(this.posX, this.posY), this.damage);
-
             return;
         }
         int damage = this.damage;
 
         //if target is favorite target, damage *= damageScale
         if (this.target.type.startsWith(this.favoriteTarget)) {
-            damage = (int) ((double) damage * this.damageScale);
+            damage = damage * this.damageScale;
         }
         this.target.onGainDamage(damage);
     }
