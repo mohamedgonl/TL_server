@@ -1,5 +1,5 @@
 package util.algorithms;
-import battle_models.BattleBuilding;
+
 import util.Common;
 import util.log.LogUtils;
 
@@ -64,7 +64,6 @@ public class BattleAStar {
         while (openHeap.size() > 0) {
             // Grab the lowest f(x) to process next.  Heap keeps this sorted for us.
             BattleGridNode currentNode = openHeap.pop();
-            LogUtils.writeLog("currentNode: "+currentNode.x+" "+currentNode.y);
 
             // End case -- result has been found, return the traced path.
             if(currentNode.x == end.x && currentNode.y == end.y) {
@@ -78,10 +77,7 @@ public class BattleAStar {
             // Find all neighbors for the current node.
             ArrayList<BattleGridNode> neighbors = graph.neighbors(currentNode);
 
-            for(BattleGridNode neighbor: neighbors)
-            {
-                LogUtils.writeLog("neighbor: "+neighbor.x+" "+neighbor.y);
-            }
+
 
             for (BattleGridNode neighbor : neighbors) {
                 if (neighbor.closed) {
@@ -97,7 +93,6 @@ public class BattleAStar {
                 } else {
                     gScore = Common.roundFloat(currentNode.g + neighbor.getCost(currentNode) + neighbor.weight, 4);
                 }
-                LogUtils.writeLog("gScore: " + gScore);
                 boolean beenVisited = neighbor.visited;
 
                 if (!beenVisited || gScore < neighbor.g) {
@@ -108,6 +103,8 @@ public class BattleAStar {
                     neighbor.h = Heuristics.diagonal(neighbor, end);
                     neighbor.g = gScore;
                     neighbor.f = neighbor.g + neighbor.h;
+                    neighbor.f = Common.roundFloat(neighbor.f, 4);
+
                     graph.markDirty(neighbor);
 
                     if (!beenVisited) {
@@ -158,10 +155,10 @@ public class BattleAStar {
 
         public static double diagonal(BattleGridNode pos0, BattleGridNode pos1) {
             double D = 1;
-            double D2 = Math.sqrt(2);
-            double d1 = Math.abs(pos1.x - pos0.x);
-            double d2 = Math.abs(pos1.y - pos0.y);
-            return (D * (d1 + d2)) + ((D2 - (2 * D)) * Math.min(d1, d2));
+            double D2 = Common.roundFloat(Math.sqrt(2), 4);
+            double d1 = Common.roundFloat(Math.abs(pos1.x - pos0.x), 4);
+            double d2 = Common.roundFloat(Math.abs(pos1.y - pos0.y), 4);
+            return Common.roundFloat((D * (d1 + d2)) + ((D2 - (2 * D)) * Math.min(d1, d2)), 4);
         }
     }
 
