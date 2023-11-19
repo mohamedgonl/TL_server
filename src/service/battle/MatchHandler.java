@@ -234,8 +234,7 @@ public class MatchHandler {
                 listUserData.updateSegmentRank(match.enemyId, oldEnemyRank, newEnemyRank);
                 listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
 
-//                userInfo.pushNewMatch(match);
-//                match.saveModel(match.id);
+                userInfo.pushNewMatch(match);
                 enemyInfo.saveModel(enemyInfo.getId());
                 userInfo.saveModel(user.getId());
             } else {

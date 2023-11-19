@@ -184,10 +184,11 @@ public class Barrack extends Building {
                         String troopCfgId = this.removeFirstTroop();
                         doneList.add(new TrainingItem(troopCfgId, 1));
 
-                        this.lastTrainingTime -= (int) Math.ceil(
+                        timeLeft -= (int) Math.ceil(
                                 (double) GameConfig.getInstance().troopBaseConfig.get(troopCfgId).trainingTime
                                         / ServerConstant.TRAIN_TIME_RATE);
                         userInfo.pushToListTroop(doneList);
+                        doneList.clear();
                     }
 
                 }
