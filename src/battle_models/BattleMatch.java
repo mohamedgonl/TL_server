@@ -142,12 +142,12 @@ public class BattleMatch extends DataModel {
 
     public void initBattleMap() {
         for (BattleGameObject gameObject : this.listGameObjects) {
+            if (!gameObject.type.startsWith("OBS") && !gameObject.type.startsWith("WAL")) {
+                this.totalBuildingPoint += ((BattleBuilding) gameObject).maxHp;
+            }
             for (int i = 0; i < gameObject.width; i++) {
                 for (int j = 0; j < gameObject.height; j++) {
                     this.battleMap[i + gameObject.posX][j + gameObject.posY] = gameObject.id;
-                    if (!gameObject.type.startsWith("OBS") && !gameObject.type.startsWith("WAL")) {
-                        this.totalBuildingPoint += ((BattleBuilding) gameObject).maxHp;
-                    }
                 }
             }
         }
@@ -359,8 +359,20 @@ public class BattleMatch extends DataModel {
     public void setResourceToBuilding() {
         if (this.listResources.size() == 0)
             return;
-        int goldCapacity = (int) Math.floor(this.maxGold / this.listResources.size());
-        int elixirCapacity = (int) Math.floor(this.maxElixir / this.listResources.size());
+
+        int goldBuildingAmount = 0;
+        int elixirBuildingAmount = 0;
+
+        for (BattleBuilding building : this.listResources) {
+            BattleStorage storage = (BattleStorage) building;
+            if (storage.getResourceType() == BattleConst.ResourceType.GOLD) {
+                goldBuildingAmount++;
+            } else if (storage.getResourceType() == BattleConst.ResourceType.ELIXIR)
+                elixirBuildingAmount++;
+        }
+
+        int goldCapacity = (int) Math.floor((double) this.maxGold / goldBuildingAmount);
+        int elixirCapacity = (int) Math.floor((double) this.maxElixir / elixirBuildingAmount);
 
         for (BattleBuilding building : this.listResources) {
             BattleStorage storage = (BattleStorage) building;
@@ -595,7 +607,8 @@ public class BattleMatch extends DataModel {
         }
         this.isWin = this.stars > 0;
 
-        this.trophy = this.winPercentage * (this.isWin ? this.winTrophy : -this.loseTrophy) / 100;
+        this.trophy = this.isWin ? this.winTrophy : -this.loseTrophy;
+//        this.trophy = this.winPercentage * (this.isWin ? this.winTrophy : -this.loseTrophy) / 100;
 
         for (BattleAction action : this.actionsList) {
             if (action.type == BattleConst.ACTION_THROW_TROOP) {

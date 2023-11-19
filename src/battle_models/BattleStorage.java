@@ -14,6 +14,7 @@ public class BattleStorage extends BattleBuilding {
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
+        this.resourceLeft = capacity;
     }
 
     public void setResourceLeft(int resourceLeft) {
@@ -57,4 +58,20 @@ public class BattleStorage extends BattleBuilding {
         super.onDestroy();
     }
 
+    @Override
+    public String toString() {
+        return "BattleBuilding{" +
+                "id=" + id +
+                ", posX=" + posX +
+                ", posY=" + posY +
+                ", hp=" + hp +
+                ", type='" + type + '\'' +
+                ", level=" + level +
+                ", width=" + width +
+                ", height=" + height +
+                ", maxHp=" + maxHp +
+                ", resourceLeft=" + resourceLeft +
+                ", capacity=" + capacity +
+                '}';
+    }
 }
