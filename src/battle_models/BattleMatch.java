@@ -1,11 +1,10 @@
 package battle_models;
 
-import com.google.gson.annotations.Expose;
 import util.BattleConst;
 import util.Common;
+import util.algorithms.BattleGraph;
 import util.database.DataModel;
 import util.log.LogUtils;
-import util.algorithms.BattleGraph;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -249,6 +248,13 @@ public class BattleMatch extends DataModel {
         // remove from building count
 //        this.buildingAmount[building._type] = Math.max(this.buildingAmount[building._type] - 1, 0);
 
+        //update mapgrid
+        for (int column = building.posX; column < building.posX + building.width; column++) {
+            for (int row = building.posY; row < building.posY + building.height; row++) {
+                this.battleMap[column][row] = 0;
+            }
+        }
+
         // Update troopMap
         for (int column = building.posX; column < building.posX + building.width; column++) {
             for (int row = building.posY; row < building.posY + building.height; row++) {
@@ -298,6 +304,7 @@ public class BattleMatch extends DataModel {
     }
 
     public BattleBuilding getBattleBuildingByPos(int posX, int posY) {
+
         return this.getBattleBuildingById(this.battleMap[posX][posY]);
     }
 
@@ -521,7 +528,10 @@ public class BattleMatch extends DataModel {
         }
 
     }
-
+    //return battlemap
+    public int[][] getBattleMap() {
+        return this.battleMap;
+    }
     private void printEndLog() {
         LogUtils.writeLog("------------------------------------------ BATTLE ENDED ------------------------------------------");
         LogUtils.writeLog("LIST BUILDING");

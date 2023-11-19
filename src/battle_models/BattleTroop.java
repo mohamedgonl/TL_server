@@ -66,7 +66,7 @@ public class BattleTroop {
         this.favoriteTarget = this.baseStats.favoriteTarget;
         this.moveSpeed = this.baseStats.moveSpeed*3;
         this.attackSpeed = this.baseStats.attackSpeed;
-        this.damage = this.stats.damagePerAttack;
+        this.damage = this.stats.damagePerAttack*20;
         this.hitpoints = this.stats.hitpoints;
         this.attackRange = this.baseStats.attackRange*3;
         this.damageScale = (int) this.baseStats.dmgScale;
@@ -97,6 +97,12 @@ public class BattleTroop {
                 break;
         }
 
+//        for(int i = 0; i<132;i++)
+//            for(int j = 0; j<132;j++){
+//                int id = this.match.getBattleMap()[i][j];
+//                if(id == 0) continue;
+//                LogUtils.writeLog("map: " + i + " " + j + " " + id);
+//            }
 
 
     }
@@ -110,8 +116,14 @@ public class BattleTroop {
 
         if (this.state == TROOP_STATE.FIND) {
             this.findTarget();
+            LogUtils.writeLog("1 :troop " + this.type + " find target " + this.target.type);
             this.findPath();
+            LogUtils.writeLog("2 :troop " + this.type + " find target " + this.target.type);
+            for(Point point : this.path){
+                LogUtils.writeLog("path: " + point.x + " " + point.y);
+            }
             this.checkPath();
+            LogUtils.writeLog("3 :troop " + this.type + " find target " + this.target.type);
 
 
             //change weight of grid in path +1 for various path each troop
@@ -139,7 +151,11 @@ public class BattleTroop {
                 this.isFirstMove = true;
             }
 
-            LogUtils.writeLog("troop " + this.type + " find target " + this.target.type);
+            LogUtils.writeLog("troop " + this.type +
+                                " find target " + this.target.type+
+                                "length path: " + this.path.size());
+            LogUtils.writeLog("target pos: " + this.target.posX + " " + this.target.posY +
+                    "width: " + this.target.width + " height: " + this.target.height);
             for(Point point : this.path){
                 LogUtils.writeLog("path: " + point.x + " " + point.y);
             }
@@ -318,10 +334,17 @@ public class BattleTroop {
 
             // if path go through WAL, this.target = WAL
             BattleBuilding building = this.match.getBattleBuildingByPos(x, y);
+            if(building != null){
+                LogUtils.writeLog("building: " + building.type);
+                LogUtils.writeLog("x , y" + x + " " + y);
+                LogUtils.writeLog("building pos: " + building.posX + " " + building.posY);
+                LogUtils.writeLog("building width: " + building.width + " height: " + building.height);
+            }
             if (building != null && building.type.startsWith("WAL")) {
+                LogUtils.writeLog("troop " + this.type + " change target to " + building.type);
                 this.target = building;
                 //update this.path = path from 0 to i
-                this.path = new ArrayList<>(this.path.subList(0, i + 1));
+                this.path = new ArrayList<>(this.path.subList(0, i));
                 return;
             }
 
@@ -365,7 +388,7 @@ public class BattleTroop {
         //if move in this grid, not ++ currentIndex
         if (this.nextIndexDistanceLeft > distance) {
             this.nextIndexDistanceLeft = Common.roundFloat(this.nextIndexDistanceLeft - distance,4);
-            LogUtils.writeLog("nextIndexDistanceLeft: " + this.nextIndexDistanceLeft + " distance: " + distance + " moveSpeed: " + this.moveSpeed + "dt: " + dt);
+//            LogUtils.writeLog("nextIndexDistanceLeft: " + this.nextIndexDistanceLeft + " distance: " + distance + " moveSpeed: " + this.moveSpeed + "dt: " + dt);
         }
 
         //if move to next index of path
