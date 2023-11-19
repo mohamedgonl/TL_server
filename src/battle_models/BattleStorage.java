@@ -3,9 +3,9 @@ package battle_models;
 import util.BattleConst;
 
 public class BattleStorage extends BattleBuilding {
-    private int capacity;
-    private int resourceLeft;
-    private BattleConst.ResourceType resourceType;
+    private transient int capacity;
+    private transient int resourceLeft;
+    private transient BattleConst.ResourceType resourceType;
 
     public BattleStorage(int id, String type, int level, int posX, int posY, BattleConst.ResourceType resourceType) {
         super(id, type, level, posX, posY);

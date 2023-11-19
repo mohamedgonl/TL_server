@@ -10,16 +10,16 @@ import util.log.LogUtils;
 import java.awt.*;
 
 public class BattleDefence extends BattleBuilding {
-    public DefenceBaseConfig defBaseStats;
-    public DefenceConfig defStats;
-    public BattleTroop target;
-    public double attackCd = 0;
-    public double attackSpeed;
-    public Point centerPoint;
-    public double minRange;
-    public double maxRange;
-    public double attackRadius;
-    public int attackArea;
+    public transient DefenceBaseConfig defBaseStats;
+    public transient DefenceConfig defStats;
+    public transient BattleTroop target;
+    public transient double attackCd = 0;
+    public transient double attackSpeed;
+    public transient Point centerPoint;
+    public transient double minRange;
+    public transient double maxRange;
+    public transient double attackRadius;
+    public transient int attackArea;
 
     public BattleDefence(int id, String type, int level, int posX, int posY) {
         super(id, type, level, posX, posY);

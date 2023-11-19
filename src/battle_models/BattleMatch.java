@@ -382,11 +382,20 @@ public class BattleMatch extends DataModel {
                 storage.setCapacity(elixirCapacity);
         }
 
-        BattleStorage lastBuilding = (BattleStorage) this.listResources.get(this.listResources.size() - 1);
-        if (lastBuilding.getResourceType() == BattleConst.ResourceType.GOLD)
-            lastBuilding.setCapacity(this.maxGold - goldCapacity * (this.listResources.size() - 1));
-        else if (lastBuilding.getResourceType() == BattleConst.ResourceType.ELIXIR)
-            lastBuilding.setCapacity(this.maxElixir - elixirCapacity * (this.listResources.size() - 1));
+        for (int i = this.listResources.size() - 1; i >= 0; i--) {
+            BattleStorage latStorage = (BattleStorage) listResources.get(i);
+            if (latStorage.getResourceType() == BattleConst.ResourceType.GOLD) {
+                latStorage.setCapacity(this.maxGold - goldCapacity * (goldBuildingAmount - 1));
+                break;
+            }
+        }
+        for (int i = this.listResources.size() - 1; i >= 0; i--) {
+            BattleStorage latStorage = (BattleStorage) listResources.get(i);
+            if (latStorage.getResourceType() == BattleConst.ResourceType.ELIXIR) {
+                latStorage.setCapacity(this.maxElixir - elixirCapacity * (elixirBuildingAmount - 1));
+                break;
+            }
+        }
     }
 
     public void removeTroop(BattleTroop troop) {
@@ -595,16 +604,7 @@ public class BattleMatch extends DataModel {
         System.out.println("DESTROYED : " + this.buildingDestroyedPoint + " TOTAL : " + this.totalBuildingPoint);
         this.winPercentage = this.buildingDestroyedPoint * 100 / this.totalBuildingPoint;
         System.out.println(this.winPercentage);
-        if (this.townHall.hp == 0) {
-            this.stars++;
-        }
 
-        if (this.winPercentage >= 50) {
-            this.stars++;
-            if (this.winPercentage == 100) {
-                this.stars++;
-            }
-        }
         this.isWin = this.stars > 0;
 
         this.trophy = this.isWin ? this.winTrophy : -this.loseTrophy;
