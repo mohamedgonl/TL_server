@@ -32,30 +32,17 @@ public class BattleTroop {
     public boolean isOverhead;
     public int currentHitpoints;
     public BattleBuilding target;
-
-    //state 5 type: FIND, MOVE, ATTACK, IDLE, DEAD
-    public enum TROOP_STATE {
-        FIND, MOVE, ATTACK, IDLE, DEAD
-    }
-
     public TROOP_STATE state;
     public ArrayList<Point> path;
-
     public double attackCd;
     public boolean firstAttack;
-
     public TroopConfig stats;
     public TroopBaseConfig baseStats;
-
     private boolean isFirstMove;
-
     private int nextIndex;
-
     private double nextIndexDistanceLeft = 0;
     private double dtCount;
     private double timeAttackAnimationHit;
-
-
     public BattleTroop(String type, int level, int posX, int posY) {
 
         this.stats = GameConfig.getInstance().troopConfig.get(type).get(level);
@@ -64,11 +51,11 @@ public class BattleTroop {
         this.posX = posX;
         this.posY = posY;
         this.favoriteTarget = this.baseStats.favoriteTarget;
-        this.moveSpeed = this.baseStats.moveSpeed*3;
+        this.moveSpeed = this.baseStats.moveSpeed * 3;
         this.attackSpeed = this.baseStats.attackSpeed;
-        this.damage = this.stats.damagePerAttack*20;
+        this.damage = this.stats.damagePerAttack * 20;
         this.hitpoints = this.stats.hitpoints;
-        this.attackRange = this.baseStats.attackRange*3;
+        this.attackRange = this.baseStats.attackRange * 3;
         this.damageScale = (int) this.baseStats.dmgScale;
         this.isOverhead = type.equals("ARM_6");
         this.currentHitpoints = this.hitpoints;
@@ -78,8 +65,7 @@ public class BattleTroop {
         this.attackCd = this.attackSpeed;
         this.firstAttack = true;
         this.dtCount = 0;
-        switch(type)
-        {
+        switch (type) {
             case "ARM_1":
                 this.timeAttackAnimationHit = 1;
                 break;
@@ -112,14 +98,14 @@ public class BattleTroop {
     }
 
     public void gameLoop(double dt) {
-        this.dtCount+=dt;
+        this.dtCount += dt;
 
         if (this.state == TROOP_STATE.FIND) {
             this.findTarget();
             LogUtils.writeLog("1 :troop " + this.type + " find target " + this.target.type);
             this.findPath();
             LogUtils.writeLog("2 :troop " + this.type + " find target " + this.target.type);
-            for(Point point : this.path){
+            for (Point point : this.path) {
                 LogUtils.writeLog("path: " + point.x + " " + point.y);
             }
             this.checkPath();
@@ -152,11 +138,11 @@ public class BattleTroop {
             }
 
             LogUtils.writeLog("troop " + this.type +
-                                " find target " + this.target.type+
-                                "length path: " + this.path.size());
+                    " find target " + this.target.type +
+                    "length path: " + this.path.size());
             LogUtils.writeLog("target pos: " + this.target.posX + " " + this.target.posY +
                     "width: " + this.target.width + " height: " + this.target.height);
-            for(Point point : this.path){
+            for (Point point : this.path) {
                 LogUtils.writeLog("path: " + point.x + " " + point.y);
             }
             return;
@@ -179,31 +165,34 @@ public class BattleTroop {
     }
 
     private ArrayList<Point> getPathToBuilding(BattleBuilding building) {
-        //get path
-        BattleGraph graph = this.match.getBattleGraph();
-        BattleGridNode start = new BattleGridNode(this.posX, this.posY, graph.getNode(this.posX, this.posY).weight, null);
+        try {
+            //get path
+            BattleGraph graph = this.match.getBattleGraph();
+            BattleGridNode start = new BattleGridNode(this.posX, this.posY, graph.getNode(this.posX, this.posY).weight, null);
 
-        //get center of building
-        int targetCenterX = (int) (building.posX + Math.floor(building.width / 2));
-        int targetCenterY = (int) (building.posY + Math.floor(building.height / 2));
-        LogUtils.writeLog("target center: " + targetCenterX + " " + targetCenterY);
+            //get center of building
+            int targetCenterX = (int) (building.posX + Math.floor(building.width / 2));
+            int targetCenterY = (int) (building.posY + Math.floor(building.height / 2));
+            LogUtils.writeLog("target center: " + targetCenterX + " " + targetCenterY);
+            System.out.println(3);
 
-        BattleGridNode end = new BattleGridNode(targetCenterX, targetCenterY, graph.getNode(targetCenterX, targetCenterY).weight, building.id);
-        ArrayList<BattleGridNode> path = BattleAStar.search(graph, start, end);
+            BattleGridNode end = new BattleGridNode(targetCenterX, targetCenterY, graph.getNode(targetCenterX, targetCenterY).weight, building.id);
+            ArrayList<BattleGridNode> path = BattleAStar.search(graph, start, end);
 //        ArrayList<BattleGridNode> path = BattleAStar.searchSimple(graph, start, end);
 
-        //change to Point
-        ArrayList<Point> ret = new ArrayList<>();
-        assert path != null;
-        for (BattleGridNode node : path) {
-            ret.add(new Point(node.x, node.y));
+            //change to Point
+            ArrayList<Point> ret = new ArrayList<>();
+            assert path != null;
+            for (BattleGridNode node : path) {
+                ret.add(new Point(node.x, node.y));
+            }
+            return ret;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            System.out.println(exception.getMessage());
         }
-        return ret;
+        return null;
     }
-
-    //check if troop in attack range of building,
-    // normal case : troop.posX, troop.posY,
-    // else : tempX, tempY
 
     private boolean isInAttackRange(BattleBuilding building, Integer tempX, Integer tempY) {
         ArrayList<Point> corners = building.getCorners();
@@ -251,6 +240,10 @@ public class BattleTroop {
         return distance <= this.attackRange;
     }
 
+    //check if troop in attack range of building,
+    // normal case : troop.posX, troop.posY,
+    // else : tempX, tempY
+
     private void findTarget() {
         ArrayList<BattleBuilding> listTarget = new ArrayList<>();
         switch (this.favoriteTarget) {
@@ -275,13 +268,10 @@ public class BattleTroop {
 
         //if not have favourite target, change to NONE and find again
         if (listTarget.isEmpty()) {
-            if(!Objects.equals(this.favoriteTarget, "NONE"))
-            {
+            if (!Objects.equals(this.favoriteTarget, "NONE")) {
                 this.favoriteTarget = "NONE";
                 this.findTarget();
-            }
-            else
-            {
+            } else {
                 this.state = TROOP_STATE.IDLE;
             }
             return;
@@ -296,8 +286,8 @@ public class BattleTroop {
             if (target.isDestroy()) continue;
             //get min distance
             double distance = Math.sqrt(Math.pow(this.posX - target.posX, 2) + Math.pow(this.posY - target.posY, 2));
-            distance = Common.roundFloat(distance,4);
-            LogUtils.writeLog("troop " + this.type + " distance to " + target.type + " " +(int) distance);
+            distance = Common.roundFloat(distance, 4);
+            LogUtils.writeLog("troop " + this.type + " distance to " + target.type + " " + (int) distance);
             if (minDistance == null || distance < minDistance) {
                 minDistance = distance;
                 this.target = target;
@@ -324,9 +314,6 @@ public class BattleTroop {
         this.path = this.getPathToBuilding(this.target);
     }
 
-    //check that path is valid or not
-    //not valid when path go through WAL before in attack range -> change target to WAL and update path
-
     private void checkPath() {
         for (int i = 0; i < this.path.size(); i++) {
             int x = this.path.get(i).x;
@@ -334,7 +321,7 @@ public class BattleTroop {
 
             // if path go through WAL, this.target = WAL
             BattleBuilding building = this.match.getBattleBuildingByPos(x, y);
-            if(building != null){
+            if (building != null) {
                 LogUtils.writeLog("building: " + building.type);
                 LogUtils.writeLog("x , y" + x + " " + y);
                 LogUtils.writeLog("building pos: " + building.posX + " " + building.posY);
@@ -354,6 +341,9 @@ public class BattleTroop {
             }
         }
     }
+
+    //check that path is valid or not
+    //not valid when path go through WAL before in attack range -> change target to WAL and update path
 
     private void moveLoop(double dt) {
 
@@ -383,11 +373,11 @@ public class BattleTroop {
 
 
         //distance moved each dt
-        double distance = Common.roundFloat(dt * this.moveSpeed * TROOP_SPEED_RATIO,4);
+        double distance = Common.roundFloat(dt * this.moveSpeed * TROOP_SPEED_RATIO, 4);
 
         //if move in this grid, not ++ currentIndex
         if (this.nextIndexDistanceLeft > distance) {
-            this.nextIndexDistanceLeft = Common.roundFloat(this.nextIndexDistanceLeft - distance,4);
+            this.nextIndexDistanceLeft = Common.roundFloat(this.nextIndexDistanceLeft - distance, 4);
 //            LogUtils.writeLog("nextIndexDistanceLeft: " + this.nextIndexDistanceLeft + " distance: " + distance + " moveSpeed: " + this.moveSpeed + "dt: " + dt);
         }
 
@@ -416,7 +406,7 @@ public class BattleTroop {
 
                 this.nextIndexDistanceLeft = 1 - (distance - this.nextIndexDistanceLeft);
             }
-            this.nextIndexDistanceLeft = Common.roundFloat(this.nextIndexDistanceLeft,4);
+            this.nextIndexDistanceLeft = Common.roundFloat(this.nextIndexDistanceLeft, 4);
 
             // set posX, y is currentPos
             this.posX = this.path.get(this.nextIndex - 1).x;
@@ -435,20 +425,20 @@ public class BattleTroop {
 
         if (this.firstAttack) {
             this.attackCd = this.timeAttackAnimationHit;
-            this.attackCd = Common.roundFloat(this.attackCd,4);
+            this.attackCd = Common.roundFloat(this.attackCd, 4);
             this.firstAttack = false;
         }
 
         //loop attack cd
         if (this.attackCd == 0) {
             this.attackCd = this.attackSpeed;
-            this.attackCd = Common.roundFloat(this.attackCd,4);
+            this.attackCd = Common.roundFloat(this.attackCd, 4);
             LogUtils.writeLog("troop" + this.type + " attack" + this.target.type + " dtCount" + this.dtCount);
             this.attack();
             LogUtils.writeLog("troop" + this.type + " attacked" + this.target.type + " dtCount" + this.dtCount);
         } else {
             this.attackCd -= dt;
-            this.attackCd = Common.roundFloat(this.attackCd,4);
+            this.attackCd = Common.roundFloat(this.attackCd, 4);
             if (this.attackCd < 0) {
                 this.attackCd = 0;
             }
@@ -508,6 +498,11 @@ public class BattleTroop {
                 ", favoriteTarget='" + favoriteTarget + '\'' +
                 ", currentHitpoints=" + currentHitpoints +
                 '}';
+    }
+
+    //state 5 type: FIND, MOVE, ATTACK, IDLE, DEAD
+    public enum TROOP_STATE {
+        FIND, MOVE, ATTACK, IDLE, DEAD
     }
 }
 
