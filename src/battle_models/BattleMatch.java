@@ -20,7 +20,6 @@ public class BattleMatch extends DataModel {
     private final transient double secPerTick = Math.round(1.0 / BattleConst.TICK_PER_SECOND * 1e6) / 1e6;
     private final transient int[][] troopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
     private final transient int[][] throwTroopMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
-    private transient BattleBuilding townHall;
     private final transient ArrayList<BattleTroop> troops = new ArrayList<>(); // Lưu thông tin từng con lính trong trận
     public int id;
     public int enemyId;
@@ -45,18 +44,15 @@ public class BattleMatch extends DataModel {
     public transient ArrayList<BattleBuilding> listResources = new ArrayList<>();
     public transient ArrayList<BattleBuilding> listWalls = new ArrayList<>();
     public transient ArrayList<BattleBullet> bullets = new ArrayList<>();
+    public transient int[][] findPathGrid;
+    public transient ArrayList<TroopBullet> listTroopBullet = new ArrayList<>();
+    public transient BattleGraph battleGraph;
+    private transient BattleBuilding townHall;
     private int goldGot = 0; // vàng chiếm dc
     private int elixirGot = 0; // dầu chiếm dc
     private transient int buildingDestroyedPoint = 0;
     private transient int totalBuildingPoint = 0;
-
     private transient boolean isDestroyedHalf = false;
-
-    public transient int[][] findPathGrid;
-
-    public transient ArrayList<TroopBullet> listTroopBullet = new ArrayList<>();
-
-    public transient BattleGraph battleGraph;
 
 
     public BattleMatch(int id, int enemyId, String enemyName, ArrayList<BattleGameObject> gameObjects, Map<String, Integer> army, int maxGold, int maxElixir, int enemyRank, int userRank) {
@@ -232,14 +228,15 @@ public class BattleMatch extends DataModel {
 
     public void onDestroyBuilding(int id) {
         BattleBuilding building = this.getBattleBuildingById(id);
-        this.buildingDestroyedPoint += building.maxHp;
 
+        if (!building.type.startsWith("WAL")) {
+            this.buildingDestroyedPoint += building.maxHp;
 
-        if (!this.isDestroyedHalf && this.buildingDestroyedPoint * 2 >= this.totalBuildingPoint) {
-            this.isDestroyedHalf = true;
-            this.stars++;
+            if (!this.isDestroyedHalf && this.buildingDestroyedPoint * 2 >= this.totalBuildingPoint) {
+                this.isDestroyedHalf = true;
+                this.stars++;
+            }
         }
-
         if (building.type.startsWith("TOW")) {
             this.stars++;
         }
