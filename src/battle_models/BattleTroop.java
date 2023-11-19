@@ -53,6 +53,7 @@ public class BattleTroop {
 
     private double nextIndexDistanceLeft = 0;
     private double dtCount;
+    private double timeAttackAnimationHit;
 
 
     public BattleTroop(String type, int level, int posX, int posY) {
@@ -77,6 +78,27 @@ public class BattleTroop {
         this.attackCd = this.attackSpeed;
         this.firstAttack = true;
         this.dtCount = 0;
+        switch(type)
+        {
+            case "ARM_1":
+                this.timeAttackAnimationHit = 1;
+                break;
+            case "ARM_2":
+                this.timeAttackAnimationHit = 0.7;
+                break;
+            case "ARM_3":
+                this.timeAttackAnimationHit = 0.5;
+                break;
+            case "ARM_4":
+                this.timeAttackAnimationHit = 0.6;
+                break;
+            case "ARM_6":
+                this.timeAttackAnimationHit = 0.83;
+                break;
+        }
+
+
+
     }
 
     public void setMatch(BattleMatch match) {
@@ -237,8 +259,15 @@ public class BattleTroop {
 
         //if not have favourite target, change to NONE and find again
         if (listTarget.isEmpty()) {
-            this.favoriteTarget = "NONE";
-            this.findTarget();
+            if(!Objects.equals(this.favoriteTarget, "NONE"))
+            {
+                this.favoriteTarget = "NONE";
+                this.findTarget();
+            }
+            else
+            {
+                this.state = TROOP_STATE.IDLE;
+            }
             return;
         }
 
@@ -382,8 +411,12 @@ public class BattleTroop {
         }
 
         if (this.firstAttack) {
+            this.attackCd = this.timeAttackAnimationHit;
+            this.attackCd = Common.roundFloat(this.attackCd,4);
             this.firstAttack = false;
         }
+
+        //loop attack cd
         if (this.attackCd == 0) {
             this.attackCd = this.attackSpeed;
             this.attackCd = Common.roundFloat(this.attackCd,4);
