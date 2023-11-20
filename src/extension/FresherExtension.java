@@ -131,11 +131,17 @@ public class FresherExtension extends BZExtension {
      * the first packet send from client after handshake success will dispatch to doLogin() function
      */
     public void doLogin(short cmdId, ISession session, DataCmd objData) {
+        System.out.println("doLogin 1");
         RequestLogin reqGet = new RequestLogin(objData);
         reqGet.unpackData();
         try {
+            System.out.println("doLogin 2");
+
             UserInfo uInfo = getUserInfo(reqGet.sessionKey, reqGet.userId, session.getAddress());
+            System.out.println("doLogin 3");
             User u = ExtensionUtility.instance().canLogin(uInfo, "", session);
+            System.out.println("doLogin 4 u=" + (u==null?"null":u.getId()));
+
             if (u!=null)
                 u.setProperty("userId", uInfo.getUserId());
         } catch (Exception e) {
