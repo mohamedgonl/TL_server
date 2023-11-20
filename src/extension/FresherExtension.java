@@ -135,7 +135,7 @@ public class FresherExtension extends BZExtension {
         RequestLogin reqGet = new RequestLogin(objData);
         reqGet.unpackData();
         try {
-            System.out.println("doLogin 2");
+            System.out.println("doLogin 2 req uId=" + reqGet.userId);
 
             UserInfo uInfo = getUserInfo(reqGet.sessionKey, reqGet.userId, session.getAddress());
             System.out.println("doLogin 3");
