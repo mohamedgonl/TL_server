@@ -1,5 +1,6 @@
 package battle_models;
 
+import util.BattleConst;
 import util.Common;
 import util.GameConfig;
 import util.algorithms.BattleAStar;
@@ -51,11 +52,11 @@ public class BattleTroop {
         this.posX = posX;
         this.posY = posY;
         this.favoriteTarget = this.baseStats.favoriteTarget;
-        this.moveSpeed = this.baseStats.moveSpeed * 3;
+        this.moveSpeed = this.baseStats.moveSpeed * BattleConst.BATTLE_MAP_SCALE;
         this.attackSpeed = this.baseStats.attackSpeed;
-        this.damage = this.stats.damagePerAttack * 20;
+        this.damage = this.stats.damagePerAttack;
         this.hitpoints = this.stats.hitpoints;
-        this.attackRange = this.baseStats.attackRange * 3;
+        this.attackRange = this.baseStats.attackRange * BattleConst.BATTLE_MAP_SCALE;
         this.damageScale = (int) this.baseStats.dmgScale;
         this.isOverhead = type.equals("ARM_6");
         this.currentHitpoints = this.hitpoints;

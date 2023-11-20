@@ -123,10 +123,12 @@ public class BattleHandler extends BaseClientRequestHandler {
             send(responseSendAction, user);
         }
         catch (CustomException e) {
+            e.printStackTrace();
             System.out.println("HANDLE RECEIVE ACTION FAIL with error code : " + e.getErrorCode());
             send(new ResponseSendAction(e.getErrorCode()), user);
         }
         catch (Exception e) {
+            e.printStackTrace();
             System.out.println("HANDLE RECEIVE ACTION ERROR :: " + e.getMessage());
             send(new ResponseSendAction(ErrorConst.UNKNOWN), user);
         } finally {
