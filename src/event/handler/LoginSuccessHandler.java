@@ -7,6 +7,7 @@ import bitzero.server.entities.User;
 import bitzero.server.extensions.BaseServerEventHandler;
 import bitzero.server.extensions.ExtensionLogLevel;
 import bitzero.util.ExtensionUtility;
+import bitzero.util.common.business.CommonHandle;
 import event.eventType.DemoEventParam;
 import event.eventType.DemoEventType;
 import extension.FresherExtension;
@@ -105,6 +106,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
 //        ExtensionUtility.dispatchEvent(new BZEvent(DemoEventType.LOGIN_SUCCESS, evtParams));
         } catch (Exception e) {
             trace("LOGIN HANDLE ERROR ::: " + e.getMessage());
+            CommonHandle.writeErrLog(e);
         }
     }
 
