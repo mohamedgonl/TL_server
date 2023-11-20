@@ -39,7 +39,8 @@ public class LogUtils {
             try {
                 logFile.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+//              e.printStackTrace();
+                return;
             }
         }
         try {
@@ -50,7 +51,8 @@ public class LogUtils {
 
             buf.close();
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            return;
         }
     }
 
