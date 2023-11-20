@@ -528,10 +528,12 @@ public class BattleMatch extends DataModel {
         }
 
     }
+
     //return battlemap
     public int[][] getBattleMap() {
         return this.battleMap;
     }
+
     private void printEndLog() {
         LogUtils.writeLog("------------------------------------------ BATTLE ENDED ------------------------------------------");
         LogUtils.writeLog("LIST BUILDING");
@@ -559,53 +561,6 @@ public class BattleMatch extends DataModel {
 
     }
 
-//    private void saveDataSync() {
-//
-//        try {
-//            PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
-//            userInfo.addResources(requestEndGame.getGoldGot(), requestEndGame.getElixirGot(), 0);
-//            userInfo.setRank(Math.max(userInfo.getRank() + (requestEndGame.getResult() ? 1 : -1) * requestEndGame.getTrophy(), 0));
-//
-//            BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
-//            if (match != null) {
-//                match.isWin = requestEndGame.getResult();
-//                match.trophy = requestEndGame.getTrophy();
-//                match.stars = requestEndGame.getStars();
-//                match.state = BattleConst.MATCH_ENDED;
-//                match.usedArmy = requestEndGame.getArmy();
-//                match.winPercentage = requestEndGame.percentage;
-//                match.setGoldGot(requestEndGame.getGoldGot());
-//                match.setElixirGot(requestEndGame.getElixirGot());
-//                match.pushAction(new BattleAction(BattleConst.ACTION_END, requestEndGame.getTick()));
-//                userInfo.removeTroop(match.usedArmy);
-//
-//                ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
-//                listUserData.updateUser(match.enemyId, false);
-//
-//                userInfo.pushNewMatch(match);
-//                userInfo.saveModel(user.getId());
-//                match.saveModel(match.id);
-//
-//                // update enemy rank and resource
-//                PlayerInfo enemyInfo = (PlayerInfo) PlayerInfo.getModel(match.enemyId, PlayerInfo.class);
-//                int oldEnemyRank = enemyInfo.getRank();
-//                int newEnemyRank = enemyInfo.getRank() + (match.isWin ? -match.trophy : match.trophy);
-//                enemyInfo.setRank(newEnemyRank);
-//                enemyInfo.useResources(match.getGoldGot(), match.getElixirGot(), 0);
-//
-//                listUserData.updateSegmentRank(match.enemyId, oldEnemyRank, newEnemyRank);
-//                listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
-//
-//                enemyInfo.saveModel(enemyInfo.getId());
-//            } else {
-//                throw new CustomException(ErrorConst.NO_MATCH_FOUND);
-//            }
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//        return new ResponseEndGame(ErrorConst.SUCCESS);
-//    }
 
     private void updateData() {
         System.out.println("DESTROYED : " + this.buildingDestroyedPoint + " TOTAL : " + this.totalBuildingPoint);

@@ -103,6 +103,11 @@ public class BattleTroop {
 
         if (this.state == TROOP_STATE.FIND) {
             this.findTarget();
+
+            if (this.target == null) {
+                return;
+            }
+
             LogUtils.writeLog("1 :troop " + this.type + " find target " + this.target.type);
             this.findPath();
             LogUtils.writeLog("2 :troop " + this.type + " find target " + this.target.type);
@@ -183,7 +188,8 @@ public class BattleTroop {
 
             //change to Point
             ArrayList<Point> ret = new ArrayList<>();
-            assert path != null;
+            if (path == null)
+                return ret;
             for (BattleGridNode node : path) {
                 ret.add(new Point(node.x, node.y));
             }
