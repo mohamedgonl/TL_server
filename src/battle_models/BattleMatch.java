@@ -424,14 +424,14 @@ public class BattleMatch extends DataModel {
         return listTroopsInRange;
     }
 
-    public BattleBullet getOrCreateBullet(String type, Point startPoint, BattleTroop target, int damagePerShot, double attackRadius) {
+    public BattleBullet getOrCreateBullet(String type, Point startPoint, BattleTroop target, int damagePerShot, double attackRadius, int attackArea) {
         for (BattleBullet bullet : bullets)
             if (!bullet.isActive() && bullet.getType().equals(type)) {
                 bullet.init(startPoint, target);
                 return bullet;
             }
 
-        BattleBullet newBullet = new BattleBullet(type, startPoint, target, damagePerShot, attackRadius);
+        BattleBullet newBullet = new BattleBullet(type, startPoint, target, damagePerShot, attackRadius, attackArea);
         newBullet.setMatch(this);
         bullets.add(newBullet);
         return newBullet;

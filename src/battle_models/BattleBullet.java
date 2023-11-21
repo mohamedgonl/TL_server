@@ -1,5 +1,6 @@
 package battle_models;
 
+import util.BattleConst;
 import util.Common;
 import util.log.LogUtils;
 
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 public class BattleBullet {
     private final String type;
     private final double attackRadius; // cell
+    private final int attackArea;
     public BattleMatch match;
     private Point startPoint;
     private boolean active;
@@ -19,11 +21,13 @@ public class BattleBullet {
     private double gridSpeed; // cell/s
     private int damagePerShot; // time logic to reach destination
     private double minimumTime = 0; // minimum time to reach destination
-    public BattleBullet(String type, Point startPoint, BattleTroop target, int damagePerShot, double attackRadius) {
+
+    public BattleBullet(String type, Point startPoint, BattleTroop target, int damagePerShot, double attackRadius, int attackArea) {
         this.type = type;
         this.startPoint = startPoint;
         this.damagePerShot = damagePerShot;
         this.attackRadius = attackRadius;
+        this.attackArea = attackArea;
 
         if (type.equals("DEF_1")) {
             this.gridSpeed = 40;
@@ -98,6 +102,8 @@ public class BattleBullet {
         this.time = Math.max(Common.roundFloat(gridDist / this.gridSpeed, 2), this.minimumTime);
         this.totalTime = this.time;
 
+        LogUtils.writeLog("def " + this.type + " bullet: time to reach " + this.destination.x + ' ' + this.destination.y + " : " + this.totalTime);
+
         this.active = true;
     }
 
@@ -114,7 +120,7 @@ public class BattleBullet {
         if (attackRadius > 0) {
             ArrayList<BattleTroop> listTargets = match.getListTroopsInRange(destination, attackRadius);
             for (BattleTroop target : listTargets) {
-                if (target != null && target.isAlive())
+                if (checkTarget(target))
                     target.onGainDamage(this.damagePerShot);
             }
         } else {
@@ -123,6 +129,19 @@ public class BattleBullet {
             }
         }
         destroyBullet();
+    }
+
+    //check if troop can be attakced
+    public boolean checkTarget(BattleTroop target) {
+        // target in air
+        if (target.isOverhead() && this.attackArea == BattleConst.DEF_ATTACK_AREA_GROUND) {
+            return false;
+        }
+        // target on ground
+        if (!target.isOverhead() && this.attackArea == BattleConst.DEF_ATTACK_AREA_OVERHEAD) {
+            return false;
+        }
+        return target != null && target.isAlive();
     }
 
     public void destroyBullet() {

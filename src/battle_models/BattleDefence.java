@@ -93,7 +93,7 @@ public class BattleDefence extends BattleBuilding {
     }
 
     public void attack(BattleTroop troop) {
-        BattleBullet bullet = match.getOrCreateBullet(type, centerPoint, troop, defStats.damagePerShot, attackRadius);
+        BattleBullet bullet = match.getOrCreateBullet(type, centerPoint, troop, defStats.damagePerShot, attackRadius, attackArea);
 
         LogUtils.writeLog("def " + this.id + " fire to " + target.posX + " " + target.posY);
     }
