@@ -1,7 +1,6 @@
 package event.handler;
 
 import bitzero.server.core.BZEventParam;
-import bitzero.server.core.BZEventType;
 import bitzero.server.core.IBZEvent;
 import bitzero.server.entities.User;
 import bitzero.server.extensions.BaseServerEventHandler;
@@ -9,13 +8,10 @@ import bitzero.server.extensions.ExtensionLogLevel;
 import bitzero.util.ExtensionUtility;
 import bitzero.util.common.business.CommonHandle;
 import event.eventType.DemoEventParam;
-import event.eventType.DemoEventType;
-import extension.FresherExtension;
 import model.Building;
 import model.ListPlayerData;
 import model.Obstacle;
 import model.PlayerInfo;
-import util.BattleConst;
 import util.BuildingFactory;
 import util.Common;
 import util.GameConfig;
@@ -227,42 +223,142 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
     }
 
 
-    private void createRandomPlayerInfo(PlayerInfo playerInfo) throws Exception {
+    private static void createRandomPlayerInfo(PlayerInfo playerInfo) throws Exception {
         GameConfig gameConfig = GameConfig.getInstance();
         System.out.println("init new player info: " + playerInfo.getId());
 
-        InitGameConfig initGameConfig = gameConfig.initGameConfig;
 
-        playerInfo.setGold(initGameConfig.player.gold);
-        playerInfo.setGem(initGameConfig.player.coin);
-        playerInfo.setElixir(initGameConfig.player.elixir);
+        playerInfo.setGold(new Random().nextInt(50000)+1);
+        playerInfo.setGem(new Random().nextInt(50000)+1);
+        playerInfo.setElixir(new Random().nextInt(50000)+1);
+        playerInfo.setRank(new Random().nextInt(5000)+1);
+        Random random = new Random();
 
-        List buildings = new ArrayList<Building>();
-        int id = 1;
+        ArrayList<Building> buildings = new ArrayList<>();
+        int[][] map = new int[40][40];
 
-        for (Map.Entry<String, InitGameConfig.MapElement> entry : initGameConfig.map.entrySet()) {
-            Random random = new Random();
-            boolean isCreate = random.nextBoolean();
-            if (isCreate || entry.getKey().startsWith("TOW")) {
-                String type = entry.getKey();
-                InitGameConfig.MapElement data = entry.getValue();
-                Building building = BuildingFactory.getBuilding(id, type, 1, new Point(data.posX - 1, data.posY - 1));
-                buildings.add(building);
+        String[] buildingType = {"AMC_1", "BAR_1", "DEF_1", "DEF_2", "DEF_3", "STO_1", "STO_2", "RES_1", "RES_2"};
+        int typeCount = buildingType.length;
+
+        int wallStartX = random.nextInt(5)+5;
+        int wallStartY = random.nextInt(5)+5;
+        int wallEndX = random.nextInt(20) + 20;
+        int wallEndY = random.nextInt(20) + 20;
+        int margin = random.nextInt(2)+3;
+
+        Building building = BuildingFactory.getBuilding(1, "TOW_1", random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
+                new Point(random.nextInt(wallEndX-wallStartX-3)+wallStartX, random.nextInt(wallEndY-wallStartY-3)+wallStartY ));
+        buildings.add(building);
+        BaseBuildingConfig tow = gameConfig.getBuildingConfig("TOW_1", building.getLevel());
+        fillArrayByNewValue(map, building.getPosition().x, building.getPosition().y, tow.width, tow.height,1);
+
+        int id = 2;
+
+        for (int i = wallStartX+margin; i <= wallEndX - margin; i++) {
+            for (int j = wallStartY + margin; j <= wallEndY -margin; j++) {
+                if(random.nextBoolean())
+               {
+                    String type = buildingType[random.nextInt(typeCount)];
+                    Building building1 = BuildingFactory.getBuilding(id, type, random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
+                            new Point(i, j));
+                    BaseBuildingConfig buildingConfig = gameConfig.getBuildingConfig(building1.getType(), building1.getLevel());
+                    if(checkFill(map,building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height)
+                            && i + buildingConfig.height < 40 && j+ buildingConfig.width < 40){
+                        fillArrayByNewValue(map, building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height, building1.getId());
+                        buildings.add(building1);
+                        id++;
+                    }
+                }
+            }
+        }
+
+        // init wall
+        for (int i = wallStartX; i <= wallEndX; i++) {
+            Building building1 = BuildingFactory.getBuilding(id, "WAL_1", random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
+                    new Point(i, wallStartY));
+            BaseBuildingConfig buildingConfig = gameConfig.getBuildingConfig(building1.getType(), building1.getLevel());
+            if(checkFill(map,building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height)
+                    && i + buildingConfig.height < 40 && wallStartY+ buildingConfig.width < 40){
+                fillArrayByNewValue(map, building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height, building1.getId());
+                buildings.add(building1);
+                id++;
+            }
+        }
+        for (int i = wallStartX; i <= wallEndX; i++) {
+            Building building1 = BuildingFactory.getBuilding(id, "WAL_1", random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
+                    new Point(i, wallEndY));
+            BaseBuildingConfig buildingConfig = gameConfig.getBuildingConfig(building1.getType(), building1.getLevel());
+            if(checkFill(map,building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height)
+                    && i + buildingConfig.height < 40 && wallEndY+ buildingConfig.width < 40){
+                fillArrayByNewValue(map, building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height, building1.getId());
+                buildings.add(building1);
+                id++;
+            }
+        }
+        for (int i = wallStartY; i <= wallEndY; i++) {
+            Building building1 = BuildingFactory.getBuilding(id, "WAL_1", random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
+                    new Point(wallStartX, i));
+            BaseBuildingConfig buildingConfig = gameConfig.getBuildingConfig(building1.getType(), building1.getLevel());
+            if(checkFill(map,building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height)
+                    && wallStartX + buildingConfig.height < 40 && i+ buildingConfig.width < 40){
+                fillArrayByNewValue(map, building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height, building1.getId());
+                buildings.add(building1);
+                id++;
+            }
+        }
+        for (int i = wallStartY; i <= wallEndY; i++) {
+            Building building1 = BuildingFactory.getBuilding(id, "WAL_1", random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
+                    new Point(wallEndX, i));
+            BaseBuildingConfig buildingConfig = gameConfig.getBuildingConfig(building1.getType(), building1.getLevel());
+            if(checkFill(map,building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height)
+                    && wallEndX + buildingConfig.height < 40 && i+ buildingConfig.width < 40){
+                fillArrayByNewValue(map, building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height, building1.getId());
+                buildings.add(building1);
                 id++;
             }
         }
 
-        for (Map.Entry<Integer, InitGameConfig.ObsElement> entry : initGameConfig.obs.entrySet()) {
-            Random random = new Random();
-            boolean isCreate = random.nextBoolean();
-            if (isCreate) {
-                InitGameConfig.ObsElement data = entry.getValue();
-                Building building = BuildingFactory.getBuilding(id, data.type, 1, new Point(data.posX - 1, data.posY - 1));
-                buildings.add(building);
-                id++;
+        for (int i = 0; i < 40; i++) {
+            for (int j = 0; j < 40; j++) {
+                if(random.nextBoolean() && map[i][j] == 0) {
+                    Building building1 = BuildingFactory.getBuilding(id, "OBS_" + (random.nextInt(10)+1),  1,
+                            new Point(i, j));
+                    BaseBuildingConfig buildingConfig = gameConfig.getBuildingConfig(building1.getType(), building1.getLevel());
+                    if(checkFill(map,building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height)
+                            && i + buildingConfig.height < 40 && j+ buildingConfig.width < 40){
+                        fillArrayByNewValue(map, building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height, building1.getId());
+                        buildings.add(building1);
+                        id++;
+                    }
+                }
             }
         }
 
-        playerInfo.setListBuildings((ArrayList<Building>) buildings);
+
+
+        playerInfo.setListBuildings( buildings);
     }
+    private static void fillArrayByNewValue(int[][] array, int xStart, int yStart, int width, int height, int newValue) {
+        for (int i = xStart; i < xStart + height && i < array.length; i++) {
+            for (int j = yStart; j < yStart + width && j < array[i].length; j++) {
+                array[i][j] = newValue;
+            }
+        }
+    }
+
+    private static boolean checkFill(int[][] array, int xStart, int yStart, int width, int height) {
+        try {
+        for (int i = xStart; i < xStart + height && i < array.length; i++) {
+            for (int j = yStart; j < yStart + width && j < array[i].length; j++) {
+                if(array[i][j] != 0) return false;
+            }
+        }
+        return true;
+        }
+        catch (Exception e) {
+            return  false;
+        }
+    }
+
+
 }

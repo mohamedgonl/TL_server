@@ -16,6 +16,7 @@ public class GameConfig {
     private static GameConfig instance;
 
     public InitGameConfig initGameConfig;
+    public InitGameConfig fakeInitGameConfig;
 
     public Map<String, Map<Integer, BaseBuildingConfig>> buildingConfig;
 
@@ -41,6 +42,9 @@ public class GameConfig {
         try {
             FileReader reader = new FileReader("./conf/InitGame.json");
             initGameConfig = gson.fromJson(reader, InitGameConfig.class);
+
+            reader = new FileReader("./conf/fakers/FakeUserData.json");
+            fakeInitGameConfig = gson.fromJson(reader, InitGameConfig.class);
 
             //building config
             buildingConfig = new HashMap<>();
