@@ -36,6 +36,7 @@ import util.config.TroopConfig;
 import util.server.ServerConstant;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TroopHandler extends BaseClientRequestHandler {
     public static short TROOP_MULTI_IDS = 5000;
@@ -95,6 +96,11 @@ public class TroopHandler extends BaseClientRequestHandler {
 
             if(currentBarrack == null) {
                 send(new ResponseTrainingCreate(ErrorConst.BARRACK_NOT_FOUND), user);
+                return;
+            }
+
+            if(!Arrays.asList(ServerConstant.LIST_TROOPS).contains(reqInfo.getTroopCfgId())) {
+                send(new ResponseTrainingCreate(ErrorConst.TROOP_NOT_AVAILABLE), user);
                 return;
             }
 

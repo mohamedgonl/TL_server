@@ -33,11 +33,13 @@ public class ErrorConst {
     public static final short NOT_ENOUGH_DONE_TRAIN_NOW_COST = 54;
     public static final short BARRACK_TRAIN_NOT_DONE = 55;
 
-    public static final short BARRACK_TRAIN_LIST_EMPTY = 56;
 
     public static final short ARMY_MAX_SPACE = 56;
 
+
     public static final short TROOP_NOT_FOUND = 57;
+    public static final short BARRACK_TRAIN_LIST_EMPTY = 58;
+    public static final short TROOP_NOT_AVAILABLE = 59;
 
     public static final short CANT_GET_MATCH = 61;
 

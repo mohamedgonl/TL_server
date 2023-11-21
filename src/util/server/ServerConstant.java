@@ -14,6 +14,8 @@ public class ServerConstant {
     public static final int CREATE_FAKE_ACCOUNTS = 987654321;
     public static final int TRAIN_TIME_RATE = 10;
 
+    public static final String[] LIST_TROOPS = {"ARM_1", "ARM_2", "ARM_3", "ARM_4", "ARM_6"};
+
     public static final boolean IS_CHEAT = (ConfigHandle.instance().getLong("isCheat") == 1);
     //public static final boolean IS_USE_SECOND_DATACONTROLLER = (ConfigHandle.instance().getLong("useSecondDataController") == 1);
     public static final boolean IS_PURCHASE = (ConfigHandle.instance().getLong("isPurchase") == 1);
