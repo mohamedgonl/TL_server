@@ -16,6 +16,7 @@ public class GameConfig {
     private static GameConfig instance;
 
     public InitGameConfig initGameConfig;
+    public InitGameConfig fakeInitGameConfig;
 
     public Map<String, Map<Integer, BaseBuildingConfig>> buildingConfig;
 

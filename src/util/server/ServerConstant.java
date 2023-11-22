@@ -13,6 +13,7 @@ public class ServerConstant {
 
     public static final int CREATE_FAKE_ACCOUNTS = 987654321;
     public static final int TRAIN_TIME_RATE = 10;
+    public static final int MAX_FAKE_BUILDING_LEVEL = 5;
 
     public static final String[] LIST_TROOPS = {"ARM_1", "ARM_2", "ARM_3", "ARM_4", "ARM_6"};
 
