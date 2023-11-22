@@ -48,7 +48,7 @@ public class BattleBuilding extends BattleGameObject {
             //for in list troop, if troop attack type wall, remove from list troop attack
             for (BattleTroop battleTroop : listTroop) {
                 if (!battleTroop.isAlive()) continue;
-                if (battleTroop.target.type.startsWith("WAL")) {
+                if (battleTroop.target != null && battleTroop.target.type.startsWith("WAL")) {
                     battleTroop.refindTarget();
                 }
             }
@@ -57,7 +57,7 @@ public class BattleBuilding extends BattleGameObject {
         LogUtils.writeLog("building " + this.id + " destroyed");
     }
 
-    public ArrayList<Point> getCorners(){
+    public ArrayList<Point> getCorners() {
         ArrayList<Point> corners = new ArrayList<>();
         corners.add(new Point(posX, posY));
         corners.add(new Point(posX + width, posY));
@@ -66,7 +66,7 @@ public class BattleBuilding extends BattleGameObject {
         return corners;
     }
 
-    public Point getGridPosition(){
+    public Point getGridPosition() {
         return new Point(posX, posY);
     }
 
