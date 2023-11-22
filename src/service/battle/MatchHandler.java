@@ -214,6 +214,7 @@ public class MatchHandler {
                 BattleAction lastAction = match.getActionsList().get(match.getActionsList().size() - 1);
                 if (lastAction.type != BattleConst.ACTION_END) {
                     match.getActionsList().add(new BattleAction(BattleConst.ACTION_END, lastAction.tick + 1));
+                    match.sync();
                 }
                 userInfo.addResources(match.getGoldGot(), match.getElixirGot(), 0);
                 match.state = BattleConst.MATCH_ENDED;
@@ -268,7 +269,7 @@ public class MatchHandler {
     }
 
     public static void handleDisconnect(User user) {
-
+        handleGameEndSync(user);
     }
 
 }
