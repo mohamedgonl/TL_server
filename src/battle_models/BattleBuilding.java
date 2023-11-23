@@ -3,6 +3,7 @@ package battle_models;
 import util.GameConfig;
 import util.config.BaseBuildingConfig;
 import util.log.LogUtils;
+import util.server.RandomUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -64,6 +65,111 @@ public class BattleBuilding extends BattleGameObject {
         corners.add(new Point(posX, posY + height));
         corners.add(new Point(posX + width, posY + height));
         return corners;
+    }
+    public Point getNearestPoint(int x, int y){
+        int xStart = this.posX;
+        int yStart = this.posY;
+        int xEnd = xStart + this.width;
+        int yEnd = yStart + this.height;
+        int xMid = xStart + this.width/2;
+        int yMid = yStart + this.height/2;
+        //xStart + yStart+" to string
+
+        int choose = (int) RandomUtils.generateRandomBySeed(0, 1, xStart + yStart+"" + "", true);
+        //if nearest point is one of 4 corners, else return random near point on edge
+        if (x <= xStart) {
+
+            if (y <= yStart) {
+                if (choose == 0) {
+                    return new Point(
+                            xStart,
+                            (int) RandomUtils.generateRandomBySeed(yStart, yMid, xStart + yStart+"", true)
+                    );
+                } else {
+                    return new Point(
+                            (int) RandomUtils.generateRandomBySeed(xStart, xMid, xStart + yStart+"", true),
+                            yStart
+                    );
+                }
+            }
+
+            else if (y >= yEnd) {
+                if (choose == 0) {
+                    return new Point(
+                            xStart,
+                            (int) RandomUtils.generateRandomBySeed(yMid, yEnd, xStart + yStart+"", true)
+                    );
+                } else {
+                    return new Point(
+                            (int) RandomUtils.generateRandomBySeed(xStart, xMid, xStart + yStart+"", true),
+                            yEnd
+                    );
+                }
+            }
+
+            else {
+                return new Point(
+                        xStart,
+                        (int) RandomUtils.generateRandomBySeed(yStart, yEnd, xStart + yStart+"", true)
+                );
+            }
+        }
+
+        else if (x >= xEnd) {
+            if (y <= yStart) {
+                if (choose == 0) {
+                    return new Point(
+                            xEnd,
+                            (int) RandomUtils.generateRandomBySeed(yStart, yMid, xStart + yStart+"", true)
+                    );
+                } else {
+                    return new Point(
+                            (int) RandomUtils.generateRandomBySeed(xMid, xEnd, xStart + yStart+"", true),
+                            yStart
+                    );
+                }
+            }
+
+            else if (y >= yEnd) {
+                if (choose == 0) {
+                    return new Point(
+                            xEnd,
+                            (int) RandomUtils.generateRandomBySeed(yMid, yEnd, xStart + yStart+"", true)
+                    );
+                } else {
+                    return new Point(
+                            (int) RandomUtils.generateRandomBySeed(xMid, xEnd, xStart + yStart+"", true),
+                            yEnd
+                    );
+                }
+            }
+
+            else {
+                return new Point(
+                        xEnd,
+                        (int) RandomUtils.generateRandomBySeed(yStart, yEnd, xStart + yStart+"", true)
+                );
+            }
+        }
+
+        else {
+
+            if (y <= yStart) {
+                return new Point(
+                        (int) RandomUtils.generateRandomBySeed(xStart, xEnd, xStart + yStart+"", true),
+                        yStart);
+            }
+
+            else if (y >= yEnd) {
+                return new Point(
+                        (int) RandomUtils.generateRandomBySeed(xStart, xEnd, xStart + yStart+"", true),
+                        yEnd);
+            }
+
+            else {
+                return new Point(x, y);
+            }
+        }
     }
 
     public Point getGridPosition() {
