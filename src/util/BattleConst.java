@@ -28,7 +28,7 @@ public class BattleConst {
     public static int TICK_PER_SECOND = 60;
     public static int MAX_TICK_PER_GAME = (COUNT_DOWN_TIME + MAX_TIME_A_MATCH) * TICK_PER_SECOND;
     public static int RANK_DIST = 500;
-    public static int[][] TIME_GET_MATCH = {{2, 50}, {5, 100}, {10, 200}};
+    public static int[][] TIME_GET_MATCH = {{1, 50}, {2, 100}, {5, 200}};
     public static String LOG_URL = "logs/sync/";
     public static double TROOP_SPEED_RATIO = 0.1;
     public static Map<String, Integer> BULLET_GRID_SPEED = new HashMap<String, Integer>() {{

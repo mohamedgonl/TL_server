@@ -3,11 +3,7 @@ package service.battle;
 import battle_models.BattleAction;
 import battle_models.BattleGameObject;
 import battle_models.BattleMatch;
-import bitzero.server.core.BZEventParam;
-import bitzero.server.core.BZEventType;
-import bitzero.server.core.IBZEvent;
 import bitzero.server.entities.User;
-import bitzero.server.extensions.BaseClientRequestHandler;
 import cmd.ErrorConst;
 import cmd.receive.battle.RequestEndGame;
 import cmd.receive.battle.RequestGetMatch;
@@ -21,7 +17,6 @@ import model.ListPlayerData;
 import model.PlayerInfo;
 import util.BattleConst;
 import util.Common;
-import util.GameConfig;
 import util.server.CustomException;
 import util.server.ServerConstant;
 
@@ -231,32 +226,38 @@ public class MatchHandler {
             if (match != null) {
                 if(match.getActionsList().isEmpty()) return;
                 BattleAction lastAction = match.getActionsList().get(match.getActionsList().size() - 1);
+                // if user disconnect => auto add action end in the lastest tick and start sync
                 if (lastAction.type != BattleConst.ACTION_END) {
                     match.getActionsList().add(new BattleAction(BattleConst.ACTION_END, BattleConst.MAX_TICK_PER_GAME-1));
                     match.sync();
                 }
-                userInfo.addResources(match.getGoldGot(), match.getElixirGot(), 0);
-                match.state = BattleConst.MATCH_ENDED;
-                userInfo.removeTroop(match.usedArmy);
+                // if the match not saved and update data to user
+                if(!match.isSaved()) {
+                    userInfo.addResources(match.getGoldGot(), match.getElixirGot(), 0);
+                    match.state = BattleConst.MATCH_ENDED;
+                    userInfo.removeTroop(match.usedArmy);
 
-                ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
-                listUserData.updateUser(match.enemyId, false);
+                    ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
+                    listUserData.updateUser(match.enemyId, false);
 
-                // update enemy rank and resource
-                PlayerInfo enemyInfo = (PlayerInfo) PlayerInfo.getModel(match.enemyId, PlayerInfo.class);
-                int oldEnemyRank = enemyInfo.getRank();
-                int newEnemyRank = enemyInfo.getRank() + match.trophy;
-                enemyInfo.setRank(newEnemyRank);
-                enemyInfo.useResources(match.getGoldGot(), match.getElixirGot(), 0);
+                    // update enemy rank and resource
+                    PlayerInfo enemyInfo = (PlayerInfo) PlayerInfo.getModel(match.enemyId, PlayerInfo.class);
+                    int oldEnemyRank = enemyInfo.getRank();
+                    int newEnemyRank = enemyInfo.getRank() - match.trophy;
+                    enemyInfo.setRank(newEnemyRank);
+                    enemyInfo.useResources(match.getGoldGot(), match.getElixirGot(), 0);
 
-                listUserData.updateSegmentRank(userInfo.getId(), userInfo.getRank(), userInfo.getRank() + match.trophy);
-                userInfo.setRank(Math.max(userInfo.getRank() + match.trophy, 0));
-                listUserData.updateSegmentRank(match.enemyId, oldEnemyRank, newEnemyRank);
-                listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
+                    listUserData.updateSegmentRank(userInfo.getId(), userInfo.getRank(), userInfo.getRank() + match.trophy);
+                    userInfo.setRank(Math.max(userInfo.getRank() + match.trophy, 0));
+                    listUserData.updateSegmentRank(match.enemyId, oldEnemyRank, newEnemyRank);
+                    listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
+                    match.setSaved(true);
 
-                userInfo.pushNewMatch(match);
-                enemyInfo.saveModel(enemyInfo.getId());
-                userInfo.saveModel(user.getId());
+                    userInfo.pushNewMatch(match);
+                    enemyInfo.saveModel(enemyInfo.getId());
+                    userInfo.saveModel(user.getId());
+
+                }
             } else {
                 throw new CustomException(ErrorConst.NO_MATCH_FOUND);
             }

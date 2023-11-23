@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BattleMatch extends DataModel {
+
+    private boolean isSaved = false;
     private final ArrayList<BattleAction> actionsList = new ArrayList<>();
     private final transient int[][] battleMap = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
 
@@ -585,4 +587,11 @@ public class BattleMatch extends DataModel {
     }
 
 
+    public boolean isSaved() {
+        return this.isSaved;
+    }
+
+    public void setSaved(boolean isSynced) {
+        this.isSaved = isSynced;
+    }
 }
