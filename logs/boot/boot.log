@@ -1,0 +1,651 @@
+23 Nov 2023 08:48:03,839 INFO  [main] bootLogger     - BitZeroServer alpha
+23 Nov 2023 08:48:03,843 INFO  [main] bootLogger     - BitZeroEngine version: alpha{ main }
+23 Nov 2023 08:48:03,844 INFO  [main] bootLogger     - System Info:
+	Processor(s): 8
+	VM Max. memory: 5288MB
+	os.name: Windows 10
+	os.arch: amd64
+	os.version: 10.0
+	java.version: 1.8.0_392
+	java.vendor: IBM Corporation
+	java.vendor.url: https://www.ibm.com/semeru-runtimes
+	java.vm.specification.version: 1.8
+	java.vm.version: v0.41.0-release-87d042a68
+	java.vm.vendor: Eclipse OpenJ9
+	java.vm.name: Eclipse OpenJ9 VM
+	java.io.tmpdir: C:\Users\Quyt\AppData\Local\Temp\
+	Default charset: UTF-8
+
+23 Nov 2023 08:48:03,984 INFO  [main] bootLogger     - Network Info:
+	Card: Software Loopback Interface 1
+		 ->127.0.0.1
+		 ->0:0:0:0:0:0:0:1
+	Card: Microsoft 6to4 Adapter
+	Card: WAN Miniport (SSTP)
+	Card: WAN Miniport (IPv6)
+	Card: Microsoft IP-HTTPS Platform Adapter
+	Card: WAN Miniport (Network Monitor)
+	Card: Microsoft Wi-Fi Direct Virtual Adapter
+		 ->fe80:0:0:0:3764:4bb0:f8d:8d28%wlan0
+	Card: Intel(R) Wireless-AC 9461
+		 ->10.134.121.205
+		 ->fe80:0:0:0:5b0a:2e47:5649:e620%wlan1
+	Card: WAN Miniport (PPPOE)
+	Card: Microsoft Kernel Debug Network Adapter
+	Card: WAN Miniport (IKEv2)
+	Card: Microsoft Teredo Tunneling Adapter
+	Card: WAN Miniport (L2TP)
+	Card: Bluetooth Device (Personal Area Network)
+		 ->fe80:0:0:0:2934:34e6:5bee:15e8%eth3
+	Card: RAS Async Adapter
+	Card: WAN Miniport (PPTP)
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2
+		 ->fe80:0:0:0:6fdd:92ff:1231:c763%wlan2
+	Card: WAN Miniport (IP)
+	Card: Intel(R) Wireless-AC 9461-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Intel(R) Wireless-AC 9461-Virtual WiFi Filter Driver-0000
+	Card: Intel(R) Wireless-AC 9461-Native WiFi Filter Driver-0000
+	Card: Intel(R) Wireless-AC 9461-QoS Packet Scheduler-0000
+	Card: Intel(R) Wireless-AC 9461-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-Native WiFi Filter Driver-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IP)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IP)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IPv6)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IPv6)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (Network Monitor)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (Network Monitor)-QoS Packet Scheduler-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-Native WiFi Filter Driver-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-QoS Packet Scheduler-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-WFP 802.3 MAC Layer LightWeight Filter-0000
+
+23 Nov 2023 08:48:03,990 INFO  [main] bootLogger     - Session manager ready: bitzero.engine.sessions.DefaultSessionManager@3822fdad
+23 Nov 2023 08:48:04,170 INFO  [main] bootLogger     - TCP Selector opened
+23 Nov 2023 08:48:04,183 INFO  [main] bootLogger     - AcceptSelector opened
+23 Nov 2023 08:48:04,187 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1101
+23 Nov 2023 08:48:04,239 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1102
+23 Nov 2023 08:48:04,240 INFO  [Scheduler1-thread-1] bootLogger     - Scheduler started: scheduler
+23 Nov 2023 08:48:04,243 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.SystemController -- Queue: 0/20000
+23 Nov 2023 08:48:04,244 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.ExtensionController -- Queue: 0/20000
+23 Nov 2023 08:48:04,245 INFO  [main] bootLogger     - EngineAcceptor initialized
+23 Nov 2023 08:48:04,246 INFO  [main] bootLogger     - Socket Writer started (pool size:4)
+23 Nov 2023 08:48:04,249 INFO  [main] bootLogger     - Security Manager started
+23 Nov 2023 08:48:04,253 INFO  [main] bootLogger     - IOHandler: null
+23 Nov 2023 08:48:04,253 INFO  [main] bootLogger     - EngineReader started
+23 Nov 2023 08:48:04,253 INFO  [main] bootLogger     - [[[ ===--- Boot sequence complete ---=== ]]]
+23 Nov 2023 10:58:42,845 INFO  [main] bootLogger     - BitZeroServer alpha
+23 Nov 2023 10:58:42,848 INFO  [main] bootLogger     - BitZeroEngine version: alpha{ main }
+23 Nov 2023 10:58:42,850 INFO  [main] bootLogger     - System Info:
+	Processor(s): 8
+	VM Max. memory: 5288MB
+	os.name: Windows 10
+	os.arch: amd64
+	os.version: 10.0
+	java.version: 1.8.0_392
+	java.vendor: IBM Corporation
+	java.vendor.url: https://www.ibm.com/semeru-runtimes
+	java.vm.specification.version: 1.8
+	java.vm.version: v0.41.0-release-87d042a68
+	java.vm.vendor: Eclipse OpenJ9
+	java.vm.name: Eclipse OpenJ9 VM
+	java.io.tmpdir: C:\Users\Quyt\AppData\Local\Temp\
+	Default charset: UTF-8
+
+23 Nov 2023 10:58:43,038 INFO  [main] bootLogger     - Network Info:
+	Card: Software Loopback Interface 1
+		 ->127.0.0.1
+		 ->0:0:0:0:0:0:0:1
+	Card: Microsoft 6to4 Adapter
+	Card: WAN Miniport (SSTP)
+	Card: WAN Miniport (IPv6)
+	Card: Microsoft IP-HTTPS Platform Adapter
+	Card: WAN Miniport (Network Monitor)
+	Card: Microsoft Wi-Fi Direct Virtual Adapter
+		 ->fe80:0:0:0:3764:4bb0:f8d:8d28%wlan0
+	Card: Intel(R) Wireless-AC 9461
+		 ->192.168.110.129
+		 ->fe80:0:0:0:5b0a:2e47:5649:e620%wlan1
+	Card: WAN Miniport (PPPOE)
+	Card: Microsoft Kernel Debug Network Adapter
+	Card: WAN Miniport (IKEv2)
+	Card: Microsoft Teredo Tunneling Adapter
+	Card: WAN Miniport (L2TP)
+	Card: Bluetooth Device (Personal Area Network)
+		 ->fe80:0:0:0:2934:34e6:5bee:15e8%eth3
+	Card: RAS Async Adapter
+	Card: WAN Miniport (PPTP)
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2
+		 ->fe80:0:0:0:6fdd:92ff:1231:c763%wlan2
+	Card: WAN Miniport (IP)
+	Card: Intel(R) Wireless-AC 9461-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Intel(R) Wireless-AC 9461-Virtual WiFi Filter Driver-0000
+	Card: Intel(R) Wireless-AC 9461-Native WiFi Filter Driver-0000
+	Card: Intel(R) Wireless-AC 9461-QoS Packet Scheduler-0000
+	Card: Intel(R) Wireless-AC 9461-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-Native WiFi Filter Driver-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IP)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IP)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IPv6)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IPv6)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (Network Monitor)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (Network Monitor)-QoS Packet Scheduler-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-Native WiFi Filter Driver-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-QoS Packet Scheduler-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-WFP 802.3 MAC Layer LightWeight Filter-0000
+
+23 Nov 2023 10:58:43,051 INFO  [main] bootLogger     - Session manager ready: bitzero.engine.sessions.DefaultSessionManager@5753a1a8
+23 Nov 2023 10:58:43,362 INFO  [main] bootLogger     - TCP Selector opened
+23 Nov 2023 10:58:43,388 INFO  [main] bootLogger     - AcceptSelector opened
+23 Nov 2023 10:58:43,393 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1101
+23 Nov 2023 10:58:43,497 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1102
+23 Nov 2023 10:58:43,506 INFO  [Scheduler1-thread-1] bootLogger     - Scheduler started: scheduler
+23 Nov 2023 10:58:43,510 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.SystemController -- Queue: 0/20000
+23 Nov 2023 10:58:43,517 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.ExtensionController -- Queue: 0/20000
+23 Nov 2023 10:58:43,519 INFO  [main] bootLogger     - EngineAcceptor initialized
+23 Nov 2023 10:58:43,520 INFO  [main] bootLogger     - Socket Writer started (pool size:4)
+23 Nov 2023 10:58:43,527 INFO  [main] bootLogger     - Security Manager started
+23 Nov 2023 10:58:43,531 INFO  [main] bootLogger     - IOHandler: null
+23 Nov 2023 10:58:43,532 INFO  [main] bootLogger     - EngineReader started
+23 Nov 2023 10:58:43,532 INFO  [main] bootLogger     - [[[ ===--- Boot sequence complete ---=== ]]]
+23 Nov 2023 11:36:34,532 INFO  [main] bootLogger     - BitZeroServer alpha
+23 Nov 2023 11:36:34,534 INFO  [main] bootLogger     - BitZeroEngine version: alpha{ main }
+23 Nov 2023 11:36:34,535 INFO  [main] bootLogger     - System Info:
+	Processor(s): 8
+	VM Max. memory: 5288MB
+	os.name: Windows 10
+	os.arch: amd64
+	os.version: 10.0
+	java.version: 1.8.0_392
+	java.vendor: IBM Corporation
+	java.vendor.url: https://www.ibm.com/semeru-runtimes
+	java.vm.specification.version: 1.8
+	java.vm.version: v0.41.0-release-87d042a68
+	java.vm.vendor: Eclipse OpenJ9
+	java.vm.name: Eclipse OpenJ9 VM
+	java.io.tmpdir: C:\Users\Quyt\AppData\Local\Temp\
+	Default charset: UTF-8
+
+23 Nov 2023 11:36:34,689 INFO  [main] bootLogger     - Network Info:
+	Card: Software Loopback Interface 1
+		 ->127.0.0.1
+		 ->0:0:0:0:0:0:0:1
+	Card: Microsoft 6to4 Adapter
+	Card: WAN Miniport (SSTP)
+	Card: WAN Miniport (IPv6)
+	Card: Microsoft IP-HTTPS Platform Adapter
+	Card: WAN Miniport (Network Monitor)
+	Card: Microsoft Wi-Fi Direct Virtual Adapter
+		 ->fe80:0:0:0:3764:4bb0:f8d:8d28%wlan0
+	Card: Intel(R) Wireless-AC 9461
+		 ->192.168.110.129
+		 ->fe80:0:0:0:5b0a:2e47:5649:e620%wlan1
+	Card: WAN Miniport (PPPOE)
+	Card: Microsoft Kernel Debug Network Adapter
+	Card: WAN Miniport (IKEv2)
+	Card: Microsoft Teredo Tunneling Adapter
+	Card: WAN Miniport (L2TP)
+	Card: Bluetooth Device (Personal Area Network)
+		 ->fe80:0:0:0:2934:34e6:5bee:15e8%eth3
+	Card: RAS Async Adapter
+	Card: WAN Miniport (PPTP)
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2
+		 ->fe80:0:0:0:6fdd:92ff:1231:c763%wlan2
+	Card: WAN Miniport (IP)
+	Card: Intel(R) Wireless-AC 9461-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Intel(R) Wireless-AC 9461-Virtual WiFi Filter Driver-0000
+	Card: Intel(R) Wireless-AC 9461-Native WiFi Filter Driver-0000
+	Card: Intel(R) Wireless-AC 9461-QoS Packet Scheduler-0000
+	Card: Intel(R) Wireless-AC 9461-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-Native WiFi Filter Driver-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IP)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IP)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IPv6)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IPv6)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (Network Monitor)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (Network Monitor)-QoS Packet Scheduler-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-Native WiFi Filter Driver-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-QoS Packet Scheduler-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-WFP 802.3 MAC Layer LightWeight Filter-0000
+
+23 Nov 2023 11:36:34,695 INFO  [main] bootLogger     - Session manager ready: bitzero.engine.sessions.DefaultSessionManager@c22ffb96
+23 Nov 2023 11:36:34,899 INFO  [main] bootLogger     - TCP Selector opened
+23 Nov 2023 11:36:34,916 INFO  [main] bootLogger     - AcceptSelector opened
+23 Nov 2023 11:36:34,921 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1101
+23 Nov 2023 11:36:35,011 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1102
+23 Nov 2023 11:36:35,015 INFO  [Scheduler1-thread-1] bootLogger     - Scheduler started: scheduler
+23 Nov 2023 11:36:35,016 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.SystemController -- Queue: 0/20000
+23 Nov 2023 11:36:35,022 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.ExtensionController -- Queue: 0/20000
+23 Nov 2023 11:36:35,023 INFO  [main] bootLogger     - EngineAcceptor initialized
+23 Nov 2023 11:36:35,025 INFO  [main] bootLogger     - Socket Writer started (pool size:4)
+23 Nov 2023 11:36:35,029 INFO  [main] bootLogger     - Security Manager started
+23 Nov 2023 11:36:35,033 INFO  [main] bootLogger     - IOHandler: null
+23 Nov 2023 11:36:35,034 INFO  [main] bootLogger     - EngineReader started
+23 Nov 2023 11:36:35,035 INFO  [main] bootLogger     - [[[ ===--- Boot sequence complete ---=== ]]]
+23 Nov 2023 11:37:33,173 INFO  [main] bootLogger     - BitZeroServer alpha
+23 Nov 2023 11:37:33,176 INFO  [main] bootLogger     - BitZeroEngine version: alpha{ main }
+23 Nov 2023 11:37:33,177 INFO  [main] bootLogger     - System Info:
+	Processor(s): 8
+	VM Max. memory: 5288MB
+	os.name: Windows 10
+	os.arch: amd64
+	os.version: 10.0
+	java.version: 1.8.0_392
+	java.vendor: IBM Corporation
+	java.vendor.url: https://www.ibm.com/semeru-runtimes
+	java.vm.specification.version: 1.8
+	java.vm.version: v0.41.0-release-87d042a68
+	java.vm.vendor: Eclipse OpenJ9
+	java.vm.name: Eclipse OpenJ9 VM
+	java.io.tmpdir: C:\Users\Quyt\AppData\Local\Temp\
+	Default charset: UTF-8
+
+23 Nov 2023 11:37:33,355 INFO  [main] bootLogger     - Network Info:
+	Card: Software Loopback Interface 1
+		 ->127.0.0.1
+		 ->0:0:0:0:0:0:0:1
+	Card: Microsoft 6to4 Adapter
+	Card: WAN Miniport (SSTP)
+	Card: WAN Miniport (IPv6)
+	Card: Microsoft IP-HTTPS Platform Adapter
+	Card: WAN Miniport (Network Monitor)
+	Card: Microsoft Wi-Fi Direct Virtual Adapter
+		 ->fe80:0:0:0:3764:4bb0:f8d:8d28%wlan0
+	Card: Intel(R) Wireless-AC 9461
+		 ->192.168.110.129
+		 ->fe80:0:0:0:5b0a:2e47:5649:e620%wlan1
+	Card: WAN Miniport (PPPOE)
+	Card: Microsoft Kernel Debug Network Adapter
+	Card: WAN Miniport (IKEv2)
+	Card: Microsoft Teredo Tunneling Adapter
+	Card: WAN Miniport (L2TP)
+	Card: Bluetooth Device (Personal Area Network)
+		 ->fe80:0:0:0:2934:34e6:5bee:15e8%eth3
+	Card: RAS Async Adapter
+	Card: WAN Miniport (PPTP)
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2
+		 ->fe80:0:0:0:6fdd:92ff:1231:c763%wlan2
+	Card: WAN Miniport (IP)
+	Card: Intel(R) Wireless-AC 9461-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Intel(R) Wireless-AC 9461-Virtual WiFi Filter Driver-0000
+	Card: Intel(R) Wireless-AC 9461-Native WiFi Filter Driver-0000
+	Card: Intel(R) Wireless-AC 9461-QoS Packet Scheduler-0000
+	Card: Intel(R) Wireless-AC 9461-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-Native WiFi Filter Driver-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IP)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IP)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IPv6)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IPv6)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (Network Monitor)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (Network Monitor)-QoS Packet Scheduler-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-Native WiFi Filter Driver-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-QoS Packet Scheduler-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-WFP 802.3 MAC Layer LightWeight Filter-0000
+
+23 Nov 2023 11:37:33,364 INFO  [main] bootLogger     - Session manager ready: bitzero.engine.sessions.DefaultSessionManager@408bf7da
+23 Nov 2023 11:37:33,646 INFO  [main] bootLogger     - TCP Selector opened
+23 Nov 2023 11:37:33,663 INFO  [main] bootLogger     - AcceptSelector opened
+23 Nov 2023 11:37:33,668 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1101
+23 Nov 2023 11:37:33,762 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1102
+23 Nov 2023 11:37:33,765 INFO  [Scheduler1-thread-1] bootLogger     - Scheduler started: scheduler
+23 Nov 2023 11:37:33,766 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.SystemController -- Queue: 0/20000
+23 Nov 2023 11:37:33,769 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.ExtensionController -- Queue: 0/20000
+23 Nov 2023 11:37:33,769 INFO  [main] bootLogger     - EngineAcceptor initialized
+23 Nov 2023 11:37:33,770 INFO  [main] bootLogger     - Socket Writer started (pool size:4)
+23 Nov 2023 11:37:33,773 INFO  [main] bootLogger     - Security Manager started
+23 Nov 2023 11:37:33,776 INFO  [main] bootLogger     - IOHandler: null
+23 Nov 2023 11:37:33,776 INFO  [main] bootLogger     - EngineReader started
+23 Nov 2023 11:37:33,776 INFO  [main] bootLogger     - [[[ ===--- Boot sequence complete ---=== ]]]
+23 Nov 2023 11:52:59,819 INFO  [main] bootLogger     - BitZeroServer alpha
+23 Nov 2023 11:52:59,821 INFO  [main] bootLogger     - BitZeroEngine version: alpha{ main }
+23 Nov 2023 11:52:59,822 INFO  [main] bootLogger     - System Info:
+	Processor(s): 8
+	VM Max. memory: 5288MB
+	os.name: Windows 10
+	os.arch: amd64
+	os.version: 10.0
+	java.version: 1.8.0_392
+	java.vendor: IBM Corporation
+	java.vendor.url: https://www.ibm.com/semeru-runtimes
+	java.vm.specification.version: 1.8
+	java.vm.version: v0.41.0-release-87d042a68
+	java.vm.vendor: Eclipse OpenJ9
+	java.vm.name: Eclipse OpenJ9 VM
+	java.io.tmpdir: C:\Users\Quyt\AppData\Local\Temp\
+	Default charset: UTF-8
+
+23 Nov 2023 11:52:59,904 INFO  [main] bootLogger     - Network Info:
+	Card: Software Loopback Interface 1
+		 ->127.0.0.1
+		 ->0:0:0:0:0:0:0:1
+	Card: Microsoft 6to4 Adapter
+	Card: WAN Miniport (SSTP)
+	Card: WAN Miniport (IPv6)
+	Card: Microsoft IP-HTTPS Platform Adapter
+	Card: WAN Miniport (Network Monitor)
+	Card: Microsoft Wi-Fi Direct Virtual Adapter
+		 ->fe80:0:0:0:3764:4bb0:f8d:8d28%wlan0
+	Card: Intel(R) Wireless-AC 9461
+		 ->192.168.110.129
+		 ->fe80:0:0:0:5b0a:2e47:5649:e620%wlan1
+	Card: WAN Miniport (PPPOE)
+	Card: Microsoft Kernel Debug Network Adapter
+	Card: WAN Miniport (IKEv2)
+	Card: Microsoft Teredo Tunneling Adapter
+	Card: WAN Miniport (L2TP)
+	Card: Bluetooth Device (Personal Area Network)
+		 ->fe80:0:0:0:2934:34e6:5bee:15e8%eth3
+	Card: RAS Async Adapter
+	Card: WAN Miniport (PPTP)
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2
+		 ->fe80:0:0:0:6fdd:92ff:1231:c763%wlan2
+	Card: WAN Miniport (IP)
+	Card: Intel(R) Wireless-AC 9461-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Intel(R) Wireless-AC 9461-Virtual WiFi Filter Driver-0000
+	Card: Intel(R) Wireless-AC 9461-Native WiFi Filter Driver-0000
+	Card: Intel(R) Wireless-AC 9461-QoS Packet Scheduler-0000
+	Card: Intel(R) Wireless-AC 9461-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-Native WiFi Filter Driver-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IP)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IP)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IPv6)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IPv6)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (Network Monitor)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (Network Monitor)-QoS Packet Scheduler-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-Native WiFi Filter Driver-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-QoS Packet Scheduler-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-WFP 802.3 MAC Layer LightWeight Filter-0000
+
+23 Nov 2023 11:52:59,907 INFO  [main] bootLogger     - Session manager ready: bitzero.engine.sessions.DefaultSessionManager@4452f902
+23 Nov 2023 11:53:00,027 INFO  [main] bootLogger     - TCP Selector opened
+23 Nov 2023 11:53:00,033 INFO  [main] bootLogger     - AcceptSelector opened
+23 Nov 2023 11:53:00,035 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1101
+23 Nov 2023 11:53:00,072 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1102
+23 Nov 2023 11:53:00,073 INFO  [Scheduler1-thread-1] bootLogger     - Scheduler started: scheduler
+23 Nov 2023 11:53:00,074 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.SystemController -- Queue: 0/20000
+23 Nov 2023 11:53:00,075 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.ExtensionController -- Queue: 0/20000
+23 Nov 2023 11:53:00,076 INFO  [main] bootLogger     - EngineAcceptor initialized
+23 Nov 2023 11:53:00,076 INFO  [main] bootLogger     - Socket Writer started (pool size:4)
+23 Nov 2023 11:53:00,078 INFO  [main] bootLogger     - Security Manager started
+23 Nov 2023 11:53:00,080 INFO  [main] bootLogger     - IOHandler: null
+23 Nov 2023 11:53:00,080 INFO  [main] bootLogger     - EngineReader started
+23 Nov 2023 11:53:00,081 INFO  [main] bootLogger     - [[[ ===--- Boot sequence complete ---=== ]]]
+23 Nov 2023 15:37:58,738 INFO  [main] bootLogger     - BitZeroServer alpha
+23 Nov 2023 15:37:58,739 INFO  [main] bootLogger     - BitZeroEngine version: alpha{ main }
+23 Nov 2023 15:37:58,740 INFO  [main] bootLogger     - System Info:
+	Processor(s): 8
+	VM Max. memory: 5288MB
+	os.name: Windows 10
+	os.arch: amd64
+	os.version: 10.0
+	java.version: 1.8.0_392
+	java.vendor: IBM Corporation
+	java.vendor.url: https://www.ibm.com/semeru-runtimes
+	java.vm.specification.version: 1.8
+	java.vm.version: v0.41.0-release-87d042a68
+	java.vm.vendor: Eclipse OpenJ9
+	java.vm.name: Eclipse OpenJ9 VM
+	java.io.tmpdir: C:\Users\Quyt\AppData\Local\Temp\
+	Default charset: UTF-8
+
+23 Nov 2023 15:37:58,824 INFO  [main] bootLogger     - Network Info:
+	Card: Software Loopback Interface 1
+		 ->127.0.0.1
+		 ->0:0:0:0:0:0:0:1
+	Card: Microsoft 6to4 Adapter
+	Card: WAN Miniport (SSTP)
+	Card: WAN Miniport (IPv6)
+	Card: Microsoft IP-HTTPS Platform Adapter
+	Card: WAN Miniport (Network Monitor)
+	Card: Microsoft Wi-Fi Direct Virtual Adapter
+		 ->fe80:0:0:0:3764:4bb0:f8d:8d28%wlan0
+	Card: Intel(R) Wireless-AC 9461
+		 ->192.168.110.129
+		 ->fe80:0:0:0:5b0a:2e47:5649:e620%wlan1
+	Card: WAN Miniport (PPPOE)
+	Card: Microsoft Kernel Debug Network Adapter
+	Card: WAN Miniport (IKEv2)
+	Card: Microsoft Teredo Tunneling Adapter
+	Card: WAN Miniport (L2TP)
+	Card: Bluetooth Device (Personal Area Network)
+		 ->fe80:0:0:0:2934:34e6:5bee:15e8%eth3
+	Card: RAS Async Adapter
+	Card: WAN Miniport (PPTP)
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2
+		 ->fe80:0:0:0:6fdd:92ff:1231:c763%wlan2
+	Card: WAN Miniport (IP)
+	Card: Intel(R) Wireless-AC 9461-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Intel(R) Wireless-AC 9461-Virtual WiFi Filter Driver-0000
+	Card: Intel(R) Wireless-AC 9461-Native WiFi Filter Driver-0000
+	Card: Intel(R) Wireless-AC 9461-QoS Packet Scheduler-0000
+	Card: Intel(R) Wireless-AC 9461-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-Native WiFi Filter Driver-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IP)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IP)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IPv6)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IPv6)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (Network Monitor)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (Network Monitor)-QoS Packet Scheduler-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-Native WiFi Filter Driver-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-QoS Packet Scheduler-0000
+	Card: Microsoft Wi-Fi Direct Virtual Adapter #2-WFP 802.3 MAC Layer LightWeight Filter-0000
+
+23 Nov 2023 15:37:58,829 INFO  [main] bootLogger     - Session manager ready: bitzero.engine.sessions.DefaultSessionManager@db60461d
+23 Nov 2023 15:37:58,937 INFO  [main] bootLogger     - TCP Selector opened
+23 Nov 2023 15:37:58,940 INFO  [main] bootLogger     - AcceptSelector opened
+23 Nov 2023 15:37:58,940 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1101
+23 Nov 2023 15:37:58,971 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1102
+23 Nov 2023 15:37:58,971 INFO  [Scheduler1-thread-1] bootLogger     - Scheduler started: scheduler
+23 Nov 2023 15:37:58,971 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.SystemController -- Queue: 0/20000
+23 Nov 2023 15:37:58,971 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.ExtensionController -- Queue: 0/20000
+23 Nov 2023 15:37:58,971 INFO  [main] bootLogger     - EngineAcceptor initialized
+23 Nov 2023 15:37:58,971 INFO  [main] bootLogger     - Socket Writer started (pool size:4)
+23 Nov 2023 15:37:58,971 INFO  [main] bootLogger     - Security Manager started
+23 Nov 2023 15:37:58,971 INFO  [main] bootLogger     - IOHandler: null
+23 Nov 2023 15:37:58,971 INFO  [main] bootLogger     - EngineReader started
+23 Nov 2023 15:37:58,971 INFO  [main] bootLogger     - [[[ ===--- Boot sequence complete ---=== ]]]
+23 Nov 2023 17:35:27,995 INFO  [main] bootLogger     - BitZeroServer alpha
+23 Nov 2023 17:35:27,995 INFO  [main] bootLogger     - BitZeroEngine version: alpha{ main }
+23 Nov 2023 17:35:27,995 INFO  [main] bootLogger     - System Info:
+	Processor(s): 12
+	VM Max. memory: 3803MB
+	os.name: Windows 10
+	os.arch: amd64
+	os.version: 10.0
+	java.version: 1.8.0_251
+	java.vendor: Oracle Corporation
+	java.vendor.url: http://java.oracle.com/
+	java.vm.specification.version: 1.8
+	java.vm.version: 25.251-b08
+	java.vm.vendor: Oracle Corporation
+	java.vm.name: Java HotSpot(TM) 64-Bit Server VM
+	java.io.tmpdir: C:\Users\CPU604~1\AppData\Local\Temp\
+	Default charset: UTF-8
+
+23 Nov 2023 17:35:28,026 INFO  [main] bootLogger     - Network Info:
+	Card: Software Loopback Interface 1
+		 ->127.0.0.1
+		 ->0:0:0:0:0:0:0:1
+	Card: WAN Miniport (SSTP)
+	Card: Microsoft 6to4 Adapter
+	Card: Realtek PCIe GbE Family Controller
+		 ->172.28.62.136
+		 ->fe80:0:0:0:c6be:df01:e451:a70f%eth0
+	Card: WAN Miniport (L2TP)
+	Card: Microsoft IP-HTTPS Platform Adapter
+	Card: WAN Miniport (PPTP)
+	Card: WAN Miniport (PPPOE)
+	Card: WAN Miniport (IP)
+	Card: WAN Miniport (Network Monitor)
+	Card: WAN Miniport (IPv6)
+	Card: Microsoft Teredo Tunneling Adapter
+	Card: Microsoft Kernel Debug Network Adapter
+	Card: WAN Miniport (IKEv2)
+	Card: Realtek PCIe GbE Family Controller-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Realtek PCIe GbE Family Controller-QoS Packet Scheduler-0000
+	Card: Realtek PCIe GbE Family Controller-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IP)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IP)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IPv6)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IPv6)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (Network Monitor)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (Network Monitor)-QoS Packet Scheduler-0000
+
+23 Nov 2023 17:35:28,026 INFO  [main] bootLogger     - Session manager ready: bitzero.engine.sessions.DefaultSessionManager@6ee52dcd
+23 Nov 2023 17:35:28,089 INFO  [main] bootLogger     - TCP Selector opened
+23 Nov 2023 17:35:28,089 INFO  [main] bootLogger     - AcceptSelector opened
+23 Nov 2023 17:35:28,089 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1101
+23 Nov 2023 17:35:28,136 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1102
+23 Nov 2023 17:35:28,136 INFO  [Scheduler1-thread-1] bootLogger     - Scheduler started: scheduler
+23 Nov 2023 17:35:28,136 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.SystemController -- Queue: 0/20000
+23 Nov 2023 17:35:28,136 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.ExtensionController -- Queue: 0/20000
+23 Nov 2023 17:35:28,136 INFO  [main] bootLogger     - EngineAcceptor initialized
+23 Nov 2023 17:35:28,136 INFO  [main] bootLogger     - Socket Writer started (pool size:4)
+23 Nov 2023 17:35:28,136 INFO  [main] bootLogger     - Security Manager started
+23 Nov 2023 17:35:28,136 INFO  [main] bootLogger     - IOHandler: null
+23 Nov 2023 17:35:28,136 INFO  [main] bootLogger     - EngineReader started
+23 Nov 2023 17:35:28,145 INFO  [main] bootLogger     - [[[ ===--- Boot sequence complete ---=== ]]]
+23 Nov 2023 17:54:27,154 INFO  [main] bootLogger     - BitZeroServer alpha
+23 Nov 2023 17:54:27,155 INFO  [main] bootLogger     - BitZeroEngine version: alpha{ main }
+23 Nov 2023 17:54:27,156 INFO  [main] bootLogger     - System Info:
+	Processor(s): 12
+	VM Max. memory: 3803MB
+	os.name: Windows 10
+	os.arch: amd64
+	os.version: 10.0
+	java.version: 1.8.0_251
+	java.vendor: Oracle Corporation
+	java.vendor.url: http://java.oracle.com/
+	java.vm.specification.version: 1.8
+	java.vm.version: 25.251-b08
+	java.vm.vendor: Oracle Corporation
+	java.vm.name: Java HotSpot(TM) 64-Bit Server VM
+	java.io.tmpdir: C:\Users\CPU604~1\AppData\Local\Temp\
+	Default charset: UTF-8
+
+23 Nov 2023 17:54:27,187 INFO  [main] bootLogger     - Network Info:
+	Card: Software Loopback Interface 1
+		 ->127.0.0.1
+		 ->0:0:0:0:0:0:0:1
+	Card: WAN Miniport (SSTP)
+	Card: Microsoft 6to4 Adapter
+	Card: Realtek PCIe GbE Family Controller
+		 ->172.28.62.136
+		 ->fe80:0:0:0:c6be:df01:e451:a70f%eth0
+	Card: WAN Miniport (L2TP)
+	Card: Microsoft IP-HTTPS Platform Adapter
+	Card: WAN Miniport (PPTP)
+	Card: WAN Miniport (PPPOE)
+	Card: WAN Miniport (IP)
+	Card: WAN Miniport (Network Monitor)
+	Card: WAN Miniport (IPv6)
+	Card: Microsoft Teredo Tunneling Adapter
+	Card: Microsoft Kernel Debug Network Adapter
+	Card: WAN Miniport (IKEv2)
+	Card: Realtek PCIe GbE Family Controller-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Realtek PCIe GbE Family Controller-QoS Packet Scheduler-0000
+	Card: Realtek PCIe GbE Family Controller-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IP)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IP)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IPv6)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IPv6)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (Network Monitor)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (Network Monitor)-QoS Packet Scheduler-0000
+
+23 Nov 2023 17:54:27,190 INFO  [main] bootLogger     - Session manager ready: bitzero.engine.sessions.DefaultSessionManager@6ee52dcd
+23 Nov 2023 17:54:27,250 INFO  [main] bootLogger     - TCP Selector opened
+23 Nov 2023 17:54:27,256 INFO  [main] bootLogger     - AcceptSelector opened
+23 Nov 2023 17:54:27,258 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1101
+23 Nov 2023 17:54:27,290 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1102
+23 Nov 2023 17:54:27,292 INFO  [Scheduler1-thread-1] bootLogger     - Scheduler started: scheduler
+23 Nov 2023 17:54:27,293 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.SystemController -- Queue: 0/20000
+23 Nov 2023 17:54:27,293 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.ExtensionController -- Queue: 0/20000
+23 Nov 2023 17:54:27,293 INFO  [main] bootLogger     - EngineAcceptor initialized
+23 Nov 2023 17:54:27,294 INFO  [main] bootLogger     - Socket Writer started (pool size:4)
+23 Nov 2023 17:54:27,295 INFO  [main] bootLogger     - Security Manager started
+23 Nov 2023 17:54:27,297 INFO  [main] bootLogger     - IOHandler: null
+23 Nov 2023 17:54:27,297 INFO  [main] bootLogger     - EngineReader started
+23 Nov 2023 17:54:27,297 INFO  [main] bootLogger     - [[[ ===--- Boot sequence complete ---=== ]]]
+23 Nov 2023 19:17:00,591 INFO  [main] bootLogger     - BitZeroServer alpha
+23 Nov 2023 19:17:00,591 INFO  [main] bootLogger     - BitZeroEngine version: alpha{ main }
+23 Nov 2023 19:17:00,591 INFO  [main] bootLogger     - System Info:
+	Processor(s): 12
+	VM Max. memory: 3803MB
+	os.name: Windows 10
+	os.arch: amd64
+	os.version: 10.0
+	java.version: 1.8.0_251
+	java.vendor: Oracle Corporation
+	java.vendor.url: http://java.oracle.com/
+	java.vm.specification.version: 1.8
+	java.vm.version: 25.251-b08
+	java.vm.vendor: Oracle Corporation
+	java.vm.name: Java HotSpot(TM) 64-Bit Server VM
+	java.io.tmpdir: C:\Users\CPU604~1\AppData\Local\Temp\
+	Default charset: UTF-8
+
+23 Nov 2023 19:17:00,622 INFO  [main] bootLogger     - Network Info:
+	Card: Software Loopback Interface 1
+		 ->127.0.0.1
+		 ->0:0:0:0:0:0:0:1
+	Card: WAN Miniport (SSTP)
+	Card: Microsoft 6to4 Adapter
+	Card: Realtek PCIe GbE Family Controller
+		 ->172.28.62.136
+		 ->fe80:0:0:0:c6be:df01:e451:a70f%eth0
+	Card: WAN Miniport (L2TP)
+	Card: Microsoft IP-HTTPS Platform Adapter
+	Card: WAN Miniport (PPTP)
+	Card: WAN Miniport (PPPOE)
+	Card: WAN Miniport (IP)
+	Card: WAN Miniport (Network Monitor)
+	Card: WAN Miniport (IPv6)
+	Card: Microsoft Teredo Tunneling Adapter
+	Card: Microsoft Kernel Debug Network Adapter
+	Card: WAN Miniport (IKEv2)
+	Card: Realtek PCIe GbE Family Controller-WFP Native MAC Layer LightWeight Filter-0000
+	Card: Realtek PCIe GbE Family Controller-QoS Packet Scheduler-0000
+	Card: Realtek PCIe GbE Family Controller-WFP 802.3 MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IP)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IP)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (IPv6)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (IPv6)-QoS Packet Scheduler-0000
+	Card: WAN Miniport (Network Monitor)-WFP Native MAC Layer LightWeight Filter-0000
+	Card: WAN Miniport (Network Monitor)-QoS Packet Scheduler-0000
+
+23 Nov 2023 19:17:00,622 INFO  [main] bootLogger     - Session manager ready: bitzero.engine.sessions.DefaultSessionManager@6ee52dcd
+23 Nov 2023 19:17:00,685 INFO  [main] bootLogger     - TCP Selector opened
+23 Nov 2023 19:17:00,700 INFO  [main] bootLogger     - AcceptSelector opened
+23 Nov 2023 19:17:00,700 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1101
+23 Nov 2023 19:17:00,732 INFO  [main] bootLogger     - Added bound tcp socket --> 0.0.0.0:1102
+23 Nov 2023 19:17:00,732 INFO  [Scheduler1-thread-1] bootLogger     - Scheduler started: scheduler
+23 Nov 2023 19:17:00,732 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.SystemController -- Queue: 0/20000
+23 Nov 2023 19:17:00,732 INFO  [main] bootLogger     - Controller started: bitzero.server.controllers.ExtensionController -- Queue: 0/20000
+23 Nov 2023 19:17:00,732 INFO  [main] bootLogger     - EngineAcceptor initialized
+23 Nov 2023 19:17:00,732 INFO  [main] bootLogger     - Socket Writer started (pool size:4)
+23 Nov 2023 19:17:00,732 INFO  [main] bootLogger     - Security Manager started
+23 Nov 2023 19:17:00,732 INFO  [main] bootLogger     - IOHandler: null
+23 Nov 2023 19:17:00,732 INFO  [main] bootLogger     - EngineReader started
+23 Nov 2023 19:17:00,747 INFO  [main] bootLogger     - [[[ ===--- Boot sequence complete ---=== ]]]

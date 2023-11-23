@@ -14,10 +14,10 @@ public class RandomUtils {
         return hash;
     }
      public static double generateRandomBySeed(int min, int max, String seed, boolean isInteger) {
-        double randomNumber = Math.sin(hashCode(seed));
+        double randomNumber = Math.abs(Math.sin(hashCode(seed)));
         double scaledRandom = min + randomNumber * (max - min);
         double rd= isInteger ? Math.round(scaledRandom) : scaledRandom;
-        return Math.abs(rd);
+        return rd;
     }
 
 

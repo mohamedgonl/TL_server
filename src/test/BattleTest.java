@@ -1,48 +1,37 @@
 package test;
 
-import battle_models.BattleAction;
-import battle_models.BattleMatch;
 import bitzero.engine.sessions.ISession;
 import bitzero.engine.sessions.Session;
 import bitzero.engine.sessions.SessionType;
 import bitzero.server.BitZeroServer;
 import bitzero.server.config.ConfigHandle;
-
-import bitzero.server.config.ServerSettings;
 import bitzero.server.core.BZEvent;
 import bitzero.server.core.BZEventParam;
 import bitzero.server.core.BZEventType;
 import bitzero.server.entities.User;
-import bitzero.server.entities.managers.BZUserManager;
 import bitzero.server.exceptions.BZException;
-import bitzero.server.extensions.IClientRequestHandler;
 import bitzero.server.extensions.data.DataCmd;
 import bitzero.server.util.ByteArray;
 import bitzero.util.ExtensionUtility;
 import bitzero.util.socialcontroller.bean.UserInfo;
-
 import cmd.CmdDefine;
 import cmd.receive.battle.RequestEndGame;
 import cmd.receive.battle.RequestGetMatch;
 import cmd.receive.battle.RequestSendAction;
-import cmd.send.battle.*;
-import event.handler.LoginSuccessHandler;
+import cmd.send.battle.ResponseEndGame;
+import cmd.send.battle.ResponseGetHistoryAttack;
+import cmd.send.battle.ResponseGetMatch;
+import cmd.send.battle.ResponseMatchingPlayer;
 import extension.FresherExtension;
-import javafx.beans.binding.ObjectBinding;
 import model.Barrack;
 import model.PlayerInfo;
 import model.TrainingItem;
 import org.apache.commons.lang.exception.ExceptionUtils;
-
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
-
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import service.DemoHandler;
 import service.battle.ActionHandler;
-import service.battle.BattleHandler;
 import service.battle.MatchHandler;
 import util.BattleConst;
 import util.Common;
@@ -50,16 +39,11 @@ import util.GameConfig;
 import util.server.ServerConstant;
 
 import java.awt.*;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-
 import static org.junit.jupiter.api.Assertions.*;
-
-import static test.TestConstant.CHANGE_POS;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class BattleTest {

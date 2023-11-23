@@ -52,6 +52,7 @@ public class BattleMatch extends DataModel {
     private transient int buildingDestroyedPoint = 0;
     private transient int totalBuildingPoint = 0;
     private transient boolean isDestroyedHalf = false;
+    private int idTroop ;
 
 
     public BattleMatch(int id, int enemyId, String enemyName, ArrayList<BattleGameObject> gameObjects, Map<String, Integer> army, int maxGold, int maxElixir, int enemyRank, int userRank) {
@@ -64,6 +65,7 @@ public class BattleMatch extends DataModel {
         this.listGameObjects = gameObjects;
         this.state = BattleConst.MATCH_NEW;
         this.createTime = Common.currentTimeInSecond();
+        this.idTroop = 0;
 
         this.winTrophy = this.getWinTrophy(enemyRank, userRank);
         this.loseTrophy = this.getLoseTrophy(enemyRank, userRank);
@@ -472,6 +474,8 @@ public class BattleMatch extends DataModel {
                     if (this.actionsList.get(actionIndex).type == BattleConst.ACTION_THROW_TROOP) {
                         BattleTroop troop = new BattleTroop(this.actionsList.get(actionIndex).troopType, 1, this.actionsList.get(actionIndex).posX, this.actionsList.get(actionIndex).posY);
                         troop.setMatch(this);
+                        troop.setId(this.idTroop);
+                        this.idTroop++;
                         troops.add(troop);
                         LogUtils.writeLog("create troop : " + troop.type + " " + troop.posX + " " + troop.posY);
                     }
