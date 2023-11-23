@@ -52,7 +52,7 @@ public class BattleMatch extends DataModel {
     private transient int buildingDestroyedPoint = 0;
     private transient int totalBuildingPoint = 0;
     private transient boolean isDestroyedHalf = false;
-    private int idTroop ;
+    private int idTroop;
 
 
     public BattleMatch(int id, int enemyId, String enemyName, ArrayList<BattleGameObject> gameObjects, Map<String, Integer> army, int maxGold, int maxElixir, int enemyRank, int userRank) {
@@ -428,7 +428,7 @@ public class BattleMatch extends DataModel {
     public BattleBullet getOrCreateBullet(String type, Point startPoint, BattleTroop target, int damagePerShot, double attackRadius, int attackArea) {
         for (BattleBullet bullet : bullets)
             if (!bullet.isActive() && bullet.getType().equals(type)) {
-                bullet.init(startPoint, target);
+                bullet.init(startPoint, target, damagePerShot);
                 return bullet;
             }
 

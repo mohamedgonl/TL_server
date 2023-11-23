@@ -31,7 +31,7 @@ public class BattleBullet {
         this.gridSpeed = BattleConst.BULLET_GRID_SPEED.get(type);
         this.minimumTime = Common.roundFloat(BattleConst.BULLET_MINIMUM_TIME_REACH_DEST.get(type), 2);
 
-        init(startPoint, target);
+        init(startPoint, target, damagePerShot);
     }
 
     public void setMatch(BattleMatch match) {
@@ -86,9 +86,10 @@ public class BattleBullet {
         this.damagePerShot = damagePerShot;
     }
 
-    public void init(Point startPoint, BattleTroop target) {
+    public void init(Point startPoint, BattleTroop target, int damagePerShot) {
         this.startPoint = startPoint;
         this.target = target;
+        this.damagePerShot = damagePerShot;
         this.destination = new Point(target.posX, target.posY);
 
         double gridDist = Math.sqrt(Math.pow(startPoint.x - target.posX, 2) + Math.pow(startPoint.y - target.posY, 2));
