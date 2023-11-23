@@ -2,6 +2,7 @@ package cmd.send.battle;
 
 import battle_models.BattleAction;
 import battle_models.BattleBuilding;
+import battle_models.BattleGameObject;
 import battle_models.BattleMatch;
 import bitzero.server.extensions.data.BaseMsg;
 import cmd.CmdDefine;
@@ -19,7 +20,7 @@ public class ResponseGetMatch extends BaseMsg {
     }
 
     public ResponseGetMatch(short error, BattleMatch match) {
-        super(CmdDefine.BUILD_SUCCESS, error);
+        super(CmdDefine.GET_MATCH, error);
         this.match = match;
     }
 
@@ -49,8 +50,8 @@ public class ResponseGetMatch extends BaseMsg {
             }
 
             // building
-            bf.putInt( this.match.buildings.size());
-            for (BattleBuilding building :  this.match.buildings) {
+            bf.putInt( this.match.listGameObjects.size());
+            for (BattleGameObject building :  this.match.listGameObjects) {
                 bf.putInt(building.id);
                 putStr(bf, building.type);
                 bf.putInt(building.level);
