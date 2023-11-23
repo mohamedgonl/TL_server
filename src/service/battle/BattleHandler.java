@@ -192,6 +192,7 @@ public class BattleHandler extends BaseClientRequestHandler {
     private void userDisconnect(User user) {
         // log user disconnect
         System.out.println("USER DISCONNECTED " + user.getId());
+        MatchHandler.handleDisconnect(user);
 
     }
 

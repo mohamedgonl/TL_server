@@ -25,7 +25,9 @@ import util.Common;
 import util.server.ServerConstant;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class UserHandler extends BaseClientRequestHandler {
@@ -131,19 +133,73 @@ public class UserHandler extends BaseClientRequestHandler {
 
             ArrayList<Barrack> barracks = this.getBarracksList(userInfo.getListBuildings());
 
-                barracks.parallelStream().forEach(barrack -> {
-                   barrack.updateTrainingList(userInfo.getId());
-                });
+//                barracks.parallelStream().forEach(barrack -> {
+//                   barrack.updateTrainingList(userInfo.getId());
+//                });
 
 
+            while (userInfo.getCurrentTroopSpace() < userInfo.getMaxArmySpace()) {
+                Map<Integer, Integer> nextTimes = new HashMap<>();
+                for (Barrack barrack :
+                        barracks) {
+                    int nextTime =  barrack.getNextDoneTime();
+                    if(nextTime == -1) {
+                        nextTimes.remove(barrack.getId());
+                    }
+                    else {
+
+                    nextTimes.putIfAbsent(barrack.getId(), nextTime);
+                    }
+                }
+                if(nextTimes.isEmpty()) break;
+
+                Map.Entry<Integer, Integer> minNextTime = getMinValueEntry(nextTimes);
+                if(minNextTime.getValue() <= Common.currentTimeInSecond()) {
+                    Barrack barrack =  getBarrackById(barracks, minNextTime.getKey());
+                    if(barrack.getFirstSpaceIncrease() + userInfo.getCurrentTroopSpace() <= userInfo.getMaxArmySpace()){
+                        ArrayList<TrainingItem> doneList = new ArrayList<>();
+                        String troopCfgId = barrack.removeFirstTroop();
+                        doneList.add(new TrainingItem(troopCfgId, 1));
+                        barrack.setLastTrainingTime(minNextTime.getValue());
+                        userInfo.pushToListTroop(doneList);
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
             userInfo.saveModel(user.getId());
-
-
             send(new ResponseGetArmyInfo(ErrorConst.SUCCESS, userInfo.getListTroops()), user);
         } catch (Exception e) {
+            System.out.println("HANDLE GET ARMY ERROR " + e.getMessage());
+            e.printStackTrace();
             send(new ResponseGetArmyInfo(ErrorConst.UNKNOWN), user);
         }
     }
+
+    private static Map.Entry<Integer, Integer> getMinValueEntry(Map<Integer, Integer> map) {
+        Map.Entry<Integer, Integer> minEntry = null;
+
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            if (minEntry == null || entry.getValue() < minEntry.getValue()) {
+                minEntry = entry;
+            }
+        }
+
+        return minEntry;
+    }
+
+    private static Barrack getBarrackById (ArrayList<Barrack> barracks, int id) {
+        for (Barrack barrack :
+                barracks) {
+            if(barrack.getId() == id) return barrack;
+        }
+        return null;
+    }
+
 
     private ArrayList<Barrack> getBarracksList(ArrayList<Building> buildings) {
         ArrayList<Barrack> barrackList = new ArrayList<>();

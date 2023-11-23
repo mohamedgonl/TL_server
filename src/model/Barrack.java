@@ -40,6 +40,24 @@ public class Barrack extends Building {
 
     }
 
+    public int getFirstSpaceIncrease () {
+        String firstTroop =  this.trainingItemList.get(0).cfgId;
+        return GameConfig.getInstance().troopBaseConfig.get(firstTroop).housingSpace;
+    }
+
+    public int getNextDoneTime () {
+        if(this.trainingItemList.isEmpty()) return -1;
+        else {
+            if(this.trainingItemList.get(0).count == 0) return -1;
+            else {
+                String firstTroop =  this.trainingItemList.get(0).cfgId;
+                int trainingTime = (int) Math.ceil((double) GameConfig.getInstance().troopBaseConfig.get(firstTroop).trainingTime
+                        / ServerConstant.TRAIN_TIME_RATE);
+                return this.lastTrainingTime + trainingTime;
+            }
+        }
+    }
+
     public TrainingItem getFirstTrainingItem() {
         return this.trainingItemList.get(0);
     }
@@ -77,6 +95,11 @@ public class Barrack extends Building {
             this.trainingItemList.get(0).count -= 1;
         }
         return cfgId;
+    }
+
+    public void updateLastTrainTime(String cfgId) {
+        int trainingTime = GameConfig.getInstance().troopBaseConfig.get(cfgId).trainingTime;
+        this.lastTrainingTime +=(int) Math.ceil((double) trainingTime / ServerConstant.TRAIN_TIME_RATE);
     }
 
     public void setLastTrainingTime(int lastTrainingTime) {

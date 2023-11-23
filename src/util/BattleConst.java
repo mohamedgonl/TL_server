@@ -50,7 +50,7 @@ public class BattleConst {
 
     public static int TICK_PER_SECOND = 60;
 
-    public static int MAX_TICK_PER_GAME = (COUNT_DOWN_TIME + MAX_TIME_A_MATCH) * TICK_PER_SECOND;
+    public static int MAX_TICK_PER_GAME = (MAX_TIME_A_MATCH) * TICK_PER_SECOND;
 
     public static int RANK_DIST = 500;
 

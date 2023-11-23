@@ -223,7 +223,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
     }
 
 
-    private static void createRandomPlayerInfo(PlayerInfo playerInfo) throws Exception {
+    public static void createRandomPlayerInfo(PlayerInfo playerInfo) throws Exception {
         GameConfig gameConfig = GameConfig.getInstance();
         System.out.println("init new player info: " + playerInfo.getId());
 

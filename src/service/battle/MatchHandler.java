@@ -3,7 +3,11 @@ package service.battle;
 import battle_models.BattleAction;
 import battle_models.BattleGameObject;
 import battle_models.BattleMatch;
+import bitzero.server.core.BZEventParam;
+import bitzero.server.core.BZEventType;
+import bitzero.server.core.IBZEvent;
 import bitzero.server.entities.User;
+import bitzero.server.extensions.BaseClientRequestHandler;
 import cmd.ErrorConst;
 import cmd.receive.battle.RequestEndGame;
 import cmd.receive.battle.RequestGetMatch;
@@ -11,11 +15,13 @@ import cmd.send.battle.ResponseEndGame;
 import cmd.send.battle.ResponseGetHistoryAttack;
 import cmd.send.battle.ResponseGetMatch;
 import cmd.send.battle.ResponseMatchingPlayer;
+import event.handler.LoginSuccessHandler;
 import model.Building;
 import model.ListPlayerData;
 import model.PlayerInfo;
 import util.BattleConst;
 import util.Common;
+import util.GameConfig;
 import util.server.CustomException;
 import util.server.ServerConstant;
 
@@ -26,6 +32,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 public class MatchHandler {
+
     public static ResponseMatchingPlayer createMatch(User user) throws Exception {
         //get user from cache
         PlayerInfo userInfo = (PlayerInfo) user.getProperty(ServerConstant.PLAYER_INFO);
@@ -119,12 +126,23 @@ public class MatchHandler {
 
         if (enemyInfo == null) {
             // không tìm thấy trận
-            System.out.println("cant found enemy");
-            throw new CustomException(ErrorConst.CANT_GET_MATCH);
+            System.out.println("cant found enemy - create fake player ");
+            int id = PlayerInfo.fakeIdGenerate--;
+             enemyInfo = new PlayerInfo(id, "username_" + id);
+            try {
+                LoginSuccessHandler.createRandomPlayerInfo(enemyInfo);
+                enemyInfo.saveModel(id);
+                ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
+                listUserData.updateUser(id, false);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
         }
 
         return enemyInfo;
     }
+
 
     public static PlayerInfo getPlayerSameRank(User user, int range) {
         try {
@@ -213,7 +231,7 @@ public class MatchHandler {
             if (match != null) {
                 BattleAction lastAction = match.getActionsList().get(match.getActionsList().size() - 1);
                 if (lastAction.type != BattleConst.ACTION_END) {
-                    match.getActionsList().add(new BattleAction(BattleConst.ACTION_END, lastAction.tick + 1));
+                    match.getActionsList().add(new BattleAction(BattleConst.ACTION_END, BattleConst.MAX_TICK_PER_GAME-1));
                     match.sync();
                 }
                 userInfo.addResources(match.getGoldGot(), match.getElixirGot(), 0);
@@ -269,7 +287,19 @@ public class MatchHandler {
     }
 
     public static void handleDisconnect(User user) {
-        handleGameEndSync(user);
+        System.out.println("MATCH HANDLER HANDLE DISCONNECT");
+        BattleMatch battleMatch = (BattleMatch) user.getProperty(ServerConstant.MATCH);
+        if(battleMatch == null) return;
+        try {
+            handleGameEndSync(user);
+            ListPlayerData listUserData = (ListPlayerData) ListPlayerData.getModel(ServerConstant.LIST_USER_DATA_ID, ListPlayerData.class);
+            if(listUserData == null) listUserData = new ListPlayerData();
+            listUserData.updateUser(battleMatch.enemyId, false);
+            listUserData.saveModel(ServerConstant.LIST_USER_DATA_ID);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
 }

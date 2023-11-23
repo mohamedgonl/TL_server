@@ -277,7 +277,6 @@ public class BattleMatch extends DataModel {
             }
         }
 
-        System.out.println("get battle graph");
     }
 
     public BattleGraph getBattleGraph() {
@@ -467,7 +466,6 @@ public class BattleMatch extends DataModel {
         LogUtils.reset();
 
         while (tick < BattleConst.MAX_TICK_PER_GAME) {
-
             if (actionIndex < this.actionsList.size()) {
                 if (this.actionsList.get(actionIndex).tick == tick) {
                     //TODO: do action
@@ -563,7 +561,6 @@ public class BattleMatch extends DataModel {
 
 
     private void updateData() {
-        System.out.println("DESTROYED : " + this.buildingDestroyedPoint + " TOTAL : " + this.totalBuildingPoint);
         this.winPercentage = this.buildingDestroyedPoint * 100 / this.totalBuildingPoint;
         System.out.println(this.winPercentage);
 

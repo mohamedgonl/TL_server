@@ -180,7 +180,6 @@ public class BattleTroop {
             int targetCenterX = (int) (building.posX + Math.floor(building.width / 2));
             int targetCenterY = (int) (building.posY + Math.floor(building.height / 2));
             LogUtils.writeLog("target center: " + targetCenterX + " " + targetCenterY);
-            System.out.println(3);
 
             BattleGridNode end = new BattleGridNode(targetCenterX, targetCenterY, graph.getNode(targetCenterX, targetCenterY).weight, building.id);
             ArrayList<BattleGridNode> path = BattleAStar.search(graph, start, end);

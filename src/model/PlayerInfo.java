@@ -8,6 +8,7 @@ import util.database.DataModel;
 import java.util.*;
 
 public class PlayerInfo extends DataModel {
+    public static int fakeIdGenerate = -1;
     private int id;
     private String name;
     private String avatar;
@@ -260,7 +261,7 @@ public class PlayerInfo extends DataModel {
             int count = listTroops.get(i).count;
 
             int amount = this.listTroops.getOrDefault(cfg, 0) + count;
-            this.listTroops.put(cfg, amount);
+            this.listTroops.put(cfg, Math.max(0,amount));
         }
     }
 
