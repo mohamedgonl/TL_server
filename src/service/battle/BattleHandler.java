@@ -145,11 +145,11 @@ public class BattleHandler extends BaseClientRequestHandler {
         }
         catch (CustomException e) {
             System.out.println("HANDLE GET MATCH FAIL with error code : " + e.getErrorCode());
-            send(new ResponseSendAction(e.getErrorCode()), user);
+            send(new ResponseGetMatch(e.getErrorCode()), user);
         }
         catch (Exception e) {
             System.out.println("HANDLE GET MATCH ERROR :: " + e.getMessage());
-            send(new ResponseSendAction(ErrorConst.UNKNOWN), user);
+            send(new ResponseGetMatch(ErrorConst.UNKNOWN), user);
         } finally {
             System.out.println(logPrefix + "HANDLE GET MATCH END" + logPrefix);
         }
