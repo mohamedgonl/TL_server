@@ -28,15 +28,9 @@ public class BattleBullet {
         this.damagePerShot = damagePerShot;
         this.attackRadius = attackRadius;
         this.attackArea = attackArea;
+        this.gridSpeed = BattleConst.BULLET_GRID_SPEED.get(type);
+        this.minimumTime = Common.roundFloat(BattleConst.BULLET_MINIMUM_TIME_REACH_DEST.get(type), 2);
 
-        if (type.equals("DEF_1")) {
-            this.gridSpeed = 40;
-        } else if (type.equals("DEF_2")) {
-            this.gridSpeed = 50;
-            this.minimumTime = Common.roundFloat(15.0 / this.gridSpeed, 2);
-        } else if (type.equals("DEF_3")) {
-            this.gridSpeed = 13;
-        }
         init(startPoint, target);
     }
 
