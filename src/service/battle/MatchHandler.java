@@ -229,6 +229,7 @@ public class MatchHandler {
             BattleMatch match = (BattleMatch) user.getProperty(ServerConstant.MATCH);
 
             if (match != null) {
+                if(match.getActionsList().isEmpty()) return;
                 BattleAction lastAction = match.getActionsList().get(match.getActionsList().size() - 1);
                 if (lastAction.type != BattleConst.ACTION_END) {
                     match.getActionsList().add(new BattleAction(BattleConst.ACTION_END, BattleConst.MAX_TICK_PER_GAME-1));
