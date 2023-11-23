@@ -2,6 +2,7 @@ package battle_models;
 
 import model.Building;
 import util.BattleConst;
+import util.BuildingFactory;
 import util.GameConfig;
 import util.config.BaseBuildingConfig;
 
@@ -41,16 +42,16 @@ public class BattleGameObject {
         int posX = (building.getPosition().x + BattleConst.BATTLE_MAP_BORDER) * BattleConst.BATTLE_MAP_SCALE;
         int posY = (building.getPosition().y + BattleConst.BATTLE_MAP_BORDER) * BattleConst.BATTLE_MAP_SCALE;
 
-        if (type.startsWith("OBS"))
+        if (type.startsWith(BuildingFactory.GameObjectPrefix.OBSTACLE))
             return new BattleObstacle(id, type, 1, posX, posY);
 
-        if (type.startsWith("DEF"))
+        if (type.startsWith(BuildingFactory.GameObjectPrefix.DEFENCE))
             return new BattleDefence(id, type, level, posX, posY);
 
-        if (type.equals("RES_1") || type.equals("STO_1"))
+        if (type.equals(BuildingFactory.BuildingType.GOLD_MINE) || type.equals(BuildingFactory.BuildingType.GOLD_STORAGE))
             return new BattleStorage(id, type, level, posX, posY, BattleConst.ResourceType.GOLD);
 
-        if (type.equals("RES_2") || type.equals("STO_2"))
+        if (type.equals(BuildingFactory.BuildingType.ELIXIR_MINE) || type.equals(BuildingFactory.BuildingType.ELIXIR_STORAGE))
             return new BattleStorage(id, type, level, posX, posY, BattleConst.ResourceType.ELIXIR);
 
         return new BattleBuilding(id, type, level, posX, posY);

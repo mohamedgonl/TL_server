@@ -1,5 +1,6 @@
 package battle_models;
 
+import util.BuildingFactory;
 import util.GameConfig;
 import util.config.BaseBuildingConfig;
 import util.log.LogUtils;
@@ -41,7 +42,7 @@ public class BattleBuilding extends BattleGameObject {
         this.match.onDestroyBuilding(this.id);
 
         //if WAL
-        if (this.type.startsWith("WAL")) {
+        if (this.type.startsWith(BuildingFactory.GameObjectPrefix.WALL)) {
             //get list troop from battle manager
 
             ArrayList<BattleTroop> listTroop = this.match.getTroops();
@@ -49,7 +50,7 @@ public class BattleBuilding extends BattleGameObject {
             //for in list troop, if troop attack type wall, remove from list troop attack
             for (BattleTroop battleTroop : listTroop) {
                 if (!battleTroop.isAlive()) continue;
-                if (battleTroop.target != null && battleTroop.target.type.startsWith("WAL")) {
+                if (battleTroop.target != null && battleTroop.target.type.startsWith(BuildingFactory.GameObjectPrefix.WALL)) {
                     battleTroop.refindTarget();
                 }
             }

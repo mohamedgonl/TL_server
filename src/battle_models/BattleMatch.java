@@ -1,6 +1,7 @@
 package battle_models;
 
 import util.BattleConst;
+import util.BuildingFactory;
 import util.Common;
 import util.algorithms.BattleGraph;
 import util.database.DataModel;
@@ -141,7 +142,7 @@ public class BattleMatch extends DataModel {
 
     public void initBattleMap() {
         for (BattleGameObject gameObject : this.listGameObjects) {
-            if (!gameObject.type.startsWith("OBS") && !gameObject.type.startsWith("WAL")) {
+            if (!gameObject.type.startsWith(BuildingFactory.GameObjectPrefix.OBSTACLE) && !gameObject.type.startsWith(BuildingFactory.GameObjectPrefix.WALL)) {
                 this.totalBuildingPoint += ((BattleBuilding) gameObject).maxHp;
             }
             for (int i = 0; i < gameObject.width; i++) {
@@ -157,7 +158,7 @@ public class BattleMatch extends DataModel {
             int width = building.width + BattleConst.BATTLE_MAP_BORDER,
                     height = building.height + BattleConst.BATTLE_MAP_BORDER,
                     posX = Math.max(building.posX - BattleConst.BATTLE_MAP_BORDER / 2 * BattleConst.BATTLE_MAP_SCALE, 0), posY = Math.max(building.posY - BattleConst.BATTLE_MAP_BORDER / 2 * BattleConst.BATTLE_MAP_SCALE, 0);
-            if (building.type.startsWith("OBS")) {
+            if (building.type.startsWith(BuildingFactory.GameObjectPrefix.OBSTACLE)) {
                 width = building.width;
                 height = building.height;
                 posX = posX == 0 ? 0 : posX + BattleConst.BATTLE_MAP_BORDER / 2 * BattleConst.BATTLE_MAP_SCALE;
@@ -185,8 +186,8 @@ public class BattleMatch extends DataModel {
 
         //
         for (BattleGameObject gameObject : this.listGameObjects) {
-            if (gameObject.type.startsWith("OBS")) continue;
-            if (gameObject.type.startsWith("WAL")) {
+            if (gameObject.type.startsWith(BuildingFactory.GameObjectPrefix.OBSTACLE)) continue;
+            if (gameObject.type.startsWith(BuildingFactory.GameObjectPrefix.WALL)) {
                 for (int i = gameObject.posX; i < gameObject.posX + gameObject.width; i++) {
                     for (int j = gameObject.posY; j < gameObject.posY + gameObject.height; j++) {
                         this.findPathGrid[i][j] = 9;
@@ -232,7 +233,7 @@ public class BattleMatch extends DataModel {
     public void onDestroyBuilding(int id) {
         BattleBuilding building = this.getBattleBuildingById(id);
 
-        if (!building.type.startsWith("WAL")) {
+        if (!building.type.startsWith(BuildingFactory.GameObjectPrefix.WALL)) {
             this.buildingDestroyedPoint += building.maxHp;
 
             if (!this.isDestroyedHalf && this.buildingDestroyedPoint * 2 >= this.totalBuildingPoint) {
@@ -240,7 +241,7 @@ public class BattleMatch extends DataModel {
                 this.stars++;
             }
         }
-        if (building.type.startsWith("TOW")) {
+        if (building.type.startsWith(BuildingFactory.GameObjectPrefix.TOWN_HALL)) {
             this.stars++;
         }
 
@@ -267,7 +268,7 @@ public class BattleMatch extends DataModel {
         }
 
         //update find path grid
-        if (building.type.startsWith("WAL")) {
+        if (building.type.startsWith(BuildingFactory.GameObjectPrefix.WALL)) {
             for (int i = building.posX; i < building.posX + building.width; i++) {
                 for (int j = building.posY; j < building.posY + building.height; j++) {
                     this.battleGraph.changeNodeWeight(i, j, 0);
@@ -340,19 +341,19 @@ public class BattleMatch extends DataModel {
     public void initBattleBuildings() {
         for (BattleGameObject gameObject : this.listGameObjects) {
             gameObject.setMatch(this);
-            if (gameObject.type.startsWith("OBS")) {
+            if (gameObject.type.startsWith(BuildingFactory.GameObjectPrefix.OBSTACLE)) {
                 this.listObstacles.add((BattleObstacle) gameObject);
             } else {
                 this.buildings.add((BattleBuilding) gameObject);
 
-                if (gameObject.type.startsWith("RES") || gameObject.type.startsWith("STO")) {
+                if (gameObject.type.startsWith(BuildingFactory.GameObjectPrefix.RESOURCE) || gameObject.type.startsWith(BuildingFactory.GameObjectPrefix.STORAGE)) {
 //            if (gameObject.type.startsWith("RES") || gameObject.type.startsWith("STO") || gameObject.type.startsWith("TOW")) {
                     this.listResources.add((BattleBuilding) gameObject);
-                } else if (gameObject.type.startsWith("WAL")) {
+                } else if (gameObject.type.startsWith(BuildingFactory.GameObjectPrefix.WALL)) {
                     this.listWalls.add((BattleBuilding) gameObject);
-                } else if (gameObject.type.startsWith("DEF")) {
+                } else if (gameObject.type.startsWith(BuildingFactory.GameObjectPrefix.DEFENCE)) {
                     this.listDefences.add((BattleDefence) gameObject);
-                } else if (gameObject.type.startsWith("TOW")) {
+                } else if (gameObject.type.startsWith(BuildingFactory.GameObjectPrefix.TOWN_HALL)) {
                     this.townHall = (BattleBuilding) gameObject;
                 }
             }
@@ -543,7 +544,7 @@ public class BattleMatch extends DataModel {
         LogUtils.writeLog("LIST BUILDING");
         for (BattleBuilding building :
                 this.buildings) {
-            if (!building.type.startsWith("OBS")) LogUtils.writeLog(building.toString());
+            if (!building.type.startsWith(BuildingFactory.GameObjectPrefix.OBSTACLE)) LogUtils.writeLog(building.toString());
         }
         LogUtils.writeLog("LIST TROOP");
         for (BattleTroop e : this.troops) {

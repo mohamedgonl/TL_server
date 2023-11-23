@@ -8,6 +8,7 @@ import model.CollectorBuilding;
 import model.Obstacle;
 import net.spy.memcached.CASResponse;
 import net.spy.memcached.CASValue;
+import util.BuildingFactory;
 import util.server.ServerUtil;
 
 import java.lang.reflect.Field;
@@ -26,9 +27,9 @@ public class DataModel {
 
     private static Gson initGsonDeserializerInstance() {
         BuildingDeserializer deserializer = new BuildingDeserializer("type", Building.class);
-        deserializer.registerBarnType("RES", CollectorBuilding.class);
-        deserializer.registerBarnType("BAR", Barrack.class);
-        deserializer.registerBarnType("OBS", Obstacle.class);
+        deserializer.registerBarnType(BuildingFactory.GameObjectPrefix.RESOURCE, CollectorBuilding.class);
+        deserializer.registerBarnType(BuildingFactory.GameObjectPrefix.BARRACK, Barrack.class);
+        deserializer.registerBarnType(BuildingFactory.GameObjectPrefix.OBSTACLE, Obstacle.class);
 
         return new GsonBuilder()
                 .registerTypeAdapter(Building.class, deserializer)

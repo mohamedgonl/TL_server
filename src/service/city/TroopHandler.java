@@ -29,6 +29,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.BuildingFactory;
 import util.Common;
 import util.GameConfig;
 import util.config.TroopBaseConfig;
@@ -286,7 +287,7 @@ public class TroopHandler extends BaseClientRequestHandler {
         ArrayList<Barrack> barrackList = new ArrayList<>();
         for (int i = 0; i < buildings.size(); i++) {
             Building building = buildings.get(i);
-            if (building.getType().startsWith("BAR")) {
+            if (building.getType().startsWith(BuildingFactory.GameObjectPrefix.BARRACK)) {
                     Barrack barrack = (Barrack) building;
                     barrackList.add(barrack);
             }

@@ -1,6 +1,7 @@
 package model;
 
 import battle_models.BattleMatch;
+import util.BuildingFactory;
 import util.GameConfig;
 import util.config.ArmyCampConfig;
 import util.database.DataModel;
@@ -285,9 +286,9 @@ public class PlayerInfo extends DataModel {
     public int getMaxArmySpace(){
         int max  = 0;
         for (int i = 0; i < this.listBuildings.size(); i++) {
-            if(this.listBuildings.get(i).getType().startsWith("AMC")) {
+            if(this.listBuildings.get(i).getType().startsWith(BuildingFactory.GameObjectPrefix.ARMY_CAMP)) {
                 int level = this.listBuildings.get(i).getLevel();
-                max += ((ArmyCampConfig)GameConfig.getInstance().getBuildingConfig("AMC_1", level)).capacity;
+                max += ((ArmyCampConfig)GameConfig.getInstance().getBuildingConfig(BuildingFactory.BuildingType.ARMY_CAMP, level)).capacity;
             }
         }
         return max;

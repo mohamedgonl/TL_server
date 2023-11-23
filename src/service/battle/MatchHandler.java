@@ -16,6 +16,7 @@ import model.Building;
 import model.ListPlayerData;
 import model.PlayerInfo;
 import util.BattleConst;
+import util.BuildingFactory;
 import util.Common;
 import util.server.CustomException;
 import util.server.ServerConstant;
@@ -54,7 +55,7 @@ public class MatchHandler {
         PlayerInfo enemyInfo = findPlayer(user);
 
         ArrayList<BattleGameObject> buildings = convertToBattleBuilding(enemyInfo.getListBuildings());
-        boolean hasElixirSto = buildings.stream().anyMatch(building -> "STO_2".equals(building.type) || "RES_2".equals(building.type));
+        boolean hasElixirSto = buildings.stream().anyMatch(building -> BuildingFactory.BuildingType.ELIXIR_STORAGE.equals(building.type) || BuildingFactory.BuildingType.ELIXIR_MINE.equals(building.type));
 
         Map<String, Integer> army = new HashMap<>(userInfo.getListTroops());
 

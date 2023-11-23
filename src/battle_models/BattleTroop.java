@@ -1,6 +1,7 @@
 package battle_models;
 
 import util.BattleConst;
+import util.BuildingFactory;
 import util.Common;
 import util.GameConfig;
 import util.algorithms.BattleAStar;
@@ -274,12 +275,14 @@ public class BattleTroop
         ArrayList<BattleBuilding> listTarget = new ArrayList<>();
         switch (this.favoriteTarget)
         {
-            case "DEF":
+            case BuildingFactory.GameObjectPrefix
+                    .DEFENCE:
                 ArrayList<BattleDefence> list = this.match.getListDefences();
                 //change to BattleBuilding
                 listTarget.addAll(list);
                 break;
-            case "RES":
+            case BuildingFactory.GameObjectPrefix
+                    .RESOURCE:
                 listTarget = this.match.getListResources();
                 break;
             case "NONE":
@@ -287,8 +290,8 @@ public class BattleTroop
                 for (BattleBuilding building : mapListBuilding)
                 {
                     if (building.isDestroy()) continue;
-                    if (building.type.startsWith("WAL")) continue;
-                    if (building.type.startsWith("OBS")) continue;
+                    if (building.type.startsWith(BuildingFactory.GameObjectPrefix.WALL)) continue;
+                    if (building.type.startsWith(BuildingFactory.GameObjectPrefix.OBSTACLE)) continue;
                     listTarget.add(building);
                 }
                 break;
@@ -367,7 +370,7 @@ public class BattleTroop
                 LogUtils.writeLog("building pos: " + building.posX + " " + building.posY);
                 LogUtils.writeLog("building width: " + building.width + " height: " + building.height);
             }
-            if (building != null && building.type.startsWith("WAL"))
+            if (building != null && building.type.startsWith(BuildingFactory.GameObjectPrefix.WALL))
             {
                 LogUtils.writeLog("troop " + this.type + " change target to " + building.type);
                 this.target = building;

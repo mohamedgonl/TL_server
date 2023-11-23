@@ -246,10 +246,10 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         int wallEndY = random.nextInt(20) + 20;
         int margin = random.nextInt(2)+3;
 
-        Building building = BuildingFactory.getBuilding(1, "TOW_1", random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
+        Building building = BuildingFactory.getBuilding(1, BuildingFactory.BuildingType.TOWN_HALL, random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
                 new Point(random.nextInt(wallEndX-wallStartX-3)+wallStartX, random.nextInt(wallEndY-wallStartY-3)+wallStartY ));
         buildings.add(building);
-        BaseBuildingConfig tow = gameConfig.getBuildingConfig("TOW_1", building.getLevel());
+        BaseBuildingConfig tow = gameConfig.getBuildingConfig(BuildingFactory.BuildingType.TOWN_HALL, building.getLevel());
         fillArrayByNewValue(map, building.getPosition().x, building.getPosition().y, tow.width, tow.height,1);
 
         int id = 2;
@@ -259,7 +259,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
                 if(random.nextBoolean())
                {
                     String type = buildingType[random.nextInt(typeCount)];
-                    Building building1 = BuildingFactory.getBuilding(id, type, type.equals("BDH_1") ? 1 :random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
+                    Building building1 = BuildingFactory.getBuilding(id, type, type.equals(BuildingFactory.BuildingType.BUILDER_HUT) ? 1 :random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
                             new Point(i, j));
                     BaseBuildingConfig buildingConfig = gameConfig.getBuildingConfig(building1.getType(), building1.getLevel());
                     if(checkFill(map,building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height)
@@ -273,7 +273,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         }
 
         for (int i = wallStartX - random.nextInt(3) ; i <= wallEndX+ random.nextInt(3); i++) {
-            Building building1 = BuildingFactory.getBuilding(id, "WAL_1", random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
+            Building building1 = BuildingFactory.getBuilding(id, BuildingFactory.BuildingType.WALL, random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
                     new Point(i, wallStartY - 2));
             BaseBuildingConfig buildingConfig = gameConfig.getBuildingConfig(building1.getType(), building1.getLevel());
             if(checkFill(map,building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height)
@@ -286,7 +286,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
 
         // init wall
         for (int i = wallStartX; i <= wallEndX; i++) {
-            Building building1 = BuildingFactory.getBuilding(id, "WAL_1", random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
+            Building building1 = BuildingFactory.getBuilding(id, BuildingFactory.BuildingType.WALL, random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
                     new Point(i, wallStartY));
             BaseBuildingConfig buildingConfig = gameConfig.getBuildingConfig(building1.getType(), building1.getLevel());
             if(checkFill(map,building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height)
@@ -297,7 +297,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
             }
         }
         for (int i = wallStartX; i <= wallEndX; i++) {
-            Building building1 = BuildingFactory.getBuilding(id, "WAL_1", 4,
+            Building building1 = BuildingFactory.getBuilding(id, BuildingFactory.BuildingType.WALL, 4,
                     new Point(i, wallEndY));
             BaseBuildingConfig buildingConfig = gameConfig.getBuildingConfig(building1.getType(), building1.getLevel());
             if(checkFill(map,building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height)
@@ -308,7 +308,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
             }
         }
         for (int i = wallStartY; i <= wallEndY; i++) {
-            Building building1 = BuildingFactory.getBuilding(id, "WAL_1",  1,
+            Building building1 = BuildingFactory.getBuilding(id, BuildingFactory.BuildingType.WALL,  1,
                     new Point(wallStartX, i));
             BaseBuildingConfig buildingConfig = gameConfig.getBuildingConfig(building1.getType(), building1.getLevel());
             if(checkFill(map,building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height)
@@ -320,7 +320,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         }
 
         for (int i = wallStartY; i <= wallEndY; i++) {
-            Building building1 = BuildingFactory.getBuilding(id, "WAL_1", random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
+            Building building1 = BuildingFactory.getBuilding(id, BuildingFactory.BuildingType.WALL, random.nextInt(ServerConstant.MAX_FAKE_BUILDING_LEVEL) + 1,
                     new Point(wallEndX, i));
             BaseBuildingConfig buildingConfig = gameConfig.getBuildingConfig(building1.getType(), building1.getLevel());
             if(checkFill(map,building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height)
@@ -334,7 +334,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         for (int i = 0; i < 40; i+=4) {
             for (int j = 0; j < 40; j+=4) {
                 if(random.nextBoolean() && map[i][j] == 0) {
-                    Building building1 = BuildingFactory.getBuilding(id, "OBS_" + (random.nextInt(10)+1),  1,
+                    Building building1 = BuildingFactory.getBuilding(id, BuildingFactory.GameObjectPrefix.OBSTACLE + "_" + (random.nextInt(10)+1),  1,
                             new Point(i, j));
                     BaseBuildingConfig buildingConfig = gameConfig.getBuildingConfig(building1.getType(), building1.getLevel());
                     if(checkFill(map,building1.getPosition().x, building1.getPosition().y, buildingConfig.width, buildingConfig.height)
