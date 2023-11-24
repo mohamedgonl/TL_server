@@ -18,7 +18,7 @@ public class BuildingFactory {
         public static final String CANNON = "DEF_1";
         public static final String ARCHER_TOWER = "DEF_2";
         public static final String MORTAR = "DEF_3";
-        public static final String AIR_DEFENSE = "DEF_4";
+        public static final String AIR_DEFENSE = "DEF_5";
         public static final String BUILDER_HUT = "BDH_1";
         public static final String BARRACK = "BAR_1";
         public static final String ARMY_CAMP = "AMC_1";

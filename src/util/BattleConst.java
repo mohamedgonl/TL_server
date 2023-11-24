@@ -35,11 +35,13 @@ public class BattleConst {
         put("DEF_1", 40);
         put("DEF_2", 50);
         put("DEF_3", 13);
+        put("DEF_5", 40);
     }};
     public static Map<String, Float> BULLET_MINIMUM_TIME_REACH_DEST = new HashMap<String, Float>() {{
         put("DEF_1", 0f);
         put("DEF_2", 0.35f);
         put("DEF_3", 0f);
+        put("DEF_5", 0f);
     }};
 
     public enum BattleBuildingState {
