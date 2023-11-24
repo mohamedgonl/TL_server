@@ -18,6 +18,8 @@ public class BattleDefence extends BattleBuilding {
     public transient Point centerPoint;
     public transient double minRange;
     public transient double maxRange;
+    public transient double minRangeSquare;
+    public transient double maxRangeSquare;
     public transient double attackRadius;
     public transient int attackArea;
 
@@ -31,6 +33,9 @@ public class BattleDefence extends BattleBuilding {
         attackRadius = this.defBaseStats.attackRadius * BattleConst.GRID_BATTLE_RATIO;
         attackSpeed = this.defBaseStats.attackSpeed;
         this.attackArea = this.defBaseStats.attackArea;
+
+        minRangeSquare = minRange * minRange;
+        maxRangeSquare = maxRange * maxRange;
 
         centerPoint = new Point(posX + (int) Math.floor(width / 2), posY + (int) Math.floor(height / 2));
     }
@@ -87,9 +92,14 @@ public class BattleDefence extends BattleBuilding {
     }
 
     public boolean isTargetInRange(BattleTroop target) {
-        double dist = Math.sqrt(Math.pow(centerPoint.x - target.posX, 2) + Math.pow(centerPoint.y - target.posY, 2));
-        dist = Common.roundFloat(dist, 2);
-        return dist > minRange && dist < maxRange;
+        int dx = Math.abs(centerPoint.x - target.posX);
+        int dy = Math.abs(centerPoint.y - target.posY);
+
+        if (dx > maxRange || dy > maxRange)
+            return false;
+
+        int distSquare = dx * dx + dy * dy;
+        return distSquare >= minRangeSquare && distSquare <= maxRangeSquare;
     }
 
     public void attack(BattleTroop troop) {

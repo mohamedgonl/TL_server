@@ -472,7 +472,7 @@ public class BattleMatch extends DataModel {
 
         while (tick < BattleConst.MAX_TICK_PER_GAME) {
             if (actionIndex < this.actionsList.size()) {
-                if (this.actionsList.get(actionIndex).tick == tick) {
+                while (this.actionsList.get(actionIndex).tick == tick) {
                     //TODO: do action
                     if (this.actionsList.get(actionIndex).type == BattleConst.ACTION_THROW_TROOP) {
                         BattleTroop troop = new BattleTroop(this.actionsList.get(actionIndex).troopType, 1, this.actionsList.get(actionIndex).posX, this.actionsList.get(actionIndex).posY);
