@@ -37,8 +37,8 @@ public class BattleStorage extends BattleBuilding {
         this.resourceType = resourceType;
     }
 
-    public void onGainDamage(int damage) {
-        super.onGainDamage(damage);
+    public void onGainDamage(int damage, BattleTroop troop) {
+        super.onGainDamage(damage, troop);
 
         int resource = (int) Math.ceil((double) (damage * this.capacity) / this.maxHp);
         if (resource <= this.resourceLeft) {

@@ -46,9 +46,12 @@ public class BattleMatch extends DataModel {
     public transient ArrayList<BattleBuilding> listResources = new ArrayList<>();
     public transient ArrayList<BattleBuilding> listWalls = new ArrayList<>();
     public transient ArrayList<BattleBullet> bullets = new ArrayList<>();
-    public transient int[][] findPathGrid;
+    public transient int[][] buildingWeightGrid;
+
+    public transient int[][] buildingWeightGridWithoutWall;
     public transient ArrayList<TroopBullet> listTroopBullet = new ArrayList<>();
     public transient BattleGraph battleGraph;
+    public transient BattleGraph battleGraphWithoutWall;
     private transient BattleBuilding townHall;
     private int goldGot = 0; // vàng chiếm dc
     private int elixirGot = 0; // dầu chiếm dc
@@ -84,7 +87,8 @@ public class BattleMatch extends DataModel {
         this.initThrowTroopMap();
 
         //init battleGraph
-        this.battleGraph = new BattleGraph(this.findPathGrid, this.battleMap);
+        this.battleGraph = new BattleGraph(this.buildingWeightGrid, this.battleMap);
+        this.battleGraphWithoutWall = new BattleGraph(this.buildingWeightGridWithoutWall, this.battleMap);
     }
 
     public int getWinTrophy(int userRank, int enemyRank) {
@@ -176,11 +180,13 @@ public class BattleMatch extends DataModel {
     }
 
     public void initFindPathGrid() {
-        this.findPathGrid = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
+        this.buildingWeightGrid = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
+        this.buildingWeightGridWithoutWall = new int[BattleConst.BATTLE_MAP_SIZE][BattleConst.BATTLE_MAP_SIZE];
         //set all to 0
         for (int i = 0; i < BattleConst.BATTLE_MAP_SIZE; i++) {
             for (int j = 0; j < BattleConst.BATTLE_MAP_SIZE; j++) {
-                this.findPathGrid[i][j] = 0;
+                this.buildingWeightGrid[i][j] = 0;
+                this.buildingWeightGridWithoutWall[i][j] = 0;
             }
         }
 
@@ -190,7 +196,7 @@ public class BattleMatch extends DataModel {
             if (gameObject.type.startsWith(BuildingFactory.GameObjectPrefix.WALL)) {
                 for (int i = gameObject.posX; i < gameObject.posX + gameObject.width; i++) {
                     for (int j = gameObject.posY; j < gameObject.posY + gameObject.height; j++) {
-                        this.findPathGrid[i][j] = 9;
+                        this.buildingWeightGrid[i][j] = 9;
                     }
                 }
                 continue;
@@ -199,7 +205,8 @@ public class BattleMatch extends DataModel {
             //normal building, not inclue obs and wall
             for (int i = gameObject.posX + 1; i < gameObject.posX + gameObject.width - 1; i++) {
                 for (int j = gameObject.posY + 1; j < gameObject.posY + gameObject.height - 1; j++) {
-                    this.findPathGrid[i][j] = 99999;
+                    this.buildingWeightGrid[i][j] = 99999;
+                    this.buildingWeightGridWithoutWall[i][j] = 99999;
                 }
             }
         }
@@ -286,6 +293,9 @@ public class BattleMatch extends DataModel {
 
     public BattleGraph getBattleGraph() {
         return this.battleGraph;
+    }
+    public BattleGraph getBattleGraphWithoutWall() {
+        return this.battleGraphWithoutWall;
     }
 
     public void updateResourceGot(int addition, BattleConst.ResourceType type) {
@@ -475,7 +485,7 @@ public class BattleMatch extends DataModel {
                 while (this.actionsList.get(actionIndex).tick == tick) {
                     //TODO: do action
                     if (this.actionsList.get(actionIndex).type == BattleConst.ACTION_THROW_TROOP) {
-                        BattleTroop troop = new BattleTroop(this.actionsList.get(actionIndex).troopType, 1, this.actionsList.get(actionIndex).posX, this.actionsList.get(actionIndex).posY);
+                        BattleTroop troop = BattleTroop.create(this.actionsList.get(actionIndex).troopType, 1, this.actionsList.get(actionIndex).posX, this.actionsList.get(actionIndex).posY);
                         troop.setMatch(this);
                         troop.setId(this.idTroop);
                         this.idTroop++;
