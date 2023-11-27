@@ -507,17 +507,7 @@ public class BattleMatch extends DataModel {
                 if (defence.isDestroy()) {
                     continue;
                 }
-                defence.validateCurrentTarget();
-                if (defence.hasTarget())
-                    continue;
-                for (BattleTroop troop : this.troops) {//loop list current troops
-                    if (!troop.isAlive()) continue;
-                    if (defence.checkTarget(troop)) {
-                        LogUtils.writeLog("check target :" + tick);
-                        defence.setTarget(troop);
-                        break;
-                    }
-                }
+                defence.findTarget(this.troops);
             }
 
             for (BattleDefence defence : this.listDefences)
