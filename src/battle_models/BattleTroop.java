@@ -100,6 +100,7 @@ public class BattleTroop
 
 
     }
+
     public void setId(int id)
     {
         this.id = id;
@@ -119,8 +120,8 @@ public class BattleTroop
             this.findTarget();
 
             if (this.target == null) return;
-            LogUtils.writeLog("troop ID:" +this.id);
-            LogUtils.writeLog("1 :troop " + this.type + " find target " + this.target.type);
+            LogUtils.writeLog("troop ID:" + this.id);
+            LogUtils.writeLog("1 :troop " + this.type + " find target " + this.target.type + " id target:" + this.target.id);
             this.findPath();
             LogUtils.writeLog("2 :troop " + this.type + " find target " + this.target.type);
             for (Point point : this.path)
@@ -182,40 +183,8 @@ public class BattleTroop
         return this.isInAttackRange(target, null, null);
     }
 
-    private ArrayList<Point> getPathToBuilding(BattleBuilding building)
-    {
-        try
-        {
-            //get path
-            BattleGraph graph = this.match.getBattleGraph();
-            BattleGridNode start = new BattleGridNode(this.posX, this.posY, graph.getNode(this.posX, this.posY).weight, null);
 
-
-            Point nearestPoint = building.getNearestPoint(this.posX, this.posY,this.id,true);
-
-            BattleGridNode end = new BattleGridNode(
-                    nearestPoint.x, nearestPoint.y,
-                    graph.getNode(nearestPoint.x, nearestPoint.y).weight, building.id);
-            ArrayList<BattleGridNode> path = BattleAStar.search(graph, start, end);
-
-            //change to Point
-            ArrayList<Point> ret = new ArrayList<>();
-            if (path == null)
-                return ret;
-            for (BattleGridNode node : path)
-            {
-                ret.add(new Point(node.x, node.y));
-            }
-            return ret;
-        } catch (Exception exception)
-        {
-            exception.printStackTrace();
-            System.out.println(exception.getMessage());
-        }
-        return null;
-    }
-
-    private boolean isInAttackRange(BattleBuilding building, Integer tempX, Integer tempY)
+    protected boolean isInAttackRange(BattleBuilding building, Integer tempX, Integer tempY)
     {
         ArrayList<Point> corners = building.getCorners();
 
@@ -320,7 +289,7 @@ public class BattleTroop
             //if destroy, continue
             if (target.isDestroy()) continue;
             //get min distance
-            Point nearestPoint = target.getNearestPoint(this.posX, this.posY,null,false);
+            Point nearestPoint = target.getNearestPoint(this.posX, this.posY, null, false);
             int distanceSquare = (nearestPoint.x - this.posX) * (nearestPoint.x - this.posX) +
                     (nearestPoint.y - this.posY) * (nearestPoint.y - this.posY);
 
@@ -349,12 +318,46 @@ public class BattleTroop
         }
     }
 
-    private void findPath()
+    public void findPath()
     {
-        this.path = this.getPathToBuilding(this.target);
+        try
+        {
+            //get path
+            BattleGraph graph = this.match.getBattleGraph();
+            BattleGridNode start = new BattleGridNode(this.posX, this.posY, graph.getNode(this.posX, this.posY).weight, null);
+
+
+            Point nearestPoint = this.target.getNearestPoint(this.posX, this.posY, this.id, true);
+
+            BattleGridNode end = new BattleGridNode(
+                    nearestPoint.x, nearestPoint.y,
+                    graph.getNode(nearestPoint.x, nearestPoint.y).weight, this.target.id);
+            ArrayList<BattleGridNode> path = BattleAStar.search(graph, start, end);
+
+            //change to Point
+            ArrayList<Point> ret = new ArrayList<>();
+            if (path == null)
+            {
+                this.path = ret;
+                return;
+            }
+
+            for (BattleGridNode node : path)
+            {
+                ret.add(new Point(node.x, node.y));
+            }
+
+            this.path = ret;
+            return;
+        } catch (Exception exception)
+        {
+            exception.printStackTrace();
+            System.out.println(exception.getMessage());
+        }
+        this.path = null;
     }
 
-    private void checkPath()
+    public void checkPath()
     {
         for (int i = 0; i < this.path.size(); i++)
         {
@@ -511,7 +514,7 @@ public class BattleTroop
     {
         if (Objects.equals(this.type, "ARM_2"))
         {
-            TroopBullet.createBullet(this.match, "ARM_2", this.target, new Point(this.posX, this.posY), this.damage);
+            TroopBullet.createBullet(this.match, "ARM_2", this.target, new Point(this.posX, this.posY), this.damage, this);
             return;
         }
         int damage = this.damage;
@@ -521,7 +524,7 @@ public class BattleTroop
         {
             damage = damage * this.damageScale;
         }
-        this.target.onGainDamage(damage);
+        this.target.onGainDamage(damage,this);
     }
 
     //call when troop gain damage, update hp bar, if hp = 0, call dead
@@ -576,6 +579,19 @@ public class BattleTroop
     public enum TROOP_STATE
     {
         FIND, MOVE, ATTACK, IDLE, DEAD
+    }
+
+    public static BattleTroop create(String type, int level, int posX, int posY) {
+        BattleTroop troop = null;
+        switch (type) {
+            case "ARM_6":
+                troop = new Bomber (level, posX, posY);
+                break;
+            default:
+                troop = new BattleTroop(type, level, posX, posY);
+                break;
+        }
+        return troop;
     }
 }
 
