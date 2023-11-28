@@ -417,12 +417,8 @@ public class BattleMatch extends DataModel {
     }
 
     public void removeTroop(BattleTroop troop) {
-//        for (int i = 0; i < this.troops.size(); i++) {
-//            if (this.troops.get(i).id == id) {
-//                this.troops.remove(i);
-//            }
-//        }
-//        this.troops.remove(troop);
+        //remove from troop list
+        this.troops.remove(troop);
     }
 
     //get list troops in a circle
