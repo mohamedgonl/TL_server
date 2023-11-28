@@ -237,7 +237,7 @@ public class LoginSuccessHandler extends BaseServerEventHandler {
         ArrayList<Building> buildings = new ArrayList<>();
         int[][] map = new int[40][40];
 
-        String[] buildingType = {"AMC_1", "BAR_1", "DEF_1", "DEF_2", "DEF_3", "STO_1", "STO_2", "RES_1", "RES_2", "BDH_1"};
+        String[] buildingType = {"AMC_1", "BAR_1", "DEF_1", "DEF_2", "DEF_3", "DEF_5", "STO_1", "STO_2", "RES_1", "RES_2", "BDH_1"};
         int typeCount = buildingType.length;
 
         int wallStartX = random.nextInt(5)+5;
