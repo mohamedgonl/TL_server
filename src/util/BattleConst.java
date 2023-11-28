@@ -25,7 +25,7 @@ public class BattleConst {
     public static String END_GAME = "end_game";
     public static int BATTLE_MAP_BORDER = 2;
     public static int BATTLE_MAP_SCALE = 3;
-    public static int TICK_PER_SECOND = 60;
+    public static int TICK_PER_SECOND = 30;
     public static int MAX_TICK_PER_GAME = (COUNT_DOWN_TIME + MAX_TIME_A_MATCH) * TICK_PER_SECOND;
     public static int RANK_DIST = 500;
     public static int[][] TIME_GET_MATCH = {{1, 50}, {2, 100}, {5, 200}};
