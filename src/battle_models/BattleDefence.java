@@ -8,6 +8,7 @@ import util.config.DefenceConfig;
 import util.log.LogUtils;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class BattleDefence extends BattleBuilding {
     public transient DefenceBaseConfig defBaseStats;
@@ -62,34 +63,78 @@ public class BattleDefence extends BattleBuilding {
         LogUtils.writeLog("def " + this.id + " set new target " + target.type);
     }
 
-    //check if troop can be added as new target
-    public boolean checkTarget(BattleTroop target) {
+    public void findTarget(ArrayList<BattleTroop> troops) {
+        //remove target if dead or out of range
+        if (this.target != null && (!this.target.isAlive() || !this.isTargetInRange(this.target))) {
+            this.target = null;
+        }
+
+        if (this.target != null)
+            return;
+
+        //find new target
+        ArrayList<BattleTroop> listTroopsAttackThis = new ArrayList<>();//troops attacking this def
+        ArrayList<BattleTroop> listAttackingTroops = new ArrayList<>();
+        ArrayList<BattleTroop> listSatisfyTroops = new ArrayList<>();
+
+        for (BattleTroop troop : troops) {
+            if (troop == null || !troop.isAlive()
+                    || !this.checkTargetType(troop) || !this.isTargetInRange(troop)) continue;
+
+            listSatisfyTroops.add(troop);
+
+            if (troop.state == BattleTroop.TROOP_STATE.ATTACK) {
+                if (troop.target != null && troop.target.id == this.id) {
+                    listTroopsAttackThis.add(troop);
+                }
+                listAttackingTroops.add(troop);
+            }
+        }
+
+        this.findNearestTarget(listTroopsAttackThis);
+        if (this.target != null) {
+            return;
+        }
+        this.findNearestTarget(listAttackingTroops);
+        if (this.target != null) {
+            return;
+        }
+        this.findNearestTarget(listSatisfyTroops);
+    }
+
+    public void findNearestTarget(ArrayList<BattleTroop> troops) {
+        int minimumDist = Integer.MAX_VALUE;
+        BattleTroop newTarget = null;
+
+        for (BattleTroop troop : troops) {
+            int dx = Math.abs(centerPoint.x - troop.posX);
+            int dy = Math.abs(centerPoint.y - troop.posY);
+
+            int distSquare = dx * dx + dy * dy;
+            if (distSquare < minimumDist) {
+                minimumDist = distSquare;
+                newTarget = troop;
+            }
+        }
+        if (newTarget != null) {
+            this.setTarget(newTarget);
+        }
+    }
+
+    //check attack area of troop
+    public boolean checkTargetType(BattleTroop target) {
         // target in air
         if (target.isOverhead() && this.attackArea == BattleConst.DEF_ATTACK_AREA_GROUND) {
             return false;
         }
         // target on ground
-        if (!target.isOverhead() && this.attackArea == BattleConst.DEF_ATTACK_AREA_OVERHEAD) {
-            return false;
-        }
-        return isTargetInRange(target);
+        return target.isOverhead() || this.attackArea != BattleConst.DEF_ATTACK_AREA_OVERHEAD;
     }
 
     public boolean hasTarget() {
         return this.target != null && this.target.isAlive();
     }
 
-    //check if current target is still valid or not
-    //set current target to null if not valid
-    public void validateCurrentTarget() {
-        if (!this.hasTarget()) {
-            this.target = null;
-            return;
-        }
-        if (!this.isTargetInRange(this.target)) {
-            this.target = null;
-        }
-    }
 
     public boolean isTargetInRange(BattleTroop target) {
         int dx = Math.abs(centerPoint.x - target.posX);
