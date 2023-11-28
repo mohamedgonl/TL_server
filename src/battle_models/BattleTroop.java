@@ -548,6 +548,7 @@ public class BattleTroop
     //create sprite of troop with shadow, body, hp bar
     public void refindTarget()
     {
+        if(this.state == TROOP_STATE.DEAD) return;
         this.state = TROOP_STATE.FIND;
     }
 
