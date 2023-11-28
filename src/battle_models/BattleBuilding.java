@@ -87,7 +87,7 @@ public class BattleBuilding extends BattleGameObject {
                             queue.add(next);
                     }
                 }
-            }S
+            }
         }
         this.match.onDestroyBuilding(this.id);
         LogUtils.writeLog("building " + this.id + " destroyed");
